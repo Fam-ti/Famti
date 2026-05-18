@@ -4,7 +4,7 @@
         <field name="name">Customer Visit Report</field>
         <field name="model_id" ref="model_customer_visit"/>
         <field name="binding_model_id" ref="model_customer_visit"/>
-        <field name="binding_view_types">form</field>
+        <field name="binding_view_types">list,form</field>
         <field name="state">code</field>
         <field name="code">action = records.action_print_excel()</field>
     </record>
@@ -13,7 +13,7 @@
         <field name="name">Customer History Report</field>
         <field name="model_id" ref="model_customer_visit"/>
         <field name="binding_model_id" ref="model_customer_visit"/>
-        <field name="binding_view_types">form</field>
+        <field name="binding_view_types">list,form</field>
         <field name="state">code</field>
         <field name="code">action = records.action_customer_history_excel()</field>
     </record>

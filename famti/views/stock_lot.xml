@@ -134,41 +134,39 @@
     </record>
 
     <record id="view_stock_lot_search_inherit" model="ir.ui.view">
-    <field name="name">stock.lot.search.inherit</field>
-    <field name="model">stock.lot</field>
-    <field name="inherit_id" ref="stock.search_product_lot_filter"/>
-    <field name="arch" type="xml">
+	    <field name="name">stock.lot.search.inherit</field>
+	    <field name="model">stock.lot</field>
+	    <field name="inherit_id" ref="stock.search_product_lot_filter"/>
+	    <field name="arch" type="xml">
 
-        <!-- Filter only FM/Stock child locations -->
-        <xpath expr="//search" position="inside">
+		<xpath expr="//search" position="inside">
 
-            <filter name="fm_stock_only"
-                    string="FM Stock"
-                    domain="[('location_id.complete_name', 'like', 'FM/Stock/%')]"/>
+		    <filter name="fm_stock_only"
+		            string="FM Stock"
+		            domain="[('location_id.complete_name', 'like', 'FM/Stock/%')]"/>
 
-        </xpath>
+		</xpath>
 
-        <!-- Group by parent -->
-        <xpath expr="//search/group" position="inside">
+		<xpath expr="//search/group" position="inside">
 
-            <filter name="group_parent_location"
-                    string="Parent Location"
-                    context="{'group_by':'location_id'}"/>
+		    <filter name="group_parent_location"
+		            string="Parent Location"
+		            context="{'group_by':'location_id'}"/>
 
-        </xpath>
+		</xpath>
 
-    </field>
-</record>
+	    </field>
+	</record>
 
     <record id="stock.action_production_lot_form" model="ir.actions.act_window">
-    <field name="context">
-        {
-            'search_default_fm_stock_only': 1,
-            'search_default_group_parent_location': 1,
-            'display_complete': True
-        }
-    </field>
-</record>
+	    <field name="context">
+		{
+		    'search_default_fm_stock_only': 1,
+		    'search_default_group_parent_location': 1,
+		    'display_complete': True
+		}
+	    </field>
+	</record>
 
 
     </data>
