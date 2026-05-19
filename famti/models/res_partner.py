@@ -64,33 +64,32 @@ class ResPartner(models.Model):
             ('vendor_document_expiry', '<=', last_reminder_day),
             ('email', '!=', False),
         ])
-
         template = self.env.ref(
             'famti.mail_template_vendor_document_expiry',
             raise_if_not_found=False
         )
-
+        email_from = self.env.user.company_id.email or self.env.user.email
         for vendor in vendors:
             if vendor.vendor_document_expiry == today:
                 vendor.write({
                     'state': 'certificate_expired'
                 })
-
             subject = "Vendor Certificate Expiry Reminder"
             body = f"""
                 Dear {vendor.name},
-
+                
                 Your certificate will expire on {vendor.vendor_document_expiry}.
-
                 Please renew and share the updated certificate before the expiry date.
 
-                Thank you,
+                Best Regards,
                 {self.env.user.company_id.name}
                 """
             self.env['mail.mail'].create({
                 'subject': subject,
                 'body_html': body.replace('\n', '<br/>'),
                 'email_to': vendor.email,
+                'email_cc': vendor.create_uid.login,
+                'email_from': email_from
             }).send()
 
     
