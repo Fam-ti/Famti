@@ -25,6 +25,17 @@
                             <field name="source_loc_id"/>
                         </group>
                     </group>
+                    <group string="Transport Details" invisible="transport_type != 'land'">
+                        <group>
+                            <field name="carrier_id"/>
+                            <field name="driver_name_id"/>
+                            <field name="vehicle_number"/>
+                        </group>
+                        <group>
+                            <field name="driver_phone"/>
+                            <field name="driver_email"/>
+                        </group>
+                    </group>
                 </sheet>
                 <footer>
                     <button name="action_order_submit" string="Submit"

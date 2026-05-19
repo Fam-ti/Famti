@@ -64,33 +64,32 @@ class ResPartner(models.Model):
             ('vendor_document_expiry', '<=', last_reminder_day),
             ('email', '!=', False),
         ])
-
         template = self.env.ref(
             'famti.mail_template_vendor_document_expiry',
             raise_if_not_found=False
         )
-
+        email_from = self.env.user.company_id.email or self.env.user.email
         for vendor in vendors:
             if vendor.vendor_document_expiry == today:
                 vendor.write({
                     'state': 'certificate_expired'
                 })
-
             subject = "Vendor Certificate Expiry Reminder"
             body = f"""
                 Dear {vendor.name},
-
+                
                 Your certificate will expire on {vendor.vendor_document_expiry}.
-
                 Please renew and share the updated certificate before the expiry date.
 
-                Thank you,
+                Best Regards,
                 {self.env.user.company_id.name}
                 """
             self.env['mail.mail'].create({
                 'subject': subject,
                 'body_html': body.replace('\n', '<br/>'),
                 'email_to': vendor.email,
+                'email_cc': vendor.create_uid.login,
+                'email_from': email_from
             }).send()
 
     
@@ -124,7 +123,23 @@ class CustomerVisit(models.Model):
     contact_person = fields.Char(string="Contact Person (Customer)")
     designation = fields.Char(string="Designation")
 
-    purpose = fields.Text(string="Purpose of Visit")
+    purpose = fields.Selection([
+        ('product_enquiry', 'Product Enquiry'),
+        ('quotation_discussion', 'Quotation Discussion'),
+        ('purchase_order', 'Purchase Order Discussion'),
+        ('sample_approval', 'Sample Approval'),
+        ('new_business', 'New Business Discussion'),
+        ('price_negotiation', 'Price Negotiation'),
+        ('technical_discussion', 'Technical Discussion'),
+        ('product_demo', 'Product Demo'),
+        ('material_inspection', 'Material Inspection'),
+        ('vendor_meeting', 'Vendor Meeting'),
+        ('customer_meeting', 'Customer Meeting'),
+        ('complaint_resolution', 'Complaint Resolution'),
+        ('payment_followup', 'Payment Follow-up'),
+        ('service_support', 'Service Support'),
+        ('other', 'Other'),
+    ], string="Purpose of Visit")
     summary = fields.Text(string="Summary")
     action_items = fields.Text(string="Action Items")
     product_ids = fields.Many2many(

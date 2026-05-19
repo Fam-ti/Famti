@@ -103,8 +103,8 @@
                     <field name="advance_amount"/>
                     <field name="due_date"/>
                     <field name="po_type"/>
-                    <field name="payment_term_id" required="1"/>
-                    <field name="incoterm_id" string="Delivery Terms" required="1"/>
+                    <field name="payment_term_id" required="1" options="{'no_open': True}"/>
+                    <field name="incoterm_id" string="Delivery Terms" required="1" options="{'no_open': True}"/>
                     <field name="po_expense_ids" widget="many2many_tags" invisible="not po_expense_ids"/>
                 </xpath>
 

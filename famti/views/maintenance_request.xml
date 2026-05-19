@@ -136,9 +136,6 @@
                     <div>
                         <field name="expected_duration" widget="float_time" readonly="show_supervisor_button" required="1" class="oe_inline"/> <span class="ml8">hours</span>
                     </div>
-                    <field name="downtime_start" />
-                    <field name="downtime_end" />
-                    <field name="downtime_duration" />
                 </xpath>
                 <xpath expr="//field[@name='schedule_date']" position="after">
                     <field name="end_datetime" readonly="show_supervisor_button"/>
@@ -160,6 +157,35 @@
                                     class="btn-link"/>
                             </list>
                         </field>
+                    </page>
+                    
+                    <page string="Downtime Details">
+                        <group>
+                            <group string="Downtime">
+                                <field name="downtime_start" />
+                                <field name="downtime_end" />
+                                <field name="downtime_duration" />
+                            </group>
+                            <group string="Process Timing">
+                                <field name="vacuum_start_time"/>
+                                <field name="heating_start_time"/>
+                                <field name="web_start_time"/>
+                                <field name="mc_stop_time"/>
+                            </group>
+                            
+                        </group>
+                        <group>
+                            <group string="Vent Time">
+                                <field name="vent_from"/>
+                                <field name="vent_to"/>
+                                <field name="vent_total"/>
+                                <field name="vent_reason"/>
+                            </group>
+                            <group string="Additional Details">
+                                <field name="boat_heating_kw"/>
+                                <field name="other_than"/>
+                            </group>
+                        </group>
                     </page>
                 </xpath>
 

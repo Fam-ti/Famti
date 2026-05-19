@@ -50,6 +50,21 @@ class StockLot(models.Model):
         'mrp.production',
         string="Produced From MO"
     )
+    parent_location_id = fields.Many2one(
+        'stock.location',
+        string='Parent Location',
+        compute='_compute_parent_location_id',
+        store=True,
+    )
+
+    @api.depends('location_id')
+    def _compute_parent_location_id(self):
+        for rec in self:
+            if rec.location_id:
+                # FM/Stock/QC HOLD  -> FM/Stock
+                rec.parent_location_id = rec.location_id.location_id.id
+            else:
+                rec.parent_location_id = False
     
     # @api.depends('product_id')
     # def _compute_product_code(self):

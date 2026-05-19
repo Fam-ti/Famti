@@ -83,7 +83,7 @@
                         <group col="2">
                             <group>
                                 <field name="carrier_id"/>
-                                <field name="driver_name"/>
+                                <field name="driver_name_id"/>
                                 <field name="driver_phone"/>
                                 <field name="driver_email"/>
                             </group>

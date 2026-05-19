@@ -15,6 +15,37 @@
                     </div>
                 </xpath>
 
+                <xpath expr="(//field[@name='location_dest_id'])[1]" position="replace">
+                    <field name="location_dest_id"
+                        domain="[('location_id', '=', parent_location_id)]"
+                        groups="stock.group_stock_multi_locations"
+                        invisible="picking_type_code == 'outgoing'"
+                        readonly="state == 'done'"/>
+                </xpath>
+
+                <xpath expr="(//field[@name='location_dest_id'])[2]" position="replace">
+                    <field name="location_dest_id"
+                        domain="[('location_id', '=', parent_location_id)]"
+                        groups="stock.group_stock_multi_locations"
+                        invisible="1"/>
+                </xpath>
+
+                <xpath expr="(//field[@name='location_id'])[1]" position="replace">
+                    <field name="location_id"
+                        domain="[('location_id', '=', parent_location_id)]"
+                        groups="stock.group_stock_multi_locations"
+                        invisible="picking_type_code == 'incoming'"
+                        readonly="state == 'done'"/>
+                </xpath>
+
+                <xpath expr="(//field[@name='location_id'])[2]" position="replace">
+                    <field name="location_id"
+                        domain="[('location_id', '=', parent_location_id)]"
+                        groups="stock.group_stock_multi_locations"
+                        invisible="1"/>
+                </xpath>
+
+
                 <xpath expr="//field[@name='partner_id']" position="attributes">
                     <attribute name="options">{'no_open': True}</attribute>
                 </xpath>
@@ -43,7 +74,7 @@
                 <xpath expr="//field[@name='origin']" position="attributes">
                     <attribute name="readonly">state != 'draft'</attribute>
                 </xpath>
-               
+                
 
             </field>
         </record>
