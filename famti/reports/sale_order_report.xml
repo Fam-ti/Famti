@@ -50,7 +50,7 @@
                     <strong><span t-field="company.name"/></strong><br/>
 
                     <span t-field="company.partner_id"
-                        t-options='{"widget": "contact", "fields": ["address", "phone", "website"], "no_marker": true}'/>
+                        t-options='{"widget": "contact", "fields": ["address", "phone", "email"], "no_marker": true}'/>
 
                 </div>
 
@@ -155,7 +155,7 @@
                             <strong>Customer Details</strong>
                         </th>
                         <th style="width:50%; background:#3b4e87; font-size:14px; color:white; padding:5px; text-align:left;">
-                            <strong>Shipping Address</strong>
+                            <strong>Shipper Address</strong>
                         </th>
                     </tr>
                     <tr>
@@ -171,12 +171,22 @@
                             <strong> Email:</strong> <span t-field="o.partner_id.email"/>
                         </td>
                         <td style="width:50%; vertical-align:top; padding:6px;">
-                            <strong><span t-field="o.partner_id.name"/></strong><br/>
+                            <strong>
+                                <span t-field="o.company_id.name"/>
+                            </strong><br/>
 
-                            <span t-field="o.partner_shipping_id.street"/><br/>
-                            <span t-field="o.partner_shipping_id.city"/>
-                            <span t-field="o.partner_shipping_id.state_id.name"/><br/>
-                            <span t-field="o.partner_shipping_id.country_id.name"/><br/>
+                            <span t-field="o.company_id.partner_id.street"/><br/>
+
+                            <span t-field="o.company_id.partner_id.city"/>
+                            <span t-field="o.company_id.partner_id.state_id.name"/><br/>
+
+                            <span t-field="o.company_id.partner_id.country_id.name"/><br/>
+
+                            <strong>Phone:</strong>
+                            <span t-field="o.company_id.phone"/><br/>
+
+                            <strong>Email:</strong>
+                            <span t-field="o.company_id.email"/>
 
                             <strong>Phone:</strong> <span t-field="o.partner_shipping_id.phone"/>
                             <strong> Email:</strong> <span t-field="o.partner_shipping_id.email"/>

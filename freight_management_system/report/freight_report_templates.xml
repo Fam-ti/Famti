@@ -51,7 +51,7 @@
                                 <div style="padding:8px; font-size:12px; line-height:18px;">
                                     <strong t-field="doc.shipper_id.name"/><br/>
                                     <span t-field="doc.shipper_id.street"/><br/>
-                                    <span t-field="doc.shipper_id.city"/> -
+                                    <span t-field="doc.shipper_id.city"/>
                                     <span t-field="doc.shipper_id.state_id.name"/><br/>
                                     <span t-field="doc.shipper_id.country_id.name"/><br/>
                                     <strong>Phone:</strong> <span t-field="doc.shipper_id.phone"/><br/>
@@ -68,7 +68,7 @@
                                 <div style="padding:8px; font-size:12px; line-height:18px;">
                                     <strong t-field="doc.consignee_id.name"/><br/>
                                     <span t-field="doc.consignee_id.street"/><br/>
-                                    <span t-field="doc.consignee_id.city"/> -
+                                    <span t-field="doc.consignee_id.city"/>
                                     <span t-field="doc.consignee_id.state_id.name"/><br/>
                                     <span t-field="doc.consignee_id.country_id.name"/><br/>
                                     <strong>Phone:</strong> <span t-field="doc.consignee_id.phone"/><br/>

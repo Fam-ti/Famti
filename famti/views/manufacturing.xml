@@ -32,6 +32,9 @@
                 <attribute name="string">Serial Number</attribute>
                 <attribute name="invisible">1</attribute>
             </xpath>
+            <xpath expr="//field[@name='user_id']" position="replace">
+                <field name="user_id" options="{'no_open': True}"/>
+            </xpath>
 
             <xpath expr="//label[@for='lot_producing_id']" position="attributes">
                 <attribute name="invisible">1</attribute>

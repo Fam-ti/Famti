@@ -29,7 +29,7 @@
 
                 <xpath expr="//field[@name='title']" position="after">
                   <field name="is_supplier" invisible="1"/>
-                  <field name="company_id" />
+                  <field name="company_id" options="{'no_open': True}"/>
                 </xpath>
 
                 <xpath expr="//group/group" position="inside">
