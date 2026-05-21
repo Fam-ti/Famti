@@ -286,5 +286,25 @@
     </record>
 
 
+    <record id="action_for_oil_greece_slitter" model="ir.actions.server">
+    <field name="name">
+        OandG Lubrication XLSX
+    </field>
+    <field name="model_id" ref="mrp.model_mrp_production"/>
+    <field name="state">code</field>
+    <field name="code">
+                action = model.generate_oil_grease_lubrication_xlsx()
+    </field>
+    </record>
+
+     <menuitem
+        id="reports_action_for_oil_greece_slitter"
+        name="OandG Lubirication Xlsx"
+        parent="mrp.menu_mrp_reporting"
+        action="action_for_oil_greece_slitter"
+        sequence="3"/>
+
+
+
 
 </odoo>

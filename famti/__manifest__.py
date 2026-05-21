@@ -30,6 +30,8 @@
         'data/product_data.xml',
         # 'data/inventory_data.xml',
         'data/recruitment.xml',
+        'data/employee_templates.xml',
+        'data/manpower_template.xml',
         'data/payment_terms_data.xml',
         'data/workcenter_demo.xml',
         'data/sequence.xml',

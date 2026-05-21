@@ -47,4 +47,27 @@
             
         </field>
     </record>
+
+<!--    New hire template-->
+    <record id="action_new_hire_form" model="ir.actions.report">
+       <field name="name">New Hire Report</field>
+            <field name="model">hr.applicant</field>
+       <field name="report_type">qweb-pdf</field>
+       <field name="report_name">famti.report_new_hire_template</field>
+            <field name="report_file">famti.report_new_hire_template</field>
+       <field name="binding_model_id" ref="hr_recruitment.model_hr_applicant"/>
+       <field name="binding_type">report</field>
+   </record>
+
+
+    <record id="action_manpower_pdf" model="ir.actions.report">
+    <field name="name">Manpower Req. Form</field>
+    <field name="model">hr.applicant</field>
+    <field name="report_type">qweb-pdf</field>
+    <field name="report_name">famti.report_manpower_template</field>
+    <field name="report_file">famti.report_manpower_template</field>
+        <field name="binding_model_id" ref="hr_recruitment.model_hr_applicant"/>
+       <field name="binding_type">report</field>
+    </record>
+
 </odoo>
