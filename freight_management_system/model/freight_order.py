@@ -5,7 +5,6 @@ from io import BytesIO
 import base64
 import xlsxwriter
 
-
 class FreightOrder(models.Model):
     """Model for creating freight orders"""
     _name = 'freight.order'
@@ -113,23 +112,11 @@ class FreightOrder(models.Model):
         for rec in self:
             rec.state = 'draft'
 
-    # def action_export_tracking_xlsx(self):
-    #     return {
-    #         'type': 'ir.actions.act_window',
-    #         'name': 'Sales Excel Report',
-    #         'res_model': 'sale.report.wizard',
-    #         'view_mode': 'form',
-    #         'target': 'new',
-    #     }
-
     def action_export_transport_summary_xlsx(self):
         output = BytesIO()
         workbook = xlsxwriter.Workbook(output)
         sheet = workbook.add_worksheet('Transport Summary')
-        # =====================================================
         # Formats
-        # =====================================================
-
         title_format = workbook.add_format({
             'bold': True,
             'align': 'center',
@@ -160,27 +147,17 @@ class FreightOrder(models.Model):
             'border': 1,
             'num_format': 'dd-mm-yyyy',
         })
-
-        # =====================================================
         # Sheet Setup
-        # =====================================================
-
         sheet.set_column('A:H', 28)
 
-        # =====================================================
         # Title
-        # =====================================================
 
         sheet.merge_range(
             'A1:H1',
             'Local Delivery Tracking Report',
             title_format
         )
-
-        # =====================================================
         # Headers
-        # =====================================================
-
         headers = [
             'COMPANY NAME',
             'CUSTOMER NAME',
@@ -199,7 +176,6 @@ class FreightOrder(models.Model):
 
         row += 1
 
-        # =====================================================
         # Data
         # =====================================================
 
@@ -306,20 +282,13 @@ class FreightOrder(models.Model):
         }
 
     def action_export_container_payment_reminder_xlsx(self):
-
-        from io import BytesIO
-        import base64
-        import xlsxwriter
-
         output = BytesIO()
 
         workbook = xlsxwriter.Workbook(output)
         sheet = workbook.add_worksheet('Container Payments')
 
-        # =====================================================
         # Formats
         # =====================================================
-
         title_format = workbook.add_format({
             'bold': True,
             'align': 'center',
@@ -359,16 +328,10 @@ class FreightOrder(models.Model):
             'num_format': 'dd-mm-yyyy',
         })
 
-        # =====================================================
         # Sheet Setup
-        # =====================================================
 
         sheet.set_column('A:G', 25)
-
-        # =====================================================
         # Titles
-        # =====================================================
-
         sheet.merge_range(
             'A1:G1',
             'Container Payment Reminder To Accounts Team',
@@ -380,10 +343,7 @@ class FreightOrder(models.Model):
             'CONTAINERS',
             sub_title_format
         )
-
-        # =====================================================
         # Headers
-        # =====================================================
 
         headers = [
             'DUE Date',
@@ -401,10 +361,7 @@ class FreightOrder(models.Model):
             sheet.write(row, col, header, header_format)
 
         row += 1
-
-        # =====================================================
         # Data
-        # =====================================================
 
         for order in self:
             for service in order.service_ids:
@@ -504,8 +461,6 @@ class FreightOrder(models.Model):
 
         workbook = xlsxwriter.Workbook(output)
         sheet = workbook.add_worksheet('Warehouse Containers')
-
-        # =====================================================
         # Formats
         # =====================================================
 
@@ -536,13 +491,9 @@ class FreightOrder(models.Model):
             'num_format': 'dd-mm-yyyy',
         })
 
-        # =====================================================
         # Sheet Setup
-        # =====================================================
 
         sheet.set_column('A:E', 25)
-
-        # =====================================================
         # Title
         # =====================================================
 
@@ -552,7 +503,6 @@ class FreightOrder(models.Model):
             title_format
         )
 
-        # =====================================================
         # Headers
         # =====================================================
 
@@ -570,8 +520,6 @@ class FreightOrder(models.Model):
             sheet.write(row, col, header, header_format)
 
         row += 1
-
-        # =====================================================
         # Data
         # =====================================================
 
@@ -651,10 +599,7 @@ class FreightOrder(models.Model):
 
         workbook = xlsxwriter.Workbook(output)
         sheet = workbook.add_worksheet('Container Tracking')
-
-        # =========================
         # Formats
-        # =========================
 
         title_format = workbook.add_format({
             'bold': True,
@@ -680,9 +625,7 @@ class FreightOrder(models.Model):
             'num_format': 'dd-mm-yyyy',
         })
 
-        # =========================
         # Sheet Setup
-        # =========================
 
         sheet.set_column('A:V', 20)
 
@@ -1331,160 +1274,160 @@ class Tracking(models.Model):
 
 
 
-class ContainerTrackingXlsx(models.AbstractModel):
-    _name = 'report.freight_management_system.container_tracking_xlsx_report'
-    # _inherit = 'report.report_xlsx.abstract'
-
-    def generate_xlsx_report(self, workbook, data, orders):
-
-        sheet = workbook.add_worksheet('Container Tracking')
-
-        # =========================
-        # Formats
-        # =========================
-
-        title_format = workbook.add_format({
-            'bold': True,
-            'align': 'center',
-            'font_size': 14,
-            'border': 1,
-        })
-
-        header_format = workbook.add_format({
-            'bold': True,
-            'bg_color': '#D9EAD3',
-            'border': 1,
-            'align': 'center',
-            'text_wrap': True,
-        })
-
-        normal_format = workbook.add_format({
-            'border': 1,
-        })
-
-        date_format = workbook.add_format({
-            'border': 1,
-            'num_format': 'dd-mm-yyyy',
-        })
-
-        # =========================
-        # Sheet Setup
-        # =========================
-
-        sheet.set_column('A:V', 20)
-
-        sheet.merge_range(
-            'A1:V1',
-            'Container Tracking Sheet',
-            title_format
-        )
-
-        headers = [
-            'PO DATE',
-            'PO No.',
-            'Pi No.',
-            'Pi date',
-            'ETD',
-            'ORIGIN',
-            'CUSTOMER',
-            'shipping line',
-            'Container No',
-            'SUPPLIER',
-            'AGENT',
-            'BL No.',
-            'SUPPLIER INV NO.',
-            'CURRENT STATUS',
-            'ETA PORT',
-            'ETA Toronto',
-            'Amount',
-            'Paid or no',
-            'CUSTOMS',
-            'TELEX',
-            'PICK UP No',
-            'Delivery Location',
-        ]
-
-        row = 2
-
-        for col, header in enumerate(headers):
-            sheet.write(row, col, header, header_format)
-
-        row += 1
-
-        for order in orders:
-
-            for track in order.freight_track_ids:
-
-                col = 0
-
-                sheet.write(row, col, order.po_date or '', date_format)
-                col += 1
-
-                sheet.write(row, col, order.po_no or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, order.pi_no or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, order.pi_date or '', date_format)
-                col += 1
-
-                sheet.write(row, col, track.etd or '', date_format)
-                col += 1
-
-                sheet.write(row, col, track.origin or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, order.customer_id.name or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, track.shipping_line_id.name or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, track.container_no or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, order.supplier_id.name or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, track.agent_id.name or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, track.bl_no or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, order.supplier_invoice_no or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, track.current_status or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, track.eta_port or '', date_format)
-                col += 1
-
-                sheet.write(row, col, track.eta_toronto or '', date_format)
-                col += 1
-
-                sheet.write(row, col, order.amount_total or 0.0, normal_format)
-                col += 1
-
-                sheet.write(
-                    row,
-                    col,
-                    'Paid' if order.is_paid else 'No',
-                    normal_format
-                )
-                col += 1
-
-                sheet.write(row, col, track.customs or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, track.telex or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, track.pickup_no or '', normal_format)
-                col += 1
-
-                sheet.write(row, col, track.delivery_location or '', normal_format)
-
-                row += 1
+# class ContainerTrackingXlsx(models.AbstractModel):
+#     _name = 'report.freight_management_system.container_tracking_xlsx_report'
+#     # _inherit = 'report.report_xlsx.abstract'
+#
+#     def generate_xlsx_report(self, workbook, data, orders):
+#
+#         sheet = workbook.add_worksheet('Container Tracking')
+#
+#         # =========================
+#         # Formats
+#         # =========================
+#
+#         title_format = workbook.add_format({
+#             'bold': True,
+#             'align': 'center',
+#             'font_size': 14,
+#             'border': 1,
+#         })
+#
+#         header_format = workbook.add_format({
+#             'bold': True,
+#             'bg_color': '#D9EAD3',
+#             'border': 1,
+#             'align': 'center',
+#             'text_wrap': True,
+#         })
+#
+#         normal_format = workbook.add_format({
+#             'border': 1,
+#         })
+#
+#         date_format = workbook.add_format({
+#             'border': 1,
+#             'num_format': 'dd-mm-yyyy',
+#         })
+#
+#         # =========================
+#         # Sheet Setup
+#         # =========================
+#
+#         sheet.set_column('A:V', 20)
+#
+#         sheet.merge_range(
+#             'A1:V1',
+#             'Container Tracking Sheet',
+#             title_format
+#         )
+#
+#         headers = [
+#             'PO DATE',
+#             'PO No.',
+#             'Pi No.',
+#             'Pi date',
+#             'ETD',
+#             'ORIGIN',
+#             'CUSTOMER',
+#             'shipping line',
+#             'Container No',
+#             'SUPPLIER',
+#             'AGENT',
+#             'BL No.',
+#             'SUPPLIER INV NO.',
+#             'CURRENT STATUS',
+#             'ETA PORT',
+#             'ETA Toronto',
+#             'Amount',
+#             'Paid or no',
+#             'CUSTOMS',
+#             'TELEX',
+#             'PICK UP No',
+#             'Delivery Location',
+#         ]
+#
+#         row = 2
+#
+#         for col, header in enumerate(headers):
+#             sheet.write(row, col, header, header_format)
+#
+#         row += 1
+#
+#         for order in orders:
+#
+#             for track in order.freight_track_ids:
+#
+#                 col = 0
+#
+#                 sheet.write(row, col, order.po_date or '', date_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, order.po_no or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, order.pi_no or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, order.pi_date or '', date_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, track.etd or '', date_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, track.origin or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, order.customer_id.name or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, track.shipping_line_id.name or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, track.container_no or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, order.supplier_id.name or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, track.agent_id.name or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, track.bl_no or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, order.supplier_invoice_no or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, track.current_status or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, track.eta_port or '', date_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, track.eta_toronto or '', date_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, order.amount_total or 0.0, normal_format)
+#                 col += 1
+#
+#                 sheet.write(
+#                     row,
+#                     col,
+#                     'Paid' if order.is_paid else 'No',
+#                     normal_format
+#                 )
+#                 col += 1
+#
+#                 sheet.write(row, col, track.customs or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, track.telex or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, track.pickup_no or '', normal_format)
+#                 col += 1
+#
+#                 sheet.write(row, col, track.delivery_location or '', normal_format)
+#
+#                 row += 1

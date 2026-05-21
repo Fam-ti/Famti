@@ -260,6 +260,7 @@
             </p>
         </field>
     </record>
+
     <!--Defined menus-->
     <menuitem id="freight_order_menu_root" name="Freight Management"
               web_icon="freight_management_system,static/description/icon.png"
@@ -270,14 +271,14 @@
               action="freight_order_action"/>
 
 
-    <report
-        id="container_tracking_xlsx"
-        model="freight.order"
-        string="Container Tracking XLSX"
-        report_type="xlsx"
-        name="freight_management_system.container_tracking_xlsx_report"
-        file="container_tracking_xlsx_report"
-        print_report_name="'Container Tracking - %s' % (object.name)"
-    />
+<!--    <report-->
+<!--        id="container_tracking_xlsx"-->
+<!--        model="freight.order"-->
+<!--        string="Container Tracking XLSX"-->
+<!--        report_type="xlsx"-->
+<!--        name="freight_management_system.container_tracking_xlsx_report"-->
+<!--        file="container_tracking_xlsx_report"-->
+<!--        print_report_name="'Container Tracking - %s' % (object.name)"-->
+<!--    />-->
 
 </odoo>
