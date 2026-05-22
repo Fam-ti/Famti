@@ -77,4 +77,104 @@
               action="action_tax_report"
               name="Tax Report" sequence="10"
               parent="dynamic_report_accounting"/>
+
+    <menuitem id="Famti_report_accounting" sequence="1"
+              name="Famti Accounting Reports"
+              parent="account.menu_finance_reports"/>
+
+    <menuitem id="account_recivables"
+          action="action_account_recivables_report"
+          name="Accounts Receivables Report"
+          sequence="10"
+          parent="Famti_report_accounting"/>
+
+    <menuitem id="menu_debit_note_report"
+              name="Debit Note Report"
+              parent="Famti_report_accounting"
+              action="action_debit_note_report"
+              sequence="11"/>
+
+    <menuitem id="menu_credit_note_report"
+              name="Credit Note Report"
+              parent="Famti_report_accounting"
+              action="action_credit_note_report"
+              sequence="12"/>
+    
+    <menuitem id="menu_purchase_order_report"
+              name="Purchase Order Report"
+              parent="Famti_report_accounting"
+              action="action_purchase_order_report"
+              sequence="13"/>
+
+    <menuitem id="menu_chips_invoice_report"
+              name="Chips Invoice Report"
+              parent="Famti_report_accounting"
+              action="action_chips_invoice_report"
+              sequence="14"/>
+
+    <menuitem id="menu_misc_invoice_report"
+              name="Misc Invoice Report"
+              parent="Famti_report_accounting"
+              action="action_misc_invoice_report"
+              sequence="15"/>
+
+    <menuitem id="menu_delivery_record_report"
+              name="Delivery Record Report"
+              parent="Famti_report_accounting"
+              action="action_delivery_record_report"
+              sequence="16"/>
+
+    <menuitem id="menu_credit_card_payment_report"
+              name="Credit Card Payment Report"
+              parent="Famti_report_accounting"
+              action="action_credit_card_payment_report"
+              sequence="17"/>
+
+    <menuitem id="menu_cheque_payment_report"
+              name="Cheque Payment Report"
+              parent="Famti_report_accounting"
+              action="action_cheque_payment_report"
+              sequence="18"/>
+
+    <menuitem id="menu_accounts_payable_report"
+              name="Accounts Payable Report"
+              parent="Famti_report_accounting"
+              action="action_accounts_payable_report"
+              sequence="19"/>
+
+    <menuitem id="menu_unpaid_invoice_bill_report"
+              name="Unpaid Invoice/Bills Report"
+              parent="Famti_report_accounting"
+              action="action_unpaid_invoice_bill_report"
+              sequence="20"/>
+
+    <menuitem id="menu_petty_cash_record"
+              name="Petty Cash Record"
+              parent="Famti_report_accounting"
+              action="action_petty_cash_record"
+              sequence="21"/>
+
+    <menuitem id="menu_profit_loss_statement"
+              name="Profit and Loss Statement"
+              parent="Famti_report_accounting"
+              action="action_profit_loss_statement"
+              sequence="22"/>
+
+    <menuitem id="menu_customer_contact_list"
+              name="Customer Contact List"
+              parent="Famti_report_accounting"
+              action="action_customer_contact_list"
+              sequence="23"/>
+
+    <menuitem id="menu_daily_expense_sheet"
+              name="Daily Expense Sheet"
+              parent="Famti_report_accounting"
+              action="action_daily_expense_sheet"
+              sequence="24"/>
+
+    <menuitem id="menu_eft_record"
+              name="EFT Record"
+              parent="Famti_report_accounting"
+              action="action_eft_record"
+              sequence="25"/>
 </odoo>

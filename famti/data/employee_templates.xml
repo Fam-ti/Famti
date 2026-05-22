@@ -1,0 +1,569 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+<template id="report_new_hire_template">
+
+<t t-call="web.html_container">
+
+<t t-foreach="docs" t-as="o">
+
+<div class="page" style="font-family:Arial;padding:20px 35px;font-size:13px;">
+
+<style>
+
+.page{
+    width:100%;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-left:20px;
+    margin-right:-20px;
+}
+
+td{
+    vertical-align:top;
+    padding-top:5px;
+}
+
+.field-line{
+    border-bottom:1px solid #999;
+    min-height:24px;
+    padding-top:3px;
+}
+
+.label{
+    font-weight:bold;
+}
+
+.checkbox{
+    display:inline-block;
+    width:12px;
+    height:12px;
+    border:1px solid black;
+    margin-left:5px;
+    margin-right:5px;
+}
+
+/* FIX ONLY HEADER SPACE */
+.title{
+    text-align:center;
+    margin-top:0px;        /* remove negative space */
+    margin-bottom:15px;
+    padding-top:0px;
+}
+
+.footer{
+    margin-top:60px;
+    font-size:12px;
+}
+
+</style>
+
+<!-- HEADER -->
+<div class="title">
+
+    <img
+        t-if="o.company_id.logo"
+        t-att-src="image_data_uri(o.company_id.logo)"
+        style="
+            max-height:90px;
+            width:auto;
+            display:block;
+            margin:0 auto 10px auto;
+        "
+    />
+
+    <div style="
+        font-size:20px;
+        font-weight:bold;
+        text-decoration:underline;
+        margin-top:0px;
+    ">
+        NEW HIRE/REHIRE EMPLOYEE FORM
+    </div>
+
+</div>
+
+<table>
+
+<tr>
+
+<td width="33%">
+
+<div class="label">First Name-</div>
+
+<div class="field-line">
+
+<span t-esc="(o.candidate_id.partner_name or '').split(' ')[0]"/>
+
+</div>
+
+</td>
+
+<td width="33%">
+
+<div class="label">Last Name-</div>
+
+<div class="field-line">
+
+<span t-esc="' '.join((o.candidate_id.partner_name or '').split(' ')[1:])"/>
+
+</div>
+
+</td>
+
+<td width="34%">
+
+<div class="label">Preferred Name-</div>
+
+<div class="field-line">
+
+<span t-esc="o.candidate_id.partner_name"/>
+
+</div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td colspan="3">
+
+<div class="label">
+
+Social Security-
+
+</div>
+
+<div class="field-line"></div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+
+<div class="label">
+
+Gender-
+
+</div>
+
+<div class="field-line"></div>
+
+</td>
+
+<td colspan="2">
+
+<div class="label">
+
+Marital Status-
+
+</div>
+
+<div class="field-line"></div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+
+<div class="label">
+
+Birthdate-
+
+</div>
+
+<div class="field-line"></div>
+
+</td>
+
+<td colspan="2">
+
+<div class="label">
+
+Address-
+
+</div>
+
+<div class="field-line">
+
+<span t-esc="o.candidate_id.partner_id.contact_address"/>
+
+</div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+
+<div class="label">
+
+Cellphone-
+
+</div>
+
+<div class="field-line">
+
+<span t-esc="o.partner_phone"/>
+
+</div>
+
+</td>
+
+<td colspan="2">
+
+<div class="label">
+
+Home phone-
+
+</div>
+
+<div class="field-line"></div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+
+<div class="label">
+
+Emergency contact (Name)-
+
+</div>
+
+<div class="field-line"></div>
+
+</td>
+
+<td>
+
+<div class="label">
+
+phone-
+
+</div>
+
+<div class="field-line"></div>
+
+</td>
+
+<td>
+
+<div class="label">
+
+relation-
+
+</div>
+
+<div class="field-line"></div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+
+<div class="label">
+
+Job Title-
+
+</div>
+
+<div class="field-line">
+
+<span t-esc="o.job_id.name"/>
+
+</div>
+
+</td>
+
+<td colspan="2">
+
+<div class="label">
+
+Line Manager-
+
+</div>
+
+<div class="field-line">
+
+<span t-esc="o.user_id.name"/>
+
+</div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+
+<div class="label">
+
+Start Date-
+
+</div>
+
+<div class="field-line">
+
+<span t-esc="o.create_date"/>
+
+</div>
+
+</td>
+
+<td colspan="2">
+
+<div style="padding-top:22px;">
+
+Location:
+
+<span class="checkbox"></span>
+Office
+
+<span class="checkbox"></span>
+Plant
+
+</div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td>
+
+<div style="padding-top:10px;">
+
+Type:
+
+<span class="checkbox"></span>
+Hire
+
+<span class="checkbox"></span>
+New Hire
+
+</div>
+
+</td>
+
+<td colspan="2">
+
+<div style="padding-top:10px;">
+
+Pay Type:
+
+<span class="checkbox"></span>
+Hourly
+
+<span class="checkbox"></span>
+Salary
+
+</div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td colspan="3">
+
+<div class="label">
+
+Employment category-
+
+</div>
+
+<div style="padding-top:15px;">
+
+<span class="checkbox"></span>
+Regular
+
+<span style="margin-left:50px;"></span>
+
+<span class="checkbox"></span>
+Full Time
+
+</div>
+
+<div style="padding-top:15px;">
+
+<span class="checkbox"></span>
+Temporary
+
+<span style="margin-left:40px;"></span>
+
+<span class="checkbox"></span>
+Part time
+
+</div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td colspan="3">
+
+<div style="padding-top:10px;">
+
+Base rate:
+
+$
+
+<span style="
+display:inline-block;
+width:80px;
+border-bottom:1px solid black;
+"></span>
+
+per
+
+<span style="
+display:inline-block;
+width:120px;
+border-bottom:1px solid black;
+"></span>
+
+</div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td colspan="3">
+
+Commission:
+
+yes
+
+<span class="checkbox"></span>
+
+No
+
+<span class="checkbox"></span>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td colspan="3">
+
+<div class="label">
+
+DL# (If driving company vehicle)-
+
+</div>
+
+<div class="field-line"></div>
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td style="padding-top:40px;">
+
+Employee-
+
+</td>
+
+<td></td>
+
+<td>
+
+Date-
+
+</td>
+
+</tr>
+
+
+<tr>
+
+<td style="padding-top:20px;">
+
+Manager-
+
+</td>
+
+<td></td>
+
+<td>
+
+Date-
+
+</td>
+
+</tr>
+
+
+</table>
+
+
+<div class="footer">
+
+740, Oval Court, Burlington,
+ON, Canada L7L 6A9,
++1(905)8905533
+
+<div style="float:right;">
+
+Template#1
+
+<br/>
+
+Dec 09,2024
+
+</div>
+
+</div>
+
+</div>
+
+</t>
+
+</t>
+
+</template>
+
+</odoo>

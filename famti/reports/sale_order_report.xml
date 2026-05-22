@@ -188,10 +188,6 @@
                             <strong>Email:</strong>
                             <span t-field="o.company_id.email"/>
 
-                            <strong>Phone:</strong> <span t-field="o.partner_shipping_id.phone"/>
-                            <strong> Email:</strong> <span t-field="o.partner_shipping_id.email"/>
-
-                            
                             <div class="row" style="padding:5px;">
                                 <div class="col-6">
                                     <strong>Payment Terms:</strong>

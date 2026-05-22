@@ -1,0 +1,43 @@
+<odoo>
+
+    <record id="view_debit_note_wizard_form" model="ir.ui.view">
+        <field name="name">debit.note.wizard.form</field>
+        <field name="model">debit.note.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Debit Note Report">
+                <group>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                    </group>
+
+                    <group>
+                        <field name="partner_ids"
+                               widget="many2many_tags"/>
+                    </group>
+                </group>
+
+                <footer>
+                    <button name="action_print_xlsx"
+                            string="Print XLSX"
+                            type="object"
+                            class="btn-primary"/>
+
+                    <button string="Cancel"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+
+    <record id="action_debit_note_report" model="ir.actions.act_window">
+        <field name="name">Debit Note Report</field>
+        <field name="res_model">debit.note.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+  
+
+</odoo>

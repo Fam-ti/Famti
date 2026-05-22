@@ -184,6 +184,13 @@ class MrpBatchProduce(models.TransientModel):
                     'treatment_in': line.treatment_in,
                     'treatment_out': line.treatment_out,
                 })
+        total_manufactured_qty = sum(self.line_ids.mapped('quantity'))
+
+        if total_manufactured_qty != production.qty_producing:
+            raise ValidationError(
+                f"The total manufactured quantity ({total_manufactured_qty}) "
+                f"must be equal to the Production Quantity ({production.qty_producing})."
+            )
 
         if serial_line_vals:
             self.env['mrp.production.serial.line'].create(serial_line_vals)

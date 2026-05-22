@@ -41,7 +41,23 @@
                         <div style="border:1px solid black; border-radius:8px; overflow:hidden;">
 
                             <div style="text-align:center;font-size:18px; padding:6px; font-weight:bold;">
-                                INVOICE
+
+                                <t t-if="o.move_type == 'out_invoice'">
+                                    INVOICE
+                                </t>
+
+                                <t t-if="o.move_type == 'out_refund'">
+                                    CREDIT MEMO
+                                </t>
+
+                                <t t-if="o.move_type == 'in_invoice'">
+                                    VENDOR BILL
+                                </t>
+
+                                <t t-if="o.move_type == 'in_refund'">
+                                    DEBIT MEMO
+                                </t>
+
                             </div>
 
                             <div class="row">
@@ -58,7 +74,25 @@
                             </div>
 
                             <div style="text-align:center; font-size:16px; padding:6px;">
-                               <strong>Invoice No: </strong> <span t-field="o.name"/>
+
+                                <t t-if="o.move_type == 'out_invoice'">
+                                    <strong>Invoice No: </strong>
+                                </t>
+
+                                <t t-if="o.move_type == 'out_refund'">
+                                    <strong>Credit Memo No: </strong>
+                                </t>
+
+                                <t t-if="o.move_type == 'in_invoice'">
+                                    <strong>Bill No: </strong>
+                                </t>
+
+                                <t t-if="o.move_type == 'in_refund'">
+                                    <strong>Debit Memo No: </strong>
+                                </t>
+
+                                <span t-field="o.name"/>
+
                             </div>
 
                         </div>
