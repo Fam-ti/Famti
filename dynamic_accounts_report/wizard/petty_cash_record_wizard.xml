@@ -1,0 +1,51 @@
+<odoo>
+
+    <record id="view_petty_cash_record_wizard_form" model="ir.ui.view">
+        <field name="name">petty.cash.record.wizard.form</field>
+        <field name="model">petty.cash.record.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Petty Cash Record">
+
+                <group>
+
+                    <group>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="opening_balance"/>
+                    </group>
+
+                    <group>
+                        <field name="partner_ids"
+                               widget="many2many_tags"/>
+                    </group>
+
+                </group>
+
+                <footer>
+
+                    <button name="action_print_xlsx"
+                            string="Print XLSX"
+                            type="object"
+                            class="btn-primary"/>
+
+                    <button string="Cancel"
+                            special="cancel"/>
+
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_petty_cash_record" model="ir.actions.act_window">
+        <field name="name">Petty Cash Record</field>
+        <field name="res_model">petty.cash.record.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    
+
+</odoo>

@@ -472,13 +472,13 @@ class MisMonthlyReportWizard(models.TransientModel):
 
 
         positions = [
-            (3, 0),    # BOPP
-            (3, 6),    # BOPET
-            (3, 12),   # MET-BOPP
-            (3, 18),   # PVDC
-            (18, 0),   # MET-BOPET
-            (18, 6),   # MATTE-BOPP
-            (18, 12),  # BOPA
+            (3, 0), 
+            (3, 6),  
+            (3, 12),  
+            (3, 18), 
+            (18, 0),  
+            (18, 6),  
+            (18, 12),  
         ]
 
         for index, material in enumerate(materials):
@@ -535,5 +535,322 @@ class MisMonthlyReportWizard(models.TransientModel):
         return {
             'type': 'ir.actions.act_url',
             'url': '/web/content/%s?download=true' % attachment.id,
+            'target': 'self',
+        }
+
+class SlittingLogBookWizard(models.TransientModel):
+    _name = 'slitting.log.book.wizard'
+    _description = 'Slitting Log Book Report'
+
+    start_date = fields.Date(
+        string='Start Date'
+    )
+
+    end_date = fields.Date(
+        string='End Date'
+    )
+
+    shift = fields.Selection([
+        ('day', 'Day'),
+        ('night', 'Night')
+    ], string='Shift')
+
+    supervisor = fields.Many2one(
+        'hr.employee',
+        string='Supervisor'
+    )
+
+    operator_id = fields.Many2one(
+        'hr.employee',
+        string='Operator'
+    )
+
+    def action_print_xlsx(self):
+
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(
+            output,
+            {'in_memory': True}
+        )
+
+        sheet = workbook.add_worksheet(
+            'Slitting Log Book'
+        )
+
+        title_format = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'font_size': 16,
+            'border': 1
+        })
+
+        sub_title = workbook.add_format({
+            'bold': True,
+            'align': 'left',
+            'font_size': 11
+        })
+
+        header_format = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'valign': 'vcenter',
+            'border': 1,
+            'bg_color': '#D9D9D9',
+            'font_size': 9,
+            'text_wrap': True
+        })
+
+        text_format = workbook.add_format({
+            'border': 1,
+            'font_size': 9,
+            'align': 'left'
+        })
+
+        center_format = workbook.add_format({
+            'border': 1,
+            'font_size': 9,
+            'align': 'center'
+        })
+
+        amount_format = workbook.add_format({
+            'border': 1,
+            'font_size': 9,
+            'align': 'right',
+            'num_format': '#,##0.00'
+        })
+
+        sheet.set_column('A:AJ', 18)
+
+        sheet.merge_range(
+            'A1:AJ2',
+            'FAM Ti Inc Canada Slitting Log Book',
+            title_format
+        )
+
+        row = 4
+
+        sheet.write(row, 0, 'MONTH:', sub_title)
+        sheet.write(row, 4, 'DATE:', sub_title)
+        sheet.write(row, 8, 'SHIFT:', sub_title)
+        sheet.write(row, 12, 'SUPERVISOR:', sub_title)
+        sheet.write(row, 18, 'OPERATOR:', sub_title)
+
+        sheet.write(
+            row, 1,
+            self.start_date.strftime('%B')
+            if self.start_date else '',
+            text_format
+        )
+
+        sheet.write(
+            row, 5,
+            str(self.start_date or ''),
+            text_format
+        )
+
+        sheet.write(
+            row, 9,
+            dict(self._fields['shift'].selection).get(
+                self.shift
+            ) if self.shift else '',
+            text_format
+        )
+
+        sheet.write(
+            row, 13,
+            self.supervisor.name or '',
+            text_format
+        )
+
+        sheet.write(
+            row, 19,
+            self.operator_id.name or '',
+            text_format
+        )
+
+        row += 2
+
+        sheet.merge_range(
+            row, 0,
+            row, 25,
+            'SLITTING DETAILS',
+            header_format
+        )
+        row += 1
+
+        sheet.merge_range(
+            row, 0,
+            row, 10,
+            'SLITTING INPUT',
+            header_format
+        )
+
+        sheet.merge_range(
+            row, 11,
+            row, 25,
+            'SLITTING OUTPUT',
+            header_format
+        )
+
+        sheet.merge_range(
+            row - 1, 26,
+            row, 33,
+            'QC',
+            header_format
+        )
+
+        sheet.merge_range(
+            row - 1, 34,
+            row, 35,
+            'QA-HEAD',
+            header_format
+        )
+
+        row += 1
+
+        headers = [
+            'S.NO',
+            'DATE',
+            'SHIFT',
+            'Film Type',
+            'Product CODE',
+            'JUMBO ROLL NUMBER',
+            'THICK (µ)',
+            'WIDTH (MM)',
+            'LENGTH (MTRS)',
+            'WEIGHT (KGS)',
+            'TREATMENT',
+            'SLIT ROLL NUMBER',
+            'SLIT WIDTH (MM)',
+            'CORE ID (")',
+            'LENGTH (MTRS)',
+            'CORE WEIGHT (KGS)',
+            'GROSS WEIGHT (KGS)',
+            'NET WEIGHT (KGS)',
+            'JOINT',
+            'TREATMENT',
+            'SALES ORDER',
+            'BUYER',
+            'TRIM WIDTH MM',
+            'TRIM WEIGHT KG',
+            'WASTE(KGS)',
+            'OFFCUT - MM',
+            'DYNE VALUE',
+            'HAZE',
+            'AVG.THICKNESS/JOINTS &BOTTOM',
+            'DA NO./WDA',
+            'CUSTOMER NAME',
+            'GRADE',
+            'DEFECT',
+            'REMARK',
+            'UPGRADATION',
+            'REMARKS'
+        ]
+
+        col = 0
+
+        for header in headers:
+
+            sheet.write(
+                row,
+                col,
+                header,
+                header_format
+            )
+
+            col += 1
+
+
+        row += 1
+
+        domain = []
+
+        if self.start_date:
+            domain.append((
+                'date',
+                '>=',
+                self.start_date
+            ))
+
+        if self.end_date:
+            domain.append((
+                'date',
+                '<=',
+                self.end_date
+            ))
+
+        productions = self.env[
+            'mrp.production'
+        ].search(domain)
+
+        sl_no = 1
+
+        for rec in productions:
+
+            sheet.write(row, 0, sl_no, center_format)
+            sheet.write(row, 1, str(rec.date_start or ''), text_format)
+            sheet.write(row, 2, self.shift or '', text_format)
+            sheet.write(row, 3, rec.product_id.categ_id.name or '', text_format)
+            sheet.write(row, 4, rec.product_id.default_code or '', text_format)
+            sheet.write(row, 5, rec.name or '', text_format)
+            sheet.write(row, 6, '', text_format)
+            sheet.write(row, 7, '', text_format)
+            sheet.write(row, 8, '', text_format)
+            sheet.write(row, 9, rec.product_qty or 0.0, amount_format)
+            sheet.write(row, 10, '', text_format)
+            sheet.write(row, 11, '', text_format)
+            sheet.write(row, 12, '', text_format)
+            sheet.write(row, 13, '', text_format)
+            sheet.write(row, 14, '', text_format)
+            sheet.write(row, 15, '', text_format)
+            sheet.write(row, 16, '', text_format)
+            sheet.write(row, 17, '', text_format)
+            sheet.write(row, 18, '', text_format)
+            sheet.write(row, 19, '', text_format)
+            sheet.write(row, 20, rec.origin or '', text_format)
+            sheet.write(row, 21, '', text_format)
+            sheet.write(row, 22, '', text_format)
+            sheet.write(row, 23, '', text_format)
+            sheet.write(row, 24, '', text_format)
+            sheet.write(row, 25, '', text_format)
+            sheet.write(row, 26, '', text_format)
+            sheet.write(row, 27, '', text_format)
+            sheet.write(row, 28, '', text_format)
+            sheet.write(row, 29, '', text_format)
+            sheet.write(row, 30, rec.partner_id.name if hasattr(rec, 'partner_id') else '', text_format)
+            sheet.write(row, 31, '', text_format)
+            sheet.write(row, 32, '', text_format)
+            sheet.write(row, 33, '', text_format)
+            sheet.write(row, 34, '', text_format)
+            sheet.write(row, 35, '', text_format)
+
+            sl_no += 1
+            row += 1
+
+        workbook.close()
+
+        output.seek(0)
+
+        file_data = base64.b64encode(
+            output.read()
+        )
+
+        output.close()
+
+        attachment = self.env[
+            'ir.attachment'
+        ].create({
+            'name': 'Slitting_Log_Book.xlsx',
+            'type': 'binary',
+            'datas': file_data,
+            'mimetype':
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        })
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/%s?download=true'
+                   % attachment.id,
             'target': 'self',
         }

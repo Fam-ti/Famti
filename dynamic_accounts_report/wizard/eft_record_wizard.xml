@@ -1,0 +1,56 @@
+<odoo>
+
+    <record id="view_eft_record_wizard_form" model="ir.ui.view">
+        <field name="name">eft.record.wizard.form</field>
+        <field name="model">eft.record.wizard</field>
+        <field name="arch" type="xml">
+            <form string="EFT Record">
+
+                <group>
+
+                    <group>
+
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+
+                    </group>
+
+                    <group>
+
+                        <field name="partner_ids"
+                               widget="many2many_tags"/>
+
+                    </group>
+
+                </group>
+
+                <footer>
+
+                    <button name="action_print_xlsx"
+                            string="Print XLSX"
+                            type="object"
+                            class="btn-primary"/>
+
+                    <button string="Cancel"
+                            special="cancel"/>
+
+                </footer>
+
+            </form>
+
+        </field>
+
+    </record>
+
+
+    <record id="action_eft_record" model="ir.actions.act_window">
+        <field name="name">EFT Record</field>
+        <field name="res_model">eft.record.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    
+
+</odoo>

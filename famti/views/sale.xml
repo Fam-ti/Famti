@@ -72,7 +72,8 @@
                 <button name="action_open_sales_excel_wizard"
                     type="object"
                     string="Sales Excel Report"
-                    class="btn-primary"/>
+                    class="btn-primary"
+                    invisible="1"/>
             </xpath>
             <xpath expr="//sheet/div[@class='oe_title']" position="inside">
                     <div class="oe_avatar_container" style="position:absolute; right:16px; top:4px;">
