@@ -1,0 +1,39 @@
+<odoo>
+    <record id="view_account_receivable_wizard" model="ir.ui.view">
+        <field name="name">account.receivable.wizard.form</field>
+        <field name="model">account.receivable.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Accounts Receivable Report">
+                <group>
+                    <group>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                    </group>
+
+                    <group>
+                        <field name="partner_ids"
+                            widget="many2many_tags"/>
+                    </group>
+                </group>
+
+                <footer>
+                    <button name="action_print_xlsx"
+                            string="Print XLSX"
+                            type="object"
+                            class="btn-primary"/>
+
+                    <button string="Cancel"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_account_recivables_report" model="ir.actions.act_window">
+        <field name="name">Accounts Receivables</field>
+        <field name="res_model">account.receivable.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    
+</odoo>
