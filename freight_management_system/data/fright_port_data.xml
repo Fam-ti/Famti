@@ -111,6 +111,9 @@
             <field name="active">True</field>
         </record>
 
+
+
+
     </data>
 
 </odoo>

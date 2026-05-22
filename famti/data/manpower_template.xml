@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<template id="report_manpower_template">
+		<t t-call="web.html_container">
+			<t t-foreach="docs" t-as="o">
+				<div class="page">
+					<style>
+
+.page{
+    padding:25px;
+    font-family:Arial;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+td{
+    border:1px solid black;
+    padding:8px;
+    font-size:12px;
+}
+
+.label{
+    width:18%;
+    font-weight:bold;
+}
+
+.big-row{
+    height:80px;
+}
+
+.medium-row{
+    height:45px;
+}
+
+.center{
+    text-align:center;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.logo{
+    max-height:80px;
+}
+                        .h3{
+                        margin-left:25px;
+                        }
+
+</style>
+					<!-- HEADER -->
+					<div class="header">
+						<img
+t-if="o.company_id.logo"
+t-att-src="image_data_uri(o.company_id.logo)"
+class="logo"
+/>
+						<h3 style="margin-left:25px;">MANPOWER REQUISITION FORM</h3>
+					</div>
+					<table>
+						<tr>
+							<td class="label">Department</td>
+							<td colspan="3">
+								<span t-esc="o.department_id.name"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="label">Title</td>
+							<td colspan="3">
+								<span t-esc="o.job_id.name"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="label">Phone</td>
+							<td colspan="3">
+								<span t-esc="o.partner_phone"/>
+							</td>
+						</tr>
+						<tr class="big-row">
+							<td class="label">
+
+Job Duties
+
+</td>
+							<td colspan="3">
+								<span t-esc="o.job_id.description"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="label">
+
+Hire Date
+
+</td>
+							<td colspan="3">
+								<span t-esc="o.create_date"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="label">
+
+Tenure
+
+</td>
+							<td colspan="3"></td>
+						</tr>
+						<tr>
+							<td colspan="4"
+class="center">
+
+Signature
+
+</td>
+						</tr>
+						<tr>
+							<td class="label">
+
+Requested By
+
+</td>
+							<td colspan="3">
+								<span t-esc="o.user_id.name"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="label">
+
+Approved By
+
+</td>
+							<td colspan="3"></td>
+						</tr>
+					</table>
+				</div>
+			</t>
+		</t>
+	</template>
+</odoo>
