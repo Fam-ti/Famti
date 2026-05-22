@@ -21,7 +21,7 @@
 
                     <group>
                         <field name="supplier_name"/>
-                        <field name="material_type"/>
+                        <field name="film_type"/>
                         <field name="type_reference"/>
                         <label for="thickness_val"/>
                         <div class="o_row">
@@ -70,7 +70,7 @@
 
                     <group>
                         <field name="supplier_name"/>
-                        <field name="material_type"/>
+                        <field name="film_type"/>
                         <field name="type_reference"/>
                     </group>
 

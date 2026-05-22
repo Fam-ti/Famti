@@ -125,7 +125,7 @@
 
                         <field name="start_date"/>
                         <field name="end_date"/>
-                        <field name="shift"/>
+                        <!-- <field name="shift"/> -->
 
                     </group>
 
@@ -167,6 +167,118 @@
               name="Slitting Log Book"
               parent="stock.menu_warehouse_report"
               action="action_slitting_log_book"
+              sequence="90"/>
+
+    <record id="view_inventory_aging_report_wizard_form" model="ir.ui.view">
+        <field name="name">inventory.aging.report.wizard.form</field>
+        <field name="model">inventory.aging.report.wizard</field>
+        <field name="arch" type="xml">
+
+            <form string="Inventory Aging Report">
+
+                <group>
+
+                    <group>
+
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="location_ids" widget="many2many_tags"/>
+
+                    </group>
+
+                    <group>
+
+                        <field name="product_ids"
+                               widget="many2many_tags"/>
+
+                        <field name="customer_ids"
+                               widget="many2many_tags"/>
+
+                    </group>
+
+                </group>
+
+                <footer>
+
+                    <button name="action_print_xlsx"
+                            string="Print XLSX"
+                            type="object"
+                            class="btn-primary"/>
+
+                    <button string="Cancel"
+                            special="cancel"/>
+
+                </footer>
+
+            </form>
+
+        </field>
+    </record>
+
+
+    <record id="action_inventory_aging_report" model="ir.actions.act_window">
+        <field name="name">Inventory Aging Report</field>
+        <field name="res_model">inventory.aging.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <menuitem id="menu_inventory_aging_report"
+              name="Inventory Aging Report"
+              parent="stock.menu_warehouse_report"
+              action="action_inventory_aging_report"
+              sequence="95"/>
+
+
+    <record id="view_material_summary_report_wizard" model="ir.ui.view">
+        <field name="name">inventory.film.type.report.wizard.form</field>
+        <field name="model">inventory.film.type.report.wizard</field>
+        <field name="arch" type="xml">
+
+            <form string="Material Summary Report">
+
+                <group>
+
+                    <group>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                    </group>
+
+                    <group>
+                        <field name="location_ids" widget="many2many_tags"/>
+                    </group>
+
+                </group>
+
+                <footer>
+
+                    <button name="action_print_xlsx"
+                            type="object"
+                            string="Print XLSX"
+                            class="btn-primary"/>
+
+                    <button string="Cancel"
+                            special="cancel"/>
+
+                </footer>
+
+            </form>
+
+        </field>
+    </record>
+
+    <record id="action_material_summary_report_wizard" model="ir.actions.act_window">
+        <field name="name">Stock Summary Report</field>
+        <field name="res_model">inventory.film.type.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_material_summary_report"
+              name="Stock Summary Report"
+              parent="stock.menu_warehouse_report"
+              action="action_material_summary_report_wizard"
               sequence="90"/>
     
 </odoo>
