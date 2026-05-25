@@ -25,7 +25,7 @@
                 <field name="schedule_pay"/>
             </xpath>
             <xpath expr="//group[@name='salary']" position="after">
-                <group string="Monthly Advantages in Cash" name='allowances'>
+                <group string="Monthly Advantages in Cash" name='allowances' invisible="1">
                     <label for="hra"/>
                     <div class="o_row">
                         <field name="hra" nolabel="1"/>

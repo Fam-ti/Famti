@@ -35,7 +35,7 @@ class ResPartner(models.Model):
 
     credit_grace_days = fields.Integer(string="Credit Grace Period (Days)", default=0)
     lc_required = fields.Boolean(string="LC Required")
-    lc_document = fields.Binary(string="LC Document",required=True)
+    lc_document = fields.Binary(string="LC Document")
 
 
     def action_iso_certificate_updated(self):
