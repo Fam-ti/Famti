@@ -139,7 +139,7 @@ class HrPayslip(models.Model):
 
         if self.contract_id.struct_id.code != 'FAMTI':
             return
-        
+       
         for line in self.line_ids:
             if line.code == 'BASIC':
 
