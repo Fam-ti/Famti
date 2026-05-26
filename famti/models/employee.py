@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 from datetime import timedelta
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 
 
 class HrEmployee(models.Model):
@@ -32,6 +32,28 @@ class HrEmployee(models.Model):
         ('probation', 'Probation'),
         ('regular', 'Regular Employee'),
     ], string="Employee State", default='draft', tracking=True)
+
+    permit_category = fields.Selection([
+        ('work_permit', 'Work Permit'),
+        ('study_permit', 'Study Permit'),
+        ('pr', 'Permanent Resident'),
+        ('citizen', 'Citizen'),
+    ], string="Permit Category")
+
+    permit_type = fields.Selection([
+        ('open_wp', 'Open Work Permit'),
+        ('employer_specific', 'Employer-specific work permit'),
+        ('pgwp', 'PGWP (Post Graduation WP)'),
+        ('lmia_based', 'LMIA based WP'),
+        ('lmia_exempt', 'LMIA-exempt WP'),
+        ('spousal_open', 'Spousal open WP'),
+        ('iec_wp', 'IEC WP'),
+
+        ('study_auth', 'Study permit with work authorization'),
+        ('coop_wp', 'Co-op WP'),
+        ('post_grad_wp', 'Post graduate WP'),
+
+    ], string="Permit Type")
 
     def _compute_wsib_case_count(self):
         for rec in self:
@@ -87,6 +109,12 @@ class HrEmployee(models.Model):
     
     def action_start_training(self):
         self.state = 'training'
+
+    def action_probation_start(self):
+        if self.probation_start_date:
+            self.state = 'probation'
+        else:
+            raise UserError('Please Enter The Probation Date.')
 
     def action_training_completed(self):
         for rec in self:
