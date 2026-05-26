@@ -2,6 +2,8 @@ import io
 import base64
 import xlsxwriter
 from odoo import models, fields
+from datetime import date
+from collections import defaultdict
 
 class SaleReportWizard(models.TransientModel):
     _name = 'sale.report.wizard'
@@ -202,10 +204,10 @@ class DailyInventoryReportWizard(models.TransientModel):
                 sheet.write( row, 8,getattr(line, 'treatment', ''),cell_format)
                 sheet.write( row, 9,getattr(line, 'slit_roll_number', ''),cell_format)
                 sheet.write(row, 10,getattr(line, 'slit_width', ''),cell_format)
-                sheet.write(row, 11,getattr(line, 'core_id', ''),cell_format)
-                sheet.write(row, 12,getattr(line, 'length_mtrs', ''),cell_format)
-                sheet.write(row, 13,getattr(line, 'core_weight', ''),number_format)
-                sheet.write(row, 14,getattr(line, 'gross_weight', ''),number_format)
+                sheet.write(row, 11,lot.core_selection_id or '',cell_format)
+                sheet.write(row, 12,lot.length_val or '',cell_format)
+                sheet.write(row, 13,lot.product_qty or '',number_format)
+                sheet.write(row, 14,lot.product_qty or '',number_format)
                 sheet.write(row, 15,getattr(line, 'net_weight', ''), number_format)
                 sheet.write(row, 16, getattr(line, 'theoretical_weight', ''), number_format)
                 sheet.write( row, 17, getattr(line, 'joint', ''), cell_format)
@@ -677,6 +679,21 @@ class SlittingLogBookWizard(models.TransientModel):
             'SLITTING DETAILS',
             header_format
         )
+
+        sheet.merge_range(
+            row, 26,
+            row + 1, 33,
+            'QC',
+            header_format
+        )
+
+        sheet.merge_range(
+            row, 34,
+            row + 1, 35,
+            'QA-HEAD',
+            header_format
+        )
+
         row += 1
 
         sheet.merge_range(
@@ -690,20 +707,6 @@ class SlittingLogBookWizard(models.TransientModel):
             row, 11,
             row, 25,
             'SLITTING OUTPUT',
-            header_format
-        )
-
-        sheet.merge_range(
-            row - 1, 26,
-            row, 33,
-            'QC',
-            header_format
-        )
-
-        sheet.merge_range(
-            row - 1, 34,
-            row, 35,
-            'QA-HEAD',
             header_format
         )
 
@@ -761,21 +764,22 @@ class SlittingLogBookWizard(models.TransientModel):
 
             col += 1
 
-
         row += 1
 
-        domain = []
+        domain = [
+            ('is_slitting', '=', True)
+        ]
 
         if self.start_date:
             domain.append((
-                'date',
+                'date_start',
                 '>=',
                 self.start_date
             ))
 
         if self.end_date:
             domain.append((
-                'date',
+                'date_start',
                 '<=',
                 self.end_date
             ))
@@ -788,45 +792,80 @@ class SlittingLogBookWizard(models.TransientModel):
 
         for rec in productions:
 
-            sheet.write(row, 0, sl_no, center_format)
-            sheet.write(row, 1, str(rec.date_start or ''), text_format)
-            sheet.write(row, 2, self.shift or '', text_format)
-            sheet.write(row, 3, rec.product_id.categ_id.name or '', text_format)
-            sheet.write(row, 4, rec.product_id.default_code or '', text_format)
-            sheet.write(row, 5, rec.name or '', text_format)
-            sheet.write(row, 6, '', text_format)
-            sheet.write(row, 7, '', text_format)
-            sheet.write(row, 8, '', text_format)
-            sheet.write(row, 9, rec.product_qty or 0.0, amount_format)
-            sheet.write(row, 10, '', text_format)
-            sheet.write(row, 11, '', text_format)
-            sheet.write(row, 12, '', text_format)
-            sheet.write(row, 13, '', text_format)
-            sheet.write(row, 14, '', text_format)
-            sheet.write(row, 15, '', text_format)
-            sheet.write(row, 16, '', text_format)
-            sheet.write(row, 17, '', text_format)
-            sheet.write(row, 18, '', text_format)
-            sheet.write(row, 19, '', text_format)
-            sheet.write(row, 20, rec.origin or '', text_format)
-            sheet.write(row, 21, '', text_format)
-            sheet.write(row, 22, '', text_format)
-            sheet.write(row, 23, '', text_format)
-            sheet.write(row, 24, '', text_format)
-            sheet.write(row, 25, '', text_format)
-            sheet.write(row, 26, '', text_format)
-            sheet.write(row, 27, '', text_format)
-            sheet.write(row, 28, '', text_format)
-            sheet.write(row, 29, '', text_format)
-            sheet.write(row, 30, rec.partner_id.name if hasattr(rec, 'partner_id') else '', text_format)
-            sheet.write(row, 31, '', text_format)
-            sheet.write(row, 32, '', text_format)
-            sheet.write(row, 33, '', text_format)
-            sheet.write(row, 34, '', text_format)
-            sheet.write(row, 35, '', text_format)
+            component = rec.move_raw_ids[:1]
 
-            sl_no += 1
-            row += 1
+            lot = component.lot_ids[:1] if component else False
+
+            jumbo_roll = lot.name if lot else ''
+
+            thickness = getattr(
+                lot,
+                'thickness',
+                ''
+            )
+
+            width = getattr(
+                lot,
+                'width_val',
+                ''
+            )
+
+            length = getattr(
+                lot,
+                'length_val',
+                ''
+            )
+
+            treatment = getattr(
+                component.product_id,
+                'treatment',
+                ''
+            ) if component else ''
+
+            for serial_line in rec.serial_line_ids:
+
+                sheet.write(row, 0,sl_no,center_format)
+                sheet.write(row, 1,str(rec.date_start.date() if rec.date_start else ''),center_format)
+                sheet.write(row, 2,dict(self._fields['shift'].selection).get(self.shift) if self.shift else '',center_format)
+                sheet.write(row, 3,rec.product_id.categ_id.name or '',text_format)
+                sheet.write(row, 4,rec.product_id.default_code or '',text_format)
+                sheet.write(row, 5,jumbo_roll,text_format)
+                sheet.write(row, 6,thickness,center_format)
+                sheet.write(row, 7,width,center_format)
+                sheet.write(row, 8,length,center_format)
+                sheet.write(row, 9,component.quantity if component else 0.0,amount_format)
+                sheet.write(row, 10,treatment,text_format)
+                sheet.write(row, 11,serial_line.serial_number or '',text_format)
+                sheet.write(row, 12,serial_line.width or '',center_format)
+                sheet.write(row, 13,serial_line.core_id or '',center_format)
+                sheet.write(row, 14,serial_line.length or '',center_format)
+                sheet.write(row, 15,serial_line.total_input or 0.0,amount_format)
+                sheet.write(row, 16,serial_line.quantity or 0.0,amount_format)
+                sheet.write(row, 17,serial_line.quantity or 0.0,amount_format)
+                sheet.write(row, 18, '',center_format)
+                sheet.write(row, 19, '',text_format)
+                sale_order = self.env['sale.order'].search([('name', '=', rec.origin)], limit=1)
+                sheet.write(row, 20, sale_order.name or '', text_format)
+                sheet.write(row, 21, sale_order.partner_id.name or '', text_format)
+                sheet.write(row, 22, '', text_format)
+                sheet.write(row, 23, '', text_format)
+                sheet.write(row, 24, '', text_format)
+                sheet.write(row, 25, '', text_format)
+
+                sheet.write(row, 26, '', text_format)
+                sheet.write(row, 27, '', text_format)
+                sheet.write(row, 28, '', text_format)
+                sheet.write(row, 29, '', text_format)
+                sheet.write(row, 30, '', text_format)
+                sheet.write(row, 31, serial_line.grade_type or '', center_format)
+                sheet.write(row, 32, '', text_format)
+                sheet.write(row, 33, '', text_format)
+
+                sheet.write(row, 34, '', text_format)
+                sheet.write(row, 35, '', text_format)
+
+                row += 1
+                sl_no += 1
 
         workbook.close()
 
@@ -851,6 +890,644 @@ class SlittingLogBookWizard(models.TransientModel):
         return {
             'type': 'ir.actions.act_url',
             'url': '/web/content/%s?download=true'
+                % attachment.id,
+            'target': 'self',
+        }
+    
+
+
+class InventoryAgingReportWizard(models.TransientModel):
+    _name = 'inventory.aging.report.wizard'
+    _description = 'Inventory Aging Report Wizard'
+
+    product_ids = fields.Many2many(
+        'product.product',
+        string='Products'
+    )
+
+    customer_ids = fields.Many2many(
+        'res.partner',
+        string='Customers'
+    )
+
+    location_ids = fields.Many2many(
+        'stock.location',
+        string='Locations'
+    )
+
+    start_date = fields.Date(
+        string='Start Date'
+    )
+
+    end_date = fields.Date(
+        string='End Date'
+    )
+
+    def action_print_xlsx(self):
+
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(
+            output,
+            {'in_memory': True}
+        )
+
+        sheet = workbook.add_worksheet(
+            'Inventory Aging Report'
+        )
+
+        title_format = workbook.add_format({
+            'align': 'center',
+            'bold': True,
+            'font_size': 16,
+            'border': 1
+        })
+
+        header_format = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'valign': 'vcenter',
+            'border': 1,
+            'bg_color': '#D9D9D9',
+            'font_size': 10,
+            'text_wrap': True
+        })
+
+        text_format = workbook.add_format({
+            'border': 1,
+            'font_size': 10,
+            'align': 'left'
+        })
+
+        center_format = workbook.add_format({
+            'border': 1,
+            'font_size': 10,
+            'align': 'center'
+        })
+
+        amount_format = workbook.add_format({
+            'border': 1,
+            'font_size': 10,
+            'align': 'right',
+            'num_format': '#,##0.00'
+        })
+
+        sheet.set_column('A:A', 18)
+        sheet.set_column('B:B', 40)
+        sheet.set_column('C:C', 18)
+        sheet.set_column('D:D', 15)
+        sheet.set_column('E:E', 18)
+        sheet.set_column('F:F', 18)
+        sheet.set_column('G:G', 25)
+        sheet.set_column('H:H', 15)
+        sheet.set_column('I:I', 20)
+        sheet.set_column('J:J', 30)
+        sheet.set_column('K:K', 20)
+        sheet.set_column('L:L', 30)
+
+        sheet.merge_range(
+            'A1:L2',
+            'Inventory Aging Report',
+            title_format
+        )
+
+
+        headers = [
+            'Inventory ID',
+            'Name',
+            'THICKNESS MICRON',
+            'WIDTH MM',
+            'WIDTH INCHES',
+            'LENGTH METERS',
+            'NET WEIGHT PER ROLL (KGS)',
+            'NO OF ROLLS',
+            'TOTAL WEIGHT (KGS)',
+            'CUSTOMER NAME',
+            'Aging (No. of days)',
+            'Remarks'
+        ]
+
+        row = 3
+        col = 0
+
+        for header in headers:
+
+            sheet.write(
+                row,
+                col,
+                header,
+                header_format
+            )
+
+            col += 1
+
+
+        domain = []
+
+        if self.product_ids:
+            domain.append((
+                'product_id',
+                'in',
+                self.product_ids.ids
+            ))
+
+        if self.start_date:
+            domain.append((
+                'create_date',
+                '>=',
+                self.start_date
+            ))
+
+        if self.end_date:
+            domain.append((
+                'create_date',
+                '<=',
+                self.end_date
+            ))
+
+        lots = self.env[
+            'stock.lot'
+        ].search(domain)
+
+        row += 1
+
+        for lot in lots:
+
+            quants = self.env[
+                'stock.quant'
+            ].search([
+                ('lot_id', '=', lot.id),
+                ('quantity', '>', 0)
+            ])
+
+            if self.location_ids:
+                quants = quants.filtered(
+                    lambda q:
+                    q.location_id.id in
+                    self.location_ids.ids
+                )
+
+            qty = sum(
+                quants.mapped('quantity')
+            )
+
+            if qty <= 0:
+                continue
+
+            create_date = (
+                lot.create_date.date()
+                if lot.create_date else
+                date.today()
+            )
+
+            aging_days = (
+                date.today() - create_date
+            ).days
+
+            width_mm = (
+                lot.width_val or 0.0
+            )
+
+            width_inches = round(
+                width_mm / 25.4,
+                2
+            ) if width_mm else 0.0
+
+            net_weight = (
+                lot.product_qty or 0.0
+            )
+
+            quant_domain = [
+                ('product_id', '=', lot.product_id.id),
+                ('quantity', '>', 0)
+            ]
+
+            if self.location_ids:
+                quant_domain.append((
+                    'location_id',
+                    'in',
+                    self.location_ids.ids
+                ))
+
+            total_weight = sum(
+                self.env['stock.quant'].search(
+                    quant_domain
+                ).mapped('quantity')
+            )
+
+            customer_name = ''
+
+            if hasattr(lot, 'partner_id') and lot.partner_id:
+                customer_name = (
+                    lot.partner_id.name
+                )
+
+            sheet.write(
+                row,
+                0,
+                lot.name or '',
+                text_format
+            )
+
+            sheet.write(
+                row,
+                1,
+                lot.product_id.name or '',
+                text_format
+            )
+
+            sheet.write(
+                row,
+                2,
+                lot.thickness or 0.0,
+                center_format
+            )
+
+            sheet.write(
+                row,
+                3,
+                width_mm,
+                center_format
+            )
+
+            sheet.write(
+                row,
+                4,
+                width_inches,
+                center_format
+            )
+
+            sheet.write(
+                row,
+                5,
+                lot.length_val or 0.0,
+                center_format
+            )
+
+            sheet.write(
+                row,
+                6,
+                net_weight,
+                amount_format
+            )
+
+            sheet.write(
+                row,
+                7,
+                qty,
+                amount_format
+            )
+
+            sheet.write(
+                row,
+                8,
+                total_weight,
+                amount_format
+            )
+
+            sheet.write(
+                row,
+                9,
+                customer_name,
+                text_format
+            )
+
+            sheet.write(
+                row,
+                10,
+                aging_days,
+                center_format
+            )
+
+            sheet.write(
+                row,
+                11,
+                '',
+                text_format
+            )
+
+            row += 1
+
+        workbook.close()
+
+        output.seek(0)
+
+        file_data = base64.b64encode(
+            output.read()
+        )
+
+        output.close()
+
+        attachment = self.env[
+            'ir.attachment'
+        ].create({
+            'name': 'Inventory_Aging_Report.xlsx',
+            'type': 'binary',
+            'datas': file_data,
+            'mimetype':
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        })
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/%s?download=true'
                    % attachment.id,
+            'target': 'self',
+        }
+    
+
+class InventoryFilmTypeReportWizard(models.TransientModel):
+    _name = 'inventory.film.type.report.wizard'
+    _description = 'Inventory Film Type Report Wizard'
+
+    location_ids = fields.Many2many(
+        'stock.location',
+        string='Locations'
+    )
+
+    start_date = fields.Date(
+        string='Start Date'
+    )
+
+    end_date = fields.Date(
+        string='End Date'
+    )
+
+    def action_print_xlsx(self):
+
+        output = io.BytesIO()
+
+        workbook = xlsxwriter.Workbook(
+            output,
+            {'in_memory': True}
+        )
+
+        sheet = workbook.add_worksheet(
+            'Inventory Summary'
+        )
+
+        title_format = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'font_size': 14,
+            'border': 1
+        })
+
+        header_format = workbook.add_format({
+            'bold': True,
+            'align': 'center',
+            'valign': 'vcenter',
+            'border': 1,
+            'bg_color': '#D9D9D9',
+            'font_size': 10
+        })
+
+        text_format = workbook.add_format({
+            'border': 1,
+            'font_size': 10,
+            'align': 'left'
+        })
+
+        amount_format = workbook.add_format({
+            'border': 1,
+            'font_size': 10,
+            'align': 'right',
+            'num_format': '#,##0.00'
+        })
+
+        total_format = workbook.add_format({
+            'bold': True,
+            'border': 1,
+            'bg_color': '#EFEFEF',
+            'font_size': 10,
+            'align': 'right',
+            'num_format': '#,##0.00'
+        })
+
+        sheet.set_column('A:A', 30)
+        sheet.set_column('B:B', 25)
+        sheet.set_column('C:C', 15)
+        sheet.set_column('D:I', 18)
+
+        sheet.merge_range(
+            'A1:I2',
+            'Sum of Net Weight (Kgs)',
+            title_format
+        )
+
+        headers = [
+            'Supplier Name',
+            'Material Type',
+            'Thickness',
+            'Alox',
+            'Bare',
+            'MET',
+            'GOLD MET',
+            'PVDC',
+            'Grand Total'
+        ]
+
+        row = 3
+
+        for col, header in enumerate(headers):
+            sheet.write(row, col, header, header_format)
+
+        domain = [
+            ('qty_available', '>', 0)
+        ]
+
+        if self.start_date:
+            domain.append((
+                'create_date',
+                '>=',
+                self.start_date
+            ))
+
+        if self.end_date:
+            domain.append((
+                'create_date',
+                '<=',
+                self.end_date
+            ))
+
+        products = self.env[
+            'product.template'
+        ].search(domain)
+
+        grouped_data = defaultdict(
+            lambda: defaultdict(
+                lambda: defaultdict(
+                    lambda: {
+                        'alox': 0.0,
+                        'bare': 0.0,
+                        'met': 0.0,
+                        'gold_met': 0.0,
+                        'pvdc': 0.0,
+                    }
+                )
+            )
+        )
+
+        for product in products:
+
+            qty = product.qty_available or 0.0
+
+            if qty <= 0:
+                continue
+
+            supplier = ''
+
+            if product.seller_ids:
+                supplier = product.seller_ids[0].partner_id.name or ''
+
+            material_type = product.categ_id.name or ''
+
+            thickness = str(
+                getattr(
+                    product,
+                    'thickness_val',
+                    ''
+                )
+            )
+
+            film_type = getattr(
+                product,
+                'film_type',
+                ''
+            )
+
+            if not film_type:
+                continue
+
+            grouped_data[
+                supplier
+            ][material_type][thickness][film_type] += qty
+
+        row += 1
+
+        grand_alox = 0.0
+        grand_bare = 0.0
+        grand_met = 0.0
+        grand_gold_met = 0.0
+        grand_pvdc = 0.0
+        grand_total = 0.0
+
+        for supplier, materials in grouped_data.items():
+
+            supplier_alox = 0.0
+            supplier_bare = 0.0
+            supplier_met = 0.0
+            supplier_gold_met = 0.0
+            supplier_pvdc = 0.0
+            supplier_total = 0.0
+
+            for material, thicknesses in materials.items():
+
+                material_alox = 0.0
+                material_bare = 0.0
+                material_met = 0.0
+                material_gold_met = 0.0
+                material_pvdc = 0.0
+                material_total = 0.0
+
+                for thickness, values in thicknesses.items():
+
+                    alox = values.get('alox', 0.0)
+                    bare = values.get('bare', 0.0)
+                    met = values.get('met', 0.0)
+                    gold_met = values.get('gold_met', 0.0)
+                    pvdc = values.get('pvdc', 0.0)
+
+                    total = (
+                        alox +
+                        bare +
+                        met +
+                        gold_met +
+                        pvdc
+                    )
+
+                    sheet.write(row, 0, supplier, text_format)
+                    sheet.write(row, 1, material, text_format)
+                    sheet.write(row, 2, thickness, text_format)
+                    sheet.write(row, 3, alox, amount_format)
+                    sheet.write(row, 4, bare, amount_format)
+                    sheet.write(row, 5, met, amount_format)
+                    sheet.write(row, 6, gold_met, amount_format)
+                    sheet.write(row, 7, pvdc, amount_format)
+                    sheet.write(row, 8, total, total_format)
+
+                    material_alox += alox
+                    material_bare += bare
+                    material_met += met
+                    material_gold_met += gold_met
+                    material_pvdc += pvdc
+                    material_total += total
+
+                    row += 1
+
+                sheet.write(row, 1, material + ' Total', header_format)
+                sheet.write(row, 3, material_alox, total_format)
+                sheet.write(row, 4, material_bare, total_format)
+                sheet.write(row, 5, material_met, total_format)
+                sheet.write(row, 6, material_gold_met, total_format)
+                sheet.write(row, 7, material_pvdc, total_format)
+                sheet.write(row, 8, material_total, total_format)
+
+                supplier_alox += material_alox
+                supplier_bare += material_bare
+                supplier_met += material_met
+                supplier_gold_met += material_gold_met
+                supplier_pvdc += material_pvdc
+                supplier_total += material_total
+
+                row += 1
+
+            sheet.write(row, 0, supplier + ' Total', header_format)
+            sheet.write(row, 3, supplier_alox, total_format)
+            sheet.write(row, 4, supplier_bare, total_format)
+            sheet.write(row, 5, supplier_met, total_format)
+            sheet.write(row, 6, supplier_gold_met, total_format)
+            sheet.write(row, 7, supplier_pvdc, total_format)
+            sheet.write(row, 8, supplier_total, total_format)
+
+            grand_alox += supplier_alox
+            grand_bare += supplier_bare
+            grand_met += supplier_met
+            grand_gold_met += supplier_gold_met
+            grand_pvdc += supplier_pvdc
+            grand_total += supplier_total
+
+            row += 1
+
+        sheet.write(row, 0, 'Grand Total', header_format)
+        sheet.write(row, 3, grand_alox, total_format)
+        sheet.write(row, 4, grand_bare, total_format)
+        sheet.write(row, 5, grand_met, total_format)
+        sheet.write(row, 6, grand_gold_met, total_format)
+        sheet.write(row, 7, grand_pvdc, total_format)
+        sheet.write(row, 8, grand_total, total_format)
+
+        workbook.close()
+
+        output.seek(0)
+
+        file_data = base64.b64encode(
+            output.read()
+        )
+
+        output.close()
+
+        attachment = self.env[
+            'ir.attachment'
+        ].create({
+            'name': 'Inventory_Film_Type_Report.xlsx',
+            'type': 'binary',
+            'datas': file_data,
+            'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        })
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/%s?download=true' % attachment.id,
             'target': 'self',
         }
