@@ -7,6 +7,54 @@
             <field name="inherit_id" ref="hr.view_employee_form"/>
             <field name="arch" type="xml">
 
+                 <separator name="has_work_permit" position="attributes">
+                        <attribute name="string">
+                            Permit
+                        </attribute>
+                    </separator>
+
+                 <!-- Add fields -->
+        <xpath expr="//field[@name='visa_no']" position="before">
+            <field name="permit_category"/>
+            <field
+                name="permit_type"
+                invisible="
+                permit_category
+                not in
+                ['work_permit','study_permit']
+                "/>
+
+        </xpath>
+                <xpath expr="//label[@for='private_street']/.." position="attributes">
+                    <attribute name="string">
+                        Contact Details
+                    </attribute>
+
+                </xpath>
+                <xpath expr="//label[@for='private_street']"
+                       position="attributes">
+                    <attribute name="string">
+                        Permanent Address
+                    </attribute>
+
+                </xpath>
+
+            <xpath expr="//field[@name='permit_no']" position="attributes">
+                <attribute name="string">
+                    Permit Number
+                </attribute>
+            </xpath>
+                 <xpath expr="//field[@name='work_permit_expiration_date']" position="attributes">
+                <attribute name="string">
+                    Permit Expiration Date
+                </attribute>
+            </xpath>
+                 <xpath expr="//field[@name='has_work_permit']" position="attributes">
+                <attribute name="string">
+                    Upload Permit
+                </attribute>
+            </xpath>
+
                 <xpath expr="//page[@name='personal_information']" position="after">
                     <page string="Related Documents">
                         <field name="document_ids">
@@ -55,6 +103,9 @@
 
                     <button name="action_training_completed" type="object" string="Training Completed" class="btn-secondary"
                         invisible="state != 'training'"/>
+
+                    <button name="action_probation_start" type="object" string="Probation Start" class="btn-secondary"
+                        invisible="state in ['probation','regular']"/>
 
                     <button name="action_certified" type="object" string="Certified" class="btn-secondary"
                         invisible="state != 'completed_training'"/>

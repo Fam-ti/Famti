@@ -117,12 +117,62 @@ class HrPayslip(models.Model):
 
     def action_payslip_done(self):
         """Function for change stage of Payslip"""
-        self.action_compute_sheet()
+        # self.action_compute_sheet()
         return self.write({'state': 'done'})
 
     def action_payslip_cancel(self):
         """Function for change stage of Payslip"""
         return self.write({'state': 'cancel'})
+    
+    @api.onchange('line_ids')
+    def _onchange_line_ids_recompute_totals(self):
+        basic_total = 0.0
+        deduction_total = 0.0
+        gross_total = 0.0
+
+        for line in self.line_ids:
+            if line.code == 'BASIC':
+
+                line.total = (line.amount * line.quantity * line.rate ) / 100
+                basic_total = line.total
+
+        for line in self.line_ids:
+            if line.code == 'CPP':
+                line.amount = basic_total
+                cpp = (line.amount * line.quantity * line.rate ) / 100
+
+            elif line.code == 'EI':
+                line.amount = basic_total
+                ei = (line.amount * line.quantity * line.rate ) / 100
+
+            elif line.code == 'FIT':
+                line.amount = basic_total
+                fit = (line.amount * line.quantity * line.rate ) / 100
+
+            elif line.code == 'VP':
+                line.amount = basic_total
+                vp = (line.amount * line.quantity * line.rate ) / 100
+
+            elif line.code == 'SL':
+                line.amount = basic_total
+                fit = (line.amount * line.quantity * line.rate ) / 100
+
+            elif line.code == 'VD':
+                line.amount = basic_total
+                vp = (line.amount * line.quantity * line.rate ) / 100
+
+        gross_total = basic_total + vp
+
+        for line in self.line_ids:
+            if line.code == 'GROSS':
+                line.amount = gross_total
+                line.total = gross_total 
+
+        deduction_total = cpp + ei + fit
+        for line in self.line_ids:
+            if line.code == 'NET':
+                line.amount = gross_total + deduction_total 
+                line.total = line.amount
 
     def action_refund_sheet(self):
         """Function for refund the Payslip sheet"""

@@ -10,6 +10,13 @@ class ProductTemplate(models.Model):
     supplier_name = fields.Many2one('res.partner',string="Supplier Name")
     material_type = fields.Char(string="Material Type")
     type_reference = fields.Char(string="Type")
+    film_type = fields.Selection([
+        ('bare', 'Bare'),
+        ('met', 'MET'),
+        ('gold_met', 'GOLD MET'),
+        ('pvdc', 'PVDC'),
+        ('alox', 'Alox'),
+    ], string='Film Type')
     film_description = fields.Text(string="Film Description")
     treatment_in = fields.Char(string="Treatment In")
     treatment_out = fields.Char(string="Treatment Out")
@@ -57,6 +64,13 @@ class ProductProduct(models.Model):
     film_description = fields.Text(string="Film Description",related='product_tmpl_id.film_description')
     material_type = fields.Char(string="Material Type",related='product_tmpl_id.material_type')
     type_reference = fields.Char(string="Type",related='product_tmpl_id.type_reference')
+    film_type = fields.Selection([
+        ('bare', 'Bare'),
+        ('met', 'MET'),
+        ('gold_met', 'GOLD MET'),
+        ('pvdc', 'PVDC'),
+        ('alox', 'Alox'),
+    ], string='Film Type',related='product_tmpl_id.film_type')
     treatment_in = fields.Char(string="Treatment In",related='product_tmpl_id.treatment_in')
     treatment_out = fields.Char(string="Treatment Out",related='product_tmpl_id.treatment_out')
     treatment_in_selection = fields.Selection([
