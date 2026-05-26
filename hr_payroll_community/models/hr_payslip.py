@@ -130,6 +130,16 @@ class HrPayslip(models.Model):
         deduction_total = 0.0
         gross_total = 0.0
 
+        cpp = 0.0
+        ei = 0.0
+        fit = 0.0
+        vp = 0.0
+        sl = 0.0
+        vd = 0.0
+
+        if self.contract_id.struct_id.code != 'FAMTI':
+            return
+        
         for line in self.line_ids:
             if line.code == 'BASIC':
 
@@ -155,11 +165,11 @@ class HrPayslip(models.Model):
 
             elif line.code == 'SL':
                 line.amount = basic_total
-                fit = (line.amount * line.quantity * line.rate ) / 100
+                sl = (line.amount * line.quantity * line.rate ) / 100
 
             elif line.code == 'VD':
                 line.amount = basic_total
-                vp = (line.amount * line.quantity * line.rate ) / 100
+                vd = (line.amount * line.quantity * line.rate ) / 100
 
         gross_total = basic_total + vp
 
