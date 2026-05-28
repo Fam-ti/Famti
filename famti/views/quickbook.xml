@@ -100,7 +100,7 @@
     <menuitem
         id="menu_root_quickbook"
         name="QuickBook"
-        sequence="2"
+        sequence="52"
         action="action_quickbook_config"
         groups="group_quickbook_users"
     />
@@ -108,7 +108,7 @@
     <menuitem
         id="menu_quickbook"
         name="QuickBook Config"
-        sequence="3"
+        sequence="53"
         action="action_quickbook_config"
         parent="menu_root_quickbook"
         groups="base.group_system"
