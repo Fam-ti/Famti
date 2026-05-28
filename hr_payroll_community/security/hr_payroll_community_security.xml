@@ -53,5 +53,12 @@
                 ('company_id', 'in', company_ids)]
             </field>
         </record>
+        <record id="group_hr_payroll_batch_officer" model="res.groups">
+            <field name="name">Batch Officer</field>
+            <field name="category_id"
+                ref="hr_payroll_community.module_category_hr_payroll_community"/>
+            <field name="implied_ids"
+                eval="[(4, ref('hr_payroll_community.group_hr_payroll_community_user'))]"/>
+        </record>
     </data>
 </odoo>
