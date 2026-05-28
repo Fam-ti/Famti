@@ -155,15 +155,15 @@
         </field>
     </record>
     <!--    Defined Menu item-->
-    <menuitem id="menu_configuration" name="Configuration" sequence="4"
+    <menuitem id="menu_configuration" name="Configuration" sequence="81"
               parent="freight_order_menu_root"/>
     <menuitem id="menu_freight_port" name="Ports"
-              parent="menu_configuration" sequence="2"
+              parent="menu_configuration" sequence="82"
               action="freight_port_action"/>
     <menuitem id="menu_freight_price" name="Pricing List"
-              parent="menu_configuration" sequence="2"
+              parent="menu_configuration" sequence="82"
               action="freight_price_action"/>
     <menuitem id="menu_freight_routes" name="Route Operations"
-              parent="menu_configuration" sequence="2"
+              parent="menu_configuration" sequence="82"
               action="action_freight_routes"/>
 </odoo>

@@ -36,5 +36,20 @@
             <field name="location_id" ref="stock.stock_location_stock"/>
         </record>
 
+        <record id="location_toll_raw" model="stock.location">
+            <field name="name">Toll Raw</field>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+        </record>
+
+         <record id="location_toll_semi_finished" model="stock.location">
+            <field name="name">Toll Semi-Finish</field>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+        </record>
+
+        <record id="location_toll_finished" model="stock.location">
+            <field name="name">Toll Finish</field>
+            <field name="location_id" ref="stock.stock_location_stock"/>
+        </record>
+
     </data>
 </odoo>
