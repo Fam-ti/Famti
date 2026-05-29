@@ -1,0 +1,148 @@
+<odoo>
+    <record id="view_cost_sheet_form" model="ir.ui.view">
+        <field name="name">famti.cost.sheet.form</field>
+        <field name="model">cost.sheet</field>
+        <field name="arch" type="xml">
+
+            <form string="Cost Sheet">
+                <header>
+                    <button name="action_cfo_approval"
+                    type="object"
+                    string="Submit for CFO Approval"
+                    class="btn-primary"
+                    groups="famti.group_sales_dep_users"
+                    invisible="state != 'draft'"
+                />
+
+                    <button name="action_approve"
+                    type="object"
+                    string="Approve"
+                    class="btn-primary"
+                    groups="famti.group_cheif_financial_officer"
+                    invisible="state != 'to_approve'"
+                />
+
+                    <button name="action_reject"
+                    type="object"
+                    string="Reject"
+                    class="btn-secondary"
+                    groups="famti.group_cheif_financial_officer"
+                    invisible="state != 'to_approve'"
+                />
+
+                    <button name="action_reset_to_draft"
+                    type="object"
+                    string="Reset To Draft"
+                    class="btn-secondary"
+                    groups="famti.group_cheif_financial_officer"
+                    invisible="state not in ['approved','rejected']"
+                />
+
+                    <button name="action_calculate_metaliser" string="Calculate Metaliser" type="object"
+                            class="btn-success"/>
+
+                    <button name="action_calculate_slitter" string="Calculate Slitter" type="object"
+                            class="btn-success"/>
+
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,to_approve,approved,rejected"/>
+                </header>
+
+                <sheet>
+                    <group>
+                            <field name="name" readonly="1"/>
+                        <group>
+                            <field name="sale_order_id"/>
+                            <field name="partner_id"/>
+                            <field name="product_id"/>
+                            <field name="qty"/>
+                        </group>
+
+                        <group>
+                            <field name="selling_price"/>
+                            <field name="wastage_percent"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+
+                        <page string="Cost Sheet Metaliser">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name" readonly="1"/>
+                                    <field name="code" readonly="1"/>
+                                    <field name="uom"/>
+                                    <field name="default_value"/>
+                                    <field name="formula" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Cost Sheet Slitter">
+                            <field name="slit_line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name" readonly="1"/>
+                                    <field name="code" readonly="1"/>
+                                    <field name="uom"/>
+                                    <field name="default_value"/>
+                                    <field name="formula" readonly="1"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Cost Details">
+                            <group>
+                                <field name="raw_material_cost"/>
+                                <field name="metallization_cost"/>
+                                <field name="slitting_cost"/>
+                                <field name="packing_cost"/>
+                                <field name="logistics_cost"/>
+                            </group>
+                        </page>
+
+                        <page string="Summary">
+                            <group>
+                                <field name="total_cost_per_kg" readonly="1"/>
+                                <field name="total_cost" readonly="1"/>
+                                <field name="profit_per_kg" readonly="1"/>
+                                <field name="total_profit" readonly="1"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_cost_sheet_list" model="ir.ui.view">
+        <field name="name">cost.sheet.list</field>
+        <field name="model">cost.sheet</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sale_order_id"/>
+                <field name="product_id"/>
+
+            </list>
+        </field>
+    </record>
+
+    <record id="action_cost_sheet_form" model="ir.actions.act_window">
+        <field name="name">COST SHEET</field>
+        <field name="res_model">cost.sheet</field>
+        <field name="view_mode">list,form</field>
+<!--        <field name="target">current</field>-->
+    </record>
+
+    <menuitem
+        id="menu_costing_sheet"
+        name="Cost Sheet"
+        parent="sale.sale_order_menu"
+        action="action_cost_sheet_form"
+        sequence="11"/>
+
+
+</odoo>

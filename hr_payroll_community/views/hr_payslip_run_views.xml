@@ -119,5 +119,6 @@
     </record>
 <!--    Menu for hr_payslip-->
     <menuitem action="hr_payslip_run_action" id="menu_hr_payslip_run"
-              parent="menu_hr_payroll_community_root"/>
+              parent="menu_hr_payroll_community_root"
+              groups="hr_payroll_community.group_hr_payroll_batch_officer"/>
 </odoo>

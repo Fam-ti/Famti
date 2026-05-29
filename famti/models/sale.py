@@ -195,7 +195,8 @@ class SaleOrder(models.Model):
                 'sale_id': order.id,
                 'expected_date':order.expected_date,
                 'incoterm_id':order.incoterm.id,
-                'order_ids': line_vals}])
+                'order_ids': line_vals,
+                'consignee_id': order.partner_id.id,}])
                 
         return
 
@@ -290,6 +291,15 @@ class SaleOrder(models.Model):
         invoice_vals['narration'] = bank_details
 
         return invoice_vals
+    
+    def action_open_sales_excel_wizard(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Sales Excel Report',
+            'res_model': 'sale.report.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+        }
 
 
 class SaleOrderLine(models.Model):

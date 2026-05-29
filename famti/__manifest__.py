@@ -30,6 +30,8 @@
         'data/product_data.xml',
         # 'data/inventory_data.xml',
         'data/recruitment.xml',
+        'data/employee_templates.xml',
+        'data/manpower_template.xml',
         'data/payment_terms_data.xml',
         'data/workcenter_demo.xml',
         'data/sequence.xml',
@@ -43,10 +45,12 @@
         'wizard/maintenance_wizard.xml',
         'wizard/wsib_wizard.xml',
         'wizard/remarks_wizard.xml',
+        'wizard/report_wizard.xml',
         'reports/offer_letter_report.xml',
         'reports/purchase_order_report.xml',
         'reports/sale_order_report.xml',
         'reports/invoice_report.xml',
+        'reports/customer_interaction.xml',
         'views/purchase.xml',
         'views/hr_expense.xml',
         'views/res_partner.xml',
@@ -68,7 +72,8 @@
         'views/recruitment.xml',
         'views/hr_resignation.xml',
         'views/quickbook.xml',
-        'views/performance.xml'
+        'views/performance.xml',
+        'views/cost_sheet.xml'
 
     ],
     'demo': [

@@ -1,0 +1,54 @@
+<odoo>
+    <record id="view_daily_expense_sheet_wizard_form" model="ir.ui.view">
+        <field name="name">daily.expense.sheet.wizard.form</field>
+        <field name="model">daily.expense.sheet.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Daily Expense Sheet">
+
+                <group>
+
+                    <group>
+
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="payment_method"/>
+
+                    </group>
+
+                    <group>
+
+                        <field name="partner_ids"
+                               widget="many2many_tags"/>
+
+                    </group>
+
+                </group>
+
+                <footer>
+
+                    <button name="action_print_xlsx"
+                            string="Print XLSX"
+                            type="object"
+                            class="btn-primary"/>
+
+                    <button string="Cancel"
+                            special="cancel"/>
+
+                </footer>
+
+            </form>
+
+        </field>
+
+    </record>
+
+
+    <record id="action_daily_expense_sheet" model="ir.actions.act_window">
+        <field name="name">Daily Expense Sheet</field>
+        <field name="res_model">daily.expense.sheet.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+</odoo>

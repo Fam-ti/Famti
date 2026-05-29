@@ -20,16 +20,15 @@ class HrResignationRejectWizard(models.TransientModel):
     _description = 'Reject Resignation Wizard'
 
     remarks = fields.Text(string="Rejection Remarks", required=True)
-    resignation_id = fields.Many2one('hr.resignation')
+    employee_resignation_id = fields.Many2one('employee.resignation')
 
     def action_confirm_reject(self):
-        self.ensure_one()
 
-        self.resignation_id.write({
+        self.employee_resignation_id.write({
             'state': 'rejected',
             'remarks': self.remarks
         })
 
-        self.resignation_id.message_post(
+        self.employee_resignation_id.message_post(
             body=f"Resignation Rejected with remarks: {self.remarks}"
         )

@@ -91,7 +91,7 @@ class Purchase(models.Model):
             freight.create([{'shipper_id': order.partner_id.id, 'type': 'import', 'transport_type': 'land','loading_port_id': loading_port_id.id,
                              'discharging_port_id':discharging_port_id.id,'agent_id':self.env.user.partner_id.id,'purchase_id':order.id,
                              'expected_date':order.date_planned,'incoterm_id':order.incoterm_id.id,
-                             'order_ids': line_vals}])
+                             'order_ids': line_vals,'consignee_id': self.env.company.partner_id.id,}])
         return
 
     @api.onchange('partner_id')

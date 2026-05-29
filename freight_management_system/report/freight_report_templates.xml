@@ -16,250 +16,192 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.external_layout">
-                    <center>
-                        <b>
-                            <h3>Order Details</h3>
-                        </b>
-                    </center>
-                    <b>
-                        <h3>
-                            <t t-esc="doc.name"/>
-                        </h3>
-                    </b>
-                    <br/>
-                    <div name="customer">
-                        <strong>Customer:</strong>
+
+                    <div style="width:100%; margin-bottom:20px;">
+
+                        <div style="text-align:center; background:#e6e6e6; padding:8px; margin-bottom:10px;">
+                            <strong style="font-size:14px; letter-spacing:1px;">
+                                FREIGHT ORDER / SHIPPING INSTRUCTION
+                            </strong>
+                        </div>
+
+                        <div style="width:100%; border-bottom:2px solid #000; padding-bottom:8px;">
+
+                            <div style="float:left; width:70%;">
+                                <h1 style="margin:0; font-size:22px;">
+                                    <span t-esc="doc.name"/>
+                                </h1>
+                            </div>
+
+                            <div style="float:right; width:30%; text-align:right; font-size:12px;">
+                                <strong>Date:</strong><br/>
+                                <span t-field="doc.create_date" t-options='{"format": "dd-MM-yyyy"}'/>
+                            </div>
+
+                            <div style="clear:both;"></div>
+                        </div>
+
                     </div>
-                    <div name="customer_details">
-                        <div t-esc="doc.shipper_id.name"/>
-                        <div t-esc="doc.shipper_id.street"/>
-                        <div t-esc="doc.shipper_id.city"/>
-                        <t t-esc="doc.shipper_id.state_id.name"/>
-                        <t t-esc="doc.shipper_id.zip"/>
-                        <div t-esc="doc.shipper_id.country_id.name"/>
-                    </div>
-                    <br/>
-                    <table class="table o_main_table">
-                        <tbody class="order_body">
-                            <tr>
-                                <td name="loading_port">
-                                    <strong>Loading Port</strong>
-                                </td>
-                                <td name="loading">
-                                    <span t-field="doc.loading_port_id.name"/>
-                                </td>
-                                <td name="destination_port">
-                                    <strong>Destination Port</strong>
-                                </td>
-                                <td name="destination">
-                                    <span t-field="doc.discharging_port_id.name"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td name="consignee_id">
+                    <div class="row" style="margin-bottom:15px;">
+                        <div class="col-4">
+                            <div style="border:1px">
+                                <div style="background:#e6e6e6; color:#000; padding:6px; font-size:13px;">
+                                    <strong>Shipper</strong>
+                                </div>
+                                <div style="padding:8px; font-size:12px; line-height:18px;">
+                                    <strong t-field="doc.shipper_id.name"/><br/>
+                                    <span t-field="doc.shipper_id.street"/><br/>
+                                    <span t-field="doc.shipper_id.city"/>
+                                    <span t-field="doc.shipper_id.state_id.name"/><br/>
+                                    <span t-field="doc.shipper_id.country_id.name"/><br/>
+                                    <strong>Phone:</strong> <span t-field="doc.shipper_id.phone"/><br/>
+                                    <strong>Email:</strong> <span t-field="doc.shipper_id.email"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div style="border:1px">
+                                <div style="background:#e6e6e6; color:#000; padding:6px; font-size:13px;">
                                     <strong>Consignee</strong>
-                                </td>
-                                <td name="consignee">
-                                    <span t-field="doc.consignee_id.name"/>
-                                </td>
-                                <td name="agent">
-                                    <strong>Agent</strong>
-                                </td>
-                                <td name="agent_name">
-                                    <span t-field="doc.agent_id.name"/>
-                                </td>
+                                </div>
+                                <div style="padding:8px; font-size:12px; line-height:18px;">
+                                    <strong t-field="doc.consignee_id.name"/><br/>
+                                    <span t-field="doc.consignee_id.street"/><br/>
+                                    <span t-field="doc.consignee_id.city"/>
+                                    <span t-field="doc.consignee_id.state_id.name"/><br/>
+                                    <span t-field="doc.consignee_id.country_id.name"/><br/>
+                                    <strong>Phone:</strong> <span t-field="doc.consignee_id.phone"/><br/>
+                                    <strong>Email:</strong> <span t-field="doc.consignee_id.email"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div>
+                                <div style="background:#e6e6e6; color:#000; padding:6px; font-size:13px;">
+                                    <strong>Carrier</strong>
+                                </div>
+                                <div style="padding:8px; font-size:12px; line-height:18px;">
+                                    <strong t-field="doc.carrier_id.name"/><br/>
+                                    <strong>Driver:</strong> <span t-esc="doc.driver_name"/><br/>
+                                    <strong>Truck No:</strong> <span t-esc="doc.vehicle_number"/><br/>
+                                    <strong>Driver Phone:</strong> <span t-esc="doc.driver_phone"/><br/>
+                                    <strong>Driver Email:</strong> <span t-esc="doc.driver_email"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-bottom:15px;">
+                        <div class="col-6">
+                            <div style="border:1px">
+                                <div style="background:#e6e6e6; color:#000; padding:6px;">
+                                    <strong>Departure Details</strong>
+                                </div>
+                                <div style="padding:8px; font-size:12px;">
+                                    <strong>Load Port:</strong> <span t-esc="doc.loading_port_id.name"/><br/>
+                                    <strong>ETD:</strong> <span t-esc="doc.etd"/><br/>
+                                    <strong>Gross Weight:</strong> <span t-esc="doc.gross_weight"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <div style="border:1px ">
+                                <div style="background:#e6e6e6; color:#000; padding:6px;">
+                                    <strong>Arrival Details</strong>
+                                </div>
+                                <div style="padding:8px; font-size:12px;">
+                                    <strong>Discharge Port:</strong> <span t-esc="doc.discharging_port_id.name"/><br/>
+                                    <strong>ETA:</strong> <span t-esc="doc.eta"/><br/>
+                                    <strong>Net Weight:</strong> <span t-esc="doc.net_weight"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:15px;">
+                        <thead>
+                            <tr style="background:#e6e6e6;">
+                                <th style="padding:6px; border:1px solid #000;">Container</th>
+                                <th style="padding:6px; border:1px solid #000;">Number</th>
+                                <th style="padding:6px; border:1px solid #000;">Vessel</th>
+                                <th style="padding:6px; border:1px solid #000;">Packing</th>
+                                <th style="padding:6px; border:1px solid #000;">Goods</th>
+                                <th style="padding:6px; border:1px solid #000;">Weight</th>
                             </tr>
-                            <tr>
-                                <td name="direction">
-                                    <strong>Direction</strong>
-                                </td>
-                                <td name="direction_name">
-                                    <span t-field="doc.type"/>
-                                </td>
-                                <td name="transport">
-                                    <strong>Transport</strong>
-                                </td>
-                                <td name="transport_name">
-                                    <span t-field="doc.transport_type"/>
-                                </td>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.order_ids" t-as="line">
+                                <tr>
+                                    <td style="padding:5px; border:1px solid #000;"><span t-esc="line.container_id.name"/></td>
+                                    <td style="padding:5px; border:1px solid #000;"><span t-esc="line.container_number"/></td>
+                                    <td style="padding:5px; border:1px solid #000;"><span t-esc="line.vessel"/></td>
+                                    <td style="padding:5px; border:1px solid #000;"><span t-esc="line.packing_no"/></td>
+                                    <td style="padding:5px; border:1px solid #000;"><span t-esc="line.product_id.name"/></td>
+                                    <td style="padding:5px; border:1px solid #000;"><span t-esc="line.weight"/></td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <t t-set="total_amount" t-value="sum(doc.service_ids.mapped('total_sale'))"/>
+
+                    <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
+                        <thead>
+                            <tr style="background:#e6e6e6;">
+                                <th style="padding:6px; border:1px solid #000;">Category</th>
+                                <th style="padding:6px; border:1px solid #000;">Service</th>
+                                <th style="padding:6px; border:1px solid #000;">Amount</th>
                             </tr>
-                            <tr>
-                                <td name="date">
-                                    <strong>Date</strong>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.service_ids" t-as="srv">
+                                <tr>
+                                    <td style="padding:5px; border:1px solid #000;"><span t-esc="srv.category_id.name"/></td>
+                                    <td style="padding:5px; border:1px solid #000;"><span t-esc="srv.service_id.name"/></td>
+                                    <td style="padding:5px; border:1px solid #000; text-align:right;">
+                                        <span t-esc="srv.total_sale"/>
+                                    </td>
+                                </tr>
+                            </t>
+
+                            <tr style="background:#eee;">
+                                <td colspan="2" style="padding:6px; text-align:right; border:1px solid #000;">
+                                    <strong>Total</strong>
                                 </td>
-                                <td name="date">
-                                    <span t-field="doc.order_date"/>
-                                </td>
-                                <td name="expected">
-                                    <strong>Expected Date</strong>
-                                </td>
-                                <td name="expected_name">
-                                    <span t-field="doc.expected_date"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td name="etd">
-                                    <strong>Estimated Time of Departure</strong>
-                                </td>
-                                <td name="etd">
-                                    <span t-field="doc.etd"/>
-                                </td>
-                                <td name="bl_number">
-                                    <strong>Bill of Lading Number</strong>
-                                </td>
-                                <td name="bl_number">
-                                    <span t-field="doc.bl_number"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td name="net_weight">
-                                    <strong>Net Weight</strong>
-                                </td>
-                                <td name="net_weight">
-                                    <span t-field="doc.net_weight"/>
-                                </td>
-                                <td name="gross_weight">
-                                    <strong>Gross Weight</strong>
-                                </td>
-                                <td name="gross_weight">
-                                    <span t-field="doc.gross_weight"/>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td name="incoterm">
-                                    <strong>Delivery Term</strong>
-                                </td>
-                                <td name="incoterm_name">
-                                    <span t-esc="'[%s] %s' % (doc.incoterm_id.code, doc.incoterm_id.name)"/>
-                                </td>
-                                <td name="status">
-                                    <strong>Status</strong>
-                                </td>
-                                <td name="status_name">
-                                    <span t-field="doc.state"/>
+                                <td style="padding:6px; border:1px solid #000; text-align:right;">
+                                    <strong><span t-esc="total_amount"/></strong>
                                 </td>
                             </tr>
                         </tbody>
-                    </table><br/>
-                    <div style="page-break-inside: avoid;">
-                        <div name="orders">
-                            <strong>Orders:</strong>
-                        </div>
-                        <table class="table o_main_table">
-                            <thead style="display: table-row-group">
-                                <tr>
-                                    <t t-set="has_po" t-value="any(line.purchase_id for line in doc.order_ids)"/>
-                                    <t t-set="has_so" t-value="any(line.sale_id for line in doc.order_ids)"/>
-                                    <th name="th_po_ref" t-if="has_po" class="text-left">PO Number</th>
-                                    <th name="th_so_ref"  t-if="has_so" class="text-left">SO Number</th>
-                                    <th name="th_container" class="text-left">
-                                        Container
-                                    </th>
-                                    <th name="th_vessel" class="text-left">Vessel</th>
-                                    <th name="th_packet_list" class="text-center">No.of packet list</th>
-                                    <th name="th_goods" class="text-left">Goods</th>
-                                    <th name="th_billing_on" class="text-left">
-                                        Billing On
-                                    </th>
-                                    <th name="th_pricing" class="text-left">
-                                        Pricing
-                                    </th>
-                                    <th name="th_weight" class="text-left">Weight
-                                    </th>
-                                    <th name="th_unit_price" class="text-left">Unit
-                                        Price
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr t-att-class="'bg-200 font-weight-bold'"
-                                    t-foreach="doc.order_ids" t-as="order">
-                                    <td t-if="has_po" t-esc="order.purchase_id.name or ''"/>
-                                    <td t-if="has_so" t-esc="order.sale_id.name or ''"/>
-                                    <td t-esc="order.container_id.name or ''" />
-                                    <td t-esc="order.vessel or ''"/>
-                                    <td t-esc="order.packing_no or ''"/>
-                                    <td t-esc="(order.product_id.default_code or '') + ' - ' + (order.product_id.name or '')"/>
-                                    <td><span t-esc="order.billing_type or ''"/></td>
-                                    <td t-esc="order.pricing_id.name or ''"/>
-                                    <td t-esc="order.weight or ''" />
-                                    <td t-esc="order.price or ''"/>
-                                </tr>
-                            </tbody>
-                        </table>
+                    </table>
+
+                    <div style="border:1px solid #000; padding:8px; font-size:12px;">
+                        <strong>Amount in Words:</strong><br/>
+                        <span t-esc="doc.currency_id.amount_to_text(total_amount)"/>
                     </div>
-                    <br/>
-                    <div style="page-break-inside: avoid;">
-                        <div name="route">
-                            <strong>Route:</strong>
+
+                    <div style="width:100%; margin-top:40px;">
+
+                        <div style="float:right; width:250px; text-align:center;">
+                            <div style="height:60px;"></div>
+                            <div style="border-top:1px solid #000; margin-top:5px;"></div>
+                            <div style="font-size:12px; margin-top:5px;">
+                                <strong>Authorised Signatory</strong>
+                            </div>
+                            <div style="font-size:12px;">
+                                <span t-field="doc.company_id.name"/>
+                            </div>
                         </div>
-                        <table class="table o_main_table">
-                            <thead style="display: table-row-group">
-                                <tr>
-                                    <th name="th_operation" class="text-left">
-                                        Operation
-                                    </th>
-                                    <th name="th_source" class="text-left">Source
-                                        location
-                                    </th>
-                                    <th name="th_destination" class="text-left">
-                                        Destination Location
-                                    </th>
-                                    <th name="th_transport" class="text-left">
-                                        Transport
-                                    </th>
-                                    <th name="th_price" class="text-left">Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr t-att-class="'bg-200 font-weight-bold'"
-                                    t-foreach="doc.route_ids" t-as="route">
-                                    <td t-esc="route.routes_id.name"/>
-                                    <td t-esc="route.source_loc_id.name"/>
-                                    <td t-esc="route.destination_loc_id.name"/>
-                                    <td>
-                                        <span t-field="route.transport_type"/>
-                                    </td>
-                                    <td t-esc="route.sale"/>
-                                </tr>
-                            </tbody>
-                        </table>
+
+                        <div style="clear:both;"></div>
                     </div>
-                    <br/>
-                    <div style="page-break-inside: avoid;">
-                        <div name="route">
-                            <strong>Service:</strong>
-                        </div>
-                        <table class="table o_main_table">
-                            <thead style="display: table-row-group">
-                                <tr>
-                                    <th name="th_vendor" class="text-left">Vendor
-                                    </th>
-                                    <th name="th_service" class="text-left">
-                                        Service
-                                    </th>
-                                    <th name="th_quantity" class="text-left">
-                                        Quantity
-                                    </th>
-                                    <th name="th_sale" class="text-left">Sale</th>
-                                    <th name="th_sale_total" class="text-left">Total
-                                        sale
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr t-att-class="'bg-200 font-weight-bold'"
-                                    t-foreach="doc.service_ids" t-as="service">
-                                    <td t-esc="service.partner_id.name"/>
-                                    <td t-esc="service.service_id.name"/>
-                                    <td t-esc="service.qty"/>
-                                    <td t-esc="service.sale"/>
-                                    <td t-esc="service.total_sale"/>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <tr><strong>Service Total: </strong><span t-esc="doc.total_service_sale"/><strong>(<span t-esc="doc.company_id.currency_id.amount_to_text(doc.total_service_sale)"/>)</strong></tr>
-                    </div>
+                    
+
                 </t>
             </t>
         </t>

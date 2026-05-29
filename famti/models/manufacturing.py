@@ -2,6 +2,9 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import float_compare
 from datetime import date
+from io import BytesIO
+import base64
+import xlsxwriter
 
 class MrpProduction(models.Model):
     _inherit = 'mrp.production'
@@ -11,9 +14,6 @@ class MrpProduction(models.Model):
     )
     scrap_line_ids = fields.One2many('mrp.production.scrap.line','production_scrap_id', string='Scrap Details')
 
-    # mo_serial_no = fields.Boolean( related='product_id.product_tmpl_id.mo_serial_no',
-    #     store=False
-    # )
     mo_serial_no = fields.Boolean( related='product_id.mo_serial_no',
         store=False
     )
@@ -45,6 +45,185 @@ class MrpProduction(models.Model):
     )
     logo = fields.Image("Logo", max_width=1920, max_height=1920, default=lambda self: self.env.company.logo)
 
+    def generate_oil_grease_lubrication_xlsx(self):
+        output = BytesIO()
+        workbook = xlsxwriter.Workbook(output)
+        sheet = workbook.add_worksheet('Lubrication Sheet')
+
+
+        title_format = workbook.add_format({
+            'bold': True,
+            'font_size': 16,
+            'align': 'center',
+            'valign': 'vcenter',
+            'border': 1,
+        })
+
+        header_format = workbook.add_format({
+            'bold': True,
+            'bg_color': '#D9EAD3',
+            'border': 1,
+            'align': 'center',
+            'text_wrap': True,
+        })
+
+        normal_format = workbook.add_format({
+            'border': 1,
+            'text_wrap': True,
+            'valign': 'top',
+        })
+
+        center_format = workbook.add_format({
+            'border': 1,
+            'align': 'center',
+            'valign': 'vcenter',
+        })
+
+        # Column Widths
+        sheet.set_column('A:A', 45)
+        sheet.set_column('B:B', 20)
+        sheet.set_column('C:J', 10)
+
+        # Title
+
+        sheet.merge_range(
+            'A1:J1',
+            'OIL / GREASE LUBRICATION FOR SLITTING',
+            title_format
+        )
+        # Headers
+        headers = [
+            'Equipment',
+            'Oil/Grease Type',
+            'D',
+            'W',
+            'M',
+            'Q',
+            'BA',
+            'A',
+            '2 YEARS',
+        ]
+
+        row = 2
+
+        for col, header in enumerate(headers):
+            sheet.write(row, col, header, header_format)
+
+        row += 1
+        # Static Data
+        data = [
+            ['HYDRULIC OIL', 'LHM 46', '', '', '', '', '', '', 'X'],
+
+            ['unwinding brackets (left and right)', 'LCKC 220', '', '', '', '', '', 'X', ''],
+
+            ['Unwinding chucks left and right', 'LCKC 220', '', '', '', '', 'X', '', ''],
+
+            ['When swinging, the oil filling hole on the linear guide for the horizontal movement of the screw tighten unit',
+             'LCKC 220', '', '', '', '', '', '', 'X'],
+
+            ['the Screwstroke drive for the horizontal movement of unwinding bracket',
+             'LCKC 220', '', '', '', '', '', 'X', ''],
+
+            ['the oil filling hole on the horizontal movement of unwinder bracket (left and right)',
+             'LCKC 220', '', '', '', '', '', 'X', ''],
+
+            ['The gear driver on the motor for the swing of unwinding bracket (The gear driver is lifelong lubricated)',
+             'LCKC 220', '', '', '', '', '', 'X', ''],
+
+            ['The oil filling hole of bearing system for oscillation of unwinding bracket',
+             'LCKC 220', '', '', '', '', '', 'X', ''],
+
+            ['The oil filling point on linear guide for horizontal bracket (left and right)',
+             'LCKC 220', '', '', '', '', '', 'X', ''],
+
+            ['The oil filling point on linear guide for horizontal movement of sliding rail for unloading core (left and right)',
+             'LCKC 220', '', '', '', '', '', 'X', ''],
+
+            ['End gear reduction drive motor for the oscillation of scanning sensor',
+             'LCKC 220', '', '', '', '', '', '', 'X'],
+
+            ['gear reduction drive motor of film',
+             'LCKC 220', '', '', '', '', '', '', 'X'],
+
+            ['threading mechanism',
+             'LCKC 220', '', '', '', '', '', 'X', ''],
+
+            ['chain of film threading mechanism',
+             'SAE30', '', '', '', '', '', '', 'X'],
+
+            ['banana roll',
+             'LCKC 220', '', '', '', '', '', '', 'X'],
+
+            ['gear reduction drive motor for adjustment of banana roll drive',
+             'LCKC 220', '', '', '', '', '', 'X', ''],
+
+            ['guiding roll and pneumatic spring brake disc on bottom knife shaft',
+             'LCKC 220', '', '', '', '', '', '', 'X'],
+
+            ['Planetary gear driver for automatically adjusted knife holder',
+             'LCKC 220', '', '', '', '', '', 'X', ''],
+
+            ['The oil filling point on linear guides for horizontal movement of rewinding beam',
+             'LCKC 220', '', '', '', '', '', '', 'X'],
+
+            ['The oil filling point on spiral bevel gear for rewinding AC servo motor',
+             'LCKC 220', '', '', '', '', '', '', 'X'],
+
+            ['gear reduction drive motor of rewinder',
+             'LCKC 220', '', '', '', '', '', '', 'X'],
+
+            ['rewinding chuck',
+             'LCKC 220', '', '', '', '', '', '', 'X'],
+
+            ['unwinding chuck',
+             'NLGL-2', '', '', '', '', '', '', 'X'],
+
+            ['LINEAR GUIDE',
+             'NLGL-2', '', '', 'X', '', '', '', ''],
+
+            ['SCREW',
+             'NLGL-2', '', '', 'X', '', '', '', ''],
+
+            ['BEARING',
+             'NLGL-2', '', '', 'X', '', '', '', ''],
+
+            ['STAR GEAR',
+             'VG68', '', '', '', '', '', 'X', ''],
+
+            ['rewinding chuck',
+             'NLGL-2', '', '', '', '', '', 'X', ''],
+        ]
+
+        for item in data:
+
+            col = 0
+
+            for value in item:
+                sheet.write(row, col, value, normal_format)
+                col += 1
+
+            row += 1
+
+        workbook.close()
+
+        output.seek(0)
+
+        file_data = base64.b64encode(output.read())
+
+        attachment = self.env['ir.attachment'].create({
+            'name': 'Oil_Grease_Lubrication.xlsx',
+            'type': 'binary',
+            'datas': file_data,
+            'mimetype':
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        })
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/web/content/{attachment.id}?download=true',
+            'target': 'self',
+        }
+
     @api.onchange('product_id')
     def _onchange_product_id_set_code(self):
         for rec in self:
@@ -73,9 +252,10 @@ class MrpProduction(models.Model):
         for rec in self:
             for move in rec.move_raw_ids:
                 if move.product_uom_qty <= 0:
-                    raise ValidationError(
-                        f"Raw Material '{move.product_id.display_name}' must have a quantity greater than 0."
-                    )
+                    move.product_uom_qty = rec.product_qty
+                    # raise ValidationError(
+                    #     f"Raw Material '{move.product_id.display_name}' must have a quantity greater than 0."
+                    # )
         for record in self:
             for move in record.move_raw_ids:
                 product = move.product_id
@@ -308,29 +488,29 @@ class MrpProduction(models.Model):
                     print("calculated_weight---------",calculated_weight)
                     print("rec.recived---------",rec.quantity)
 
-                    if calculated_weight:
+                    # if calculated_weight:
 
-                        tolerance = calculated_weight * 0.03
-                        print("tolerance---------",tolerance)
-                        min_weight = calculated_weight - tolerance
-                        print("min_weight---------",min_weight)
-                        max_weight = calculated_weight + tolerance
-                        print("max_weight---------",max_weight)
+                    #     tolerance = calculated_weight * 0.03
+                    #     print("tolerance---------",tolerance)
+                    #     min_weight = calculated_weight - tolerance
+                    #     print("min_weight---------",min_weight)
+                    #     max_weight = calculated_weight + tolerance
+                    #     print("max_weight---------",max_weight)
 
-                        if rec.quantity < min_weight or rec.quantity > max_weight:
-                            raise ValidationError(
-                                _(
-                                    "Serial %s weight is outside allowed tolerance.\n"
-                                    "Expected Weight: %.2f kg\n"
-                                    "Allowed Range: %.2f - %.2f kg (±3%%)"
-                                )
-                                % (
-                                    rec.serial_number or '',
-                                    calculated_weight,
-                                    min_weight,
-                                    max_weight,
-                                )
-                            )
+                    #     if rec.quantity < min_weight or rec.quantity > max_weight:
+                    #         raise ValidationError(
+                    #             _(
+                    #                 "Serial %s weight is outside allowed tolerance.\n"
+                    #                 "Expected Weight: %.2f kg\n"
+                    #                 "Allowed Range: %.2f - %.2f kg (±3%%)"
+                    #             )
+                    #             % (
+                    #                 rec.serial_number or '',
+                    #                 calculated_weight,
+                    #                 min_weight,
+                    #                 max_weight,
+                    #             )
+                    #         )
 
             if mo.product_id.tracking == 'lot' and mo.serial_line_ids:
                 mo._create_lots_and_move_lines()

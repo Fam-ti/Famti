@@ -20,7 +20,7 @@
 #
 ################################################################################
 from werkzeug import urls
-from odoo import fields, models, _
+from odoo import fields, models, _, api
 
 
 class FreightTracking(models.Model):
@@ -41,6 +41,22 @@ class FreightTracking(models.Model):
                                  default=lambda
                                      self: self.env.company.id)
 
+    carrier_id = fields.Many2one('res.partner', string="Carrier Name")
+    driver_name_id = fields.Many2one('res.partner', string="Driver Name")
+    vehicle_number = fields.Char(string="Truck / Trailer No.")
+    driver_phone = fields.Char(string="Driver Phone Number")
+    driver_email = fields.Char(string="Driver Email")
+
+    @api.onchange('driver_name_id')
+    def _onchange_driver_name_id(self):
+        for rec in self:
+            if rec.driver_name_id:
+                rec.driver_phone = rec.driver_name_id.phone or rec.driver_name_id.mobile or ''
+                rec.driver_email = rec.driver_name_id.email or ''
+            else:
+                rec.driver_phone = ''
+                rec.driver_email = ''
+
     def action_order_submit(self):
         """Create tracking details of order"""
         self.env['freight.track'].create({
@@ -50,6 +66,13 @@ class FreightTracking(models.Model):
             'transport_type': self.transport_type,
             'date': self.date,
             'type': self.type,
+        })
+        self.freight_id.write({
+            'carrier_id': self.carrier_id.id,
+            'driver_name_id': self.driver_name_id.id,
+            'vehicle_number': self.vehicle_number,
+            'driver_phone': self.driver_phone,
+            'driver_email': self.driver_email,
         })
         for rec in self.freight_id:
             base_url = self.env['ir.config_parameter'].sudo().get_param(

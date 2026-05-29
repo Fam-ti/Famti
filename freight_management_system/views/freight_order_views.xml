@@ -27,6 +27,29 @@
                             class="oe_highlight"
                             data-hotkey="w"
                             invisible="1"/>
+
+                     <button name="action_export_tracking_xlsx"
+                    type="object"
+                    string="Container Tracking xlsx"
+                    class="btn-primary"/>
+
+                    <button
+                            name="action_export_warehouse_container_xlsx"
+                            string="WH Update Container xlsx"
+                            type="object"
+                            class="oe_highlight"/>
+
+                    <button
+                    name="action_export_container_payment_reminder_xlsx"
+                    string="Payment Reminder xlsx"
+                    type="object"
+                    class="oe_highlight"/>
+                     <button
+                            name="action_export_transport_summary_xlsx"
+                            string="Local Delv. Xlsx"
+                            type="object"
+                            class="oe_highlight"/>
+
                     <button name="action_submit" string="Submit"
                             type="object" class="oe_highlight"
                             data-hotkey="w" invisible="state != 'draft'"/>
@@ -40,7 +63,8 @@
                     <button name="action_track_order" string="Tracking"
                             type="object" class="oe_highlight"
                             invisible="state not in ('confirm', 'invoice')"
-                            data-hotkey="w"/> 
+                            data-hotkey="w"/>
+
                     <button name="action_done" string="Done" type="object"
                             class="oe_highlight"
                             invisible="state not in ('confirm', 'invoice')"
@@ -79,21 +103,29 @@
                         </h1>
                     </div>
                     <group>
-                        <group>
+                        <group string="Shipping Details">
                             <field name="shipper_id" readonly="state in 'done'"/>
                             <field name="consignee_id" readonly="state in 'done'"/>
                             <field name="order_date" readonly="state in 'done'"/>
-                            <field name="company_id" invisible="1" readonly="state in 'done'"/>
-                            <field name="loading_port_id"/>
                             <field name="agent_id" readonly="state in 'done'"/>
                             <field name="incoterm_id" readonly="state in 'done'"/>
+                            <field name="company_id" invisible="1" readonly="state in 'done'"/>
                         </group>
-                        <group>
+                        <group string="Transportation Details">
                             <field name="clearance" invisible="1" readonly="state in 'done'"/>
                             <field name="type" readonly="state in 'done'"/>
                             <field name="transport_type" readonly="state in 'done'"/>
-                            <field name="discharging_port_id"/>
                             <field name="expected_date" readonly="state in 'done'"/>
+                        </group>
+
+                    </group>
+                    <group col="2">
+                        <group string="Departure Details">
+                            <field name="loading_port_id" readonly="state == 'done'"/>
+                        </group>
+
+                        <group string="Arrival Details">
+                            <field name="discharging_port_id" readonly="state == 'done'"/>
                         </group>
                     </group>
 
@@ -228,12 +260,25 @@
             </p>
         </field>
     </record>
+
     <!--Defined menus-->
     <menuitem id="freight_order_menu_root" name="Freight Management"
               web_icon="freight_management_system,static/description/icon.png"
-              sequence="4" action="freight_order_action"/>
+              sequence="54" action="freight_order_action"/>
 
     <menuitem id="freight_order_menu_shipping" name="Shipping"
-              parent="freight_order_menu_root" sequence="2"
+              parent="freight_order_menu_root" sequence="52"
               action="freight_order_action"/>
+
+
+<!--    <report-->
+<!--        id="container_tracking_xlsx"-->
+<!--        model="freight.order"-->
+<!--        string="Container Tracking XLSX"-->
+<!--        report_type="xlsx"-->
+<!--        name="freight_management_system.container_tracking_xlsx_report"-->
+<!--        file="container_tracking_xlsx_report"-->
+<!--        print_report_name="'Container Tracking - %s' % (object.name)"-->
+<!--    />-->
+
 </odoo>

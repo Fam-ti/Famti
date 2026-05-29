@@ -31,6 +31,101 @@ class FreightOrder(models.Model):
     etd_discharge_port = fields.Datetime(string="ETD (Discharge Port)")
     eta_destination = fields.Datetime(string="ETA (Destination / Toronto)")
 
+    carrier_id = fields.Many2one('res.partner', string="Carrier Name")
+    driver_name_id = fields.Many2one('res.partner', string="Driver Name")
+    vehicle_number = fields.Char(string="Truck / Trailer No.")
+    driver_phone = fields.Char(string="Driver Phone Number")
+    driver_email = fields.Char(string="Driver Email")
+
+    @api.onchange('driver_name_id')
+    def _onchange_driver_name_id(self):
+        for rec in self:
+            if rec.driver_name_id:
+                rec.driver_phone = rec.driver_name_id.phone or rec.driver_name_id.mobile or ''
+                rec.driver_email = rec.driver_name_id.email or ''
+            else:
+                rec.driver_phone = ''
+                rec.driver_email = ''
+
+
+    def action_done(self):
+        res = super().action_done()
+
+        for rec in self:
+            base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+
+            url = urls.url_join(
+                base_url,
+                'odoo/action-%(actionId)s/%(id)s' % {
+                    'id': rec.id,
+                    'actionId': self.env.ref(
+                        'freight_management_system.freight_order_action'
+                    ).id
+                }
+            )
+            partners = self.env['res.partner'].search([
+                ('id', 'in', (
+                    rec.shipper_id.id,
+                    rec.consignee_id.id,
+                    rec.agent_id.id
+                ))
+            ])
+
+            accounts_group = self.env.ref('account.group_account_user')
+
+            inventory_group = self.env.ref(
+                'famti.group_inventory_dep_users'
+            )
+
+            sales_group = self.env.ref(
+                'famti.group_sales_dep_users'
+            )
+
+            group_users = (
+                accounts_group.users |
+                inventory_group.users |
+                sales_group.users
+            )
+
+            partners |= group_users.mapped('partner_id')
+            partners = partners.filtered(lambda p: p.email)
+
+            for partner in partners:
+                mail_content = _(
+                    'Hi %s,<br>'
+                    'The Freight Order %s is Completed'
+                    '<div style = "text-align: center; '
+                    'margin-top: 16px;"><a href = "%s"'
+                    'style = "padding: 5px 10px; font-size: 12px; '
+                    'line-height: 18px; color: #FFFFFF; '
+                    'border-color:#875A7B;text-decoration: none; '
+                    'display: inline-block; '
+                    'margin-bottom: 0px; font-weight: 400;'
+                    'text-align: center; vertical-align: middle; '
+                    'cursor: pointer; white-space: nowrap; '
+                    'background-image: none; '
+                    'background-color: #875A7B; '
+                    'border: 1px solid #875A7B; border-radius:3px;">'
+                    'View %s</a></div>'
+                ) % (
+                    partner.name,
+                    rec.name,
+                    url,
+                    rec.name
+                )
+
+                mail_values = {
+                    'subject': _('Freight Order %s is completed') % rec.name,
+                    'author_id': self.env.user.partner_id.id,
+                    'body_html': mail_content,
+                    'email_to': partner.email,
+                }
+
+                mail = self.env['mail.mail'].create(mail_values)
+                mail.send()
+
+        return res
+
     
 
 

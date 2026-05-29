@@ -1,0 +1,284 @@
+<odoo>
+    <record id="view_sale_report_wizard" model="ir.ui.view">
+        <field name="name">sale.report.wizard.form</field>
+        <field name="model">sale.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Sales Report">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="partner_id"/>
+                    </group>                    
+                </group>
+                <footer>
+                    <button name="action_generate_excel"
+                            type="object"
+                            string="Export Excel"
+                            class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_sale_report_wizard" model="ir.actions.act_window">
+        <field name="name">Sales Report</field>
+        <field name="res_model">sale.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_sale_report_wizard"
+          name="Sales Report"
+          parent="sale.menu_sale_report"
+          action="action_sale_report_wizard"
+          sequence="50"/>
+
+    <record id="view_daily_inventory_report_wizard" model="ir.ui.view">
+        <field name="name">daily.inventory.report.wizard.form</field>
+        <field name="model">daily.inventory.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Daily Inventory Report">
+
+                <group>
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                </group>
+
+                <footer>
+                    <button name="action_print_report"
+                            type="object"
+                            string="Print Report"
+                            class="btn-primary"/>
+
+                    <button string="Cancel"
+                            special="cancel"/>
+
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="action_daily_inventory_report_wizard" model="ir.actions.act_window">
+        <field name="name">Daily Inventory Report</field>
+        <field name="res_model">daily.inventory.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_daily_inventory_report"
+        name="Daily Inventory Report"
+        parent="stock.menu_warehouse_report"
+        action="action_daily_inventory_report_wizard"
+        sequence="50"/>
+
+    <record id="view_mis_monthly_report_wizard_form" model="ir.ui.view">
+        <field name="name">mis.monthly.report.wizard.form</field>
+        <field name="model">mis.monthly.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="MIS Monthly Report">
+                <group>
+                    <field name="month"/>
+                    <field name="year"/>
+                    <field name="machine"/>
+                </group>
+
+                <footer>
+                    <button name="action_mis_report_excel"
+                            string="Print Excel"
+                            type="object"
+                            class="btn-primary"/>
+
+                    <button string="Cancel"
+                            special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_mis_monthly_report" model="ir.actions.act_window">
+        <field name="name">MIS Monthly Report</field>
+        <field name="res_model">mis.monthly.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem
+        id="menu_mis_monthly_report"
+        name="MIS Monthly Report"
+        parent="stock.menu_warehouse_report"
+        action="action_mis_monthly_report"
+        sequence="51" />
+
+    <record id="view_slitting_log_book_wizard_form" model="ir.ui.view">
+        <field name="name">slitting.log.book.wizard.form</field>
+        <field name="model">slitting.log.book.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Slitting Log Book">
+                <group>
+
+                    <group>
+
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <!-- <field name="shift"/> -->
+
+                    </group>
+
+                    <group>
+
+                        <field name="supervisor"/>
+                        <field name="operator_id"/>
+
+                    </group>
+
+                </group>
+
+                <footer>
+
+                    <button name="action_print_xlsx"
+                            string="Print XLSX"
+                            type="object"
+                            class="btn-primary"/>
+
+                    <button string="Cancel"
+                            special="cancel"/>
+
+                </footer>
+
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_slitting_log_book" model="ir.actions.act_window">
+        <field name="name">Slitting Log Book</field>
+        <field name="res_model">slitting.log.book.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <menuitem id="menu_slitting_log_book"
+              name="Slitting Log Book"
+              parent="stock.menu_warehouse_report"
+              action="action_slitting_log_book"
+              sequence="90"/>
+
+    <record id="view_inventory_aging_report_wizard_form" model="ir.ui.view">
+        <field name="name">inventory.aging.report.wizard.form</field>
+        <field name="model">inventory.aging.report.wizard</field>
+        <field name="arch" type="xml">
+
+            <form string="Inventory Aging Report">
+
+                <group>
+
+                    <group>
+
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="location_ids" widget="many2many_tags"/>
+
+                    </group>
+
+                    <group>
+
+                        <field name="product_ids"
+                               widget="many2many_tags"/>
+
+                        <field name="customer_ids"
+                               widget="many2many_tags"/>
+
+                    </group>
+
+                </group>
+
+                <footer>
+
+                    <button name="action_print_xlsx"
+                            string="Print XLSX"
+                            type="object"
+                            class="btn-primary"/>
+
+                    <button string="Cancel"
+                            special="cancel"/>
+
+                </footer>
+
+            </form>
+
+        </field>
+    </record>
+
+
+    <record id="action_inventory_aging_report" model="ir.actions.act_window">
+        <field name="name">Inventory Aging Report</field>
+        <field name="res_model">inventory.aging.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <menuitem id="menu_inventory_aging_report"
+              name="Inventory Aging Report"
+              parent="stock.menu_warehouse_report"
+              action="action_inventory_aging_report"
+              sequence="95"/>
+
+
+    <record id="view_material_summary_report_wizard" model="ir.ui.view">
+        <field name="name">inventory.film.type.report.wizard.form</field>
+        <field name="model">inventory.film.type.report.wizard</field>
+        <field name="arch" type="xml">
+
+            <form string="Material Summary Report">
+
+                <group>
+
+                    <group>
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                    </group>
+
+                    <group>
+                        <field name="location_ids" widget="many2many_tags"/>
+                    </group>
+
+                </group>
+
+                <footer>
+
+                    <button name="action_print_xlsx"
+                            type="object"
+                            string="Print XLSX"
+                            class="btn-primary"/>
+
+                    <button string="Cancel"
+                            special="cancel"/>
+
+                </footer>
+
+            </form>
+
+        </field>
+    </record>
+
+    <record id="action_material_summary_report_wizard" model="ir.actions.act_window">
+        <field name="name">Stock Summary Report</field>
+        <field name="res_model">inventory.film.type.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_material_summary_report"
+              name="Stock Summary Report"
+              parent="stock.menu_warehouse_report"
+              action="action_material_summary_report_wizard"
+              sequence="90"/>
+    
+</odoo>

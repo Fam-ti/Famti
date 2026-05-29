@@ -54,7 +54,27 @@
             <record id="group_for_hr_executive" model="res.groups">
                 <field name="name">Is HR Head</field>
                 <field name="category_id" ref="famti.module_category_famti_users"/>
-            </record>   
+            </record>
+
+          <record id="group_cost_sheet_templates_modify_access" model="res.groups">
+                <field name="name">Cost Sheets All Access</field>
+                <field name="category_id" ref="famti.module_category_famti_users"/>
+            </record>
+
+         <record id="group_cost_sheet_templates_modify_user_access" model="res.groups">
+                <field name="name">Cost Sheets User Access</field>
+                <field name="category_id" ref="famti.module_category_famti_users"/>
+            </record>
+
+<!--        Sequence generated for cost sheet-->
+    <record id="seq_cost_sheet" model="ir.sequence">
+        <field name="name">Cost Sheet Sequence</field>
+        <field name="code">cost.sheet.sequence</field>
+        <field name="prefix">CS/</field>
+        <field name="padding">5</field>
+        <field name="number_next">1</field>
+        <field name="number_increment">1</field>
+    </record>
 
 
         <!-- Purchase Order: User sees only own records -->

@@ -1,62 +1,187 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <record id="view_costing_sheet_list" model="ir.ui.view">
-        <field name="name">costing.sheet.list</field>
-        <field name="model">costing.sheet</field>
+<!--    <record id="view_costing_sheet_list" model="ir.ui.view">-->
+<!--        <field name="name">costing.sheet.list</field>-->
+<!--        <field name="model">costing.sheet</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <list>-->
+<!--                <field name="name"/>-->
+<!--                <field name="customer_id"/>-->
+<!-- -->
+<!--            </list>-->
+<!--        </field>-->
+<!--    </record>-->
+
+<!--    <record id="view_costing_sheet_form" model="ir.ui.view">-->
+<!--        <field name="name">costing.sheet.form</field>-->
+<!--        <field name="model">costing.sheet</field>-->
+<!--        <field name="arch" type="xml">-->
+<!--            <form string="Cost Sheet">-->
+<!--                <sheet>-->
+<!--                    <group>-->
+<!--                        <group>-->
+<!--                            <field name="name"/>-->
+<!--                            <field name="customer_id"/>-->
+<!--                        </group>-->
+<!--                        <group>-->
+
+<!--                        </group>-->
+<!--                    </group>-->
+
+<!--                    <group>-->
+
+<!--                    </group>-->
+<!--                </sheet>-->
+<!--            </form>-->
+<!--        </field>-->
+<!--    </record>-->
+
+<!--    <record id="action_costing_sheet" model="ir.actions.act_window">-->
+<!--        <field name="name">Cost Sheet</field>-->
+<!--        <field name="res_model">costing.sheet</field>-->
+<!--        <field name="view_mode">list,form</field>-->
+<!--    </record>-->
+
+
+<!--    <record id="action_open_bom_form" model="ir.actions.act_window">-->
+<!--        <field name="name">Bill of Materials</field>-->
+<!--        <field name="res_model">mrp.bom</field>-->
+<!--        <field name="view_mode">list,form</field>-->
+<!--        <field name="view_id" ref="mrp.mrp_bom_tree_view"/>-->
+<!--        <field name="target">current</field>-->
+<!--    </record>-->
+
+<!--    <menuitem-->
+<!--        id="menu_bom_costing_sheet"-->
+<!--        name="Cost Sheet"-->
+<!--        parent="sale.sale_order_menu"-->
+<!--        action="action_open_bom_form"-->
+<!--        sequence="11"/>-->
+
+
+        <!-- views/Cost sheet template.xml -->
+  <record id="view_cost_sheet_template_form" model="ir.ui.view">
+    <field name="name">cost.sheet</field>
+    <field name="model">cost.sheet.template</field>
+    <field name="arch" type="xml">
+      <form string="Cost Sheet Template">
+        <sheet>
+            <group>
+                <group>
+              <field name="name" readonly="1"/>
+              <field name="title"/>
+              <field name="code" readonly="1"/>
+              <field name="sequence"/>
+          </group>
+            <group>
+              <field name="cost_sheet_id"/>
+                  <field name="default_value"/>
+                  <field name="is_computed"/>
+                  <field name="formula"/>
+
+            </group>
+            </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+      <record id="view_cost_sheet_template_list" model="ir.ui.view">
+        <field name="name">cos.sheet.template.list</field>
+        <field name="model">cost.sheet.template</field>
         <field name="arch" type="xml">
             <list>
-                <field name="name"/>
-                <field name="customer_id"/>
- 
+               <field name="name"/>
+              <field name="title"/>
+              <field name="code"/>
+                  <field name="default_value"/>
+                  <field name="formula"/>
+
             </list>
         </field>
     </record>
 
-    <record id="view_costing_sheet_form" model="ir.ui.view">
-        <field name="name">costing.sheet.form</field>
-        <field name="model">costing.sheet</field>
+
+     <record id="action_cost_sheet_template" model="ir.actions.act_window">
+        <field name="name">Metaliser Cost Sheet</field>
+        <field name="res_model">cost.sheet.template</field>
+        <field name="view_mode">list,form</field>
+        <field name="target">current</field>
+        <field name="view_id" ref="view_cost_sheet_template_list"/>
+    </record>
+
+     <menuitem
+        id="menu_cost_sheet_template"
+        name="Metaliser Template(Cost Sheet)"
+        parent="sale.sale_order_menu"
+        action="action_cost_sheet_template"
+        sequence="12"
+     groups="group_cost_sheet_templates_modify_access,base.group_system"/>
+
+
+
+       <!-- views/Cost sheet Slitted template.xml -->
+  <record id="view_cost_sheet_slitted_template_form" model="ir.ui.view">
+    <field name="name">cost.sheet</field>
+    <field name="model">cs.slitted.template</field>
+    <field name="arch" type="xml">
+      <form string="Cost Sheet Template">
+        <sheet>
+            <group>
+                <group>
+              <field name="name" />
+              <field name="title"/>
+              <field name="code"/>
+              <field name="sequence"/>
+              <field name="average_cost"/>
+
+          </group>
+            <group>
+              <field name="cost_kgs"/>
+<!--              <field name="cost_sheet_slit_id"/>-->
+                  <field name="default_value"/>
+                  <field name="is_computed"/>
+                  <field name="formula"/>
+
+            </group>
+            </group>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+      <record id="view_cost_sheet_slitted_template_list" model="ir.ui.view">
+        <field name="name">cos.sheet.template.list</field>
+        <field name="model">cs.slitted.template</field>
         <field name="arch" type="xml">
-            <form string="Cost Sheet">
-                <sheet>
-                    <group>
-                        <group>
-                            <field name="name"/>
-                            <field name="customer_id"/>
-                        </group>
-                        <group>
+            <list>
+               <field name="name"/>
+              <field name="title"/>
+              <field name="code"/>
+                  <field name="default_value"/>
+                  <field name="formula"/>
 
-                        </group>
-                    </group>
-
-                    <group>
-
-                    </group>
-                </sheet>
-            </form>
+            </list>
         </field>
     </record>
 
-    <record id="action_costing_sheet" model="ir.actions.act_window">
-        <field name="name">Cost Sheet</field>
-        <field name="res_model">costing.sheet</field>
-        <field name="view_mode">list,form</field>
-    </record>
 
-
-    <record id="action_open_bom_form" model="ir.actions.act_window">
-        <field name="name">Bill of Materials</field>
-        <field name="res_model">mrp.bom</field>
+     <record id="action_cost_sheet_slitted_template" model="ir.actions.act_window">
+        <field name="name">Slitted Cost Sheet</field>
+        <field name="res_model">cs.slitted.template</field>
         <field name="view_mode">list,form</field>
-        <field name="view_id" ref="mrp.mrp_bom_tree_view"/>
         <field name="target">current</field>
+        <field name="view_id" ref="view_cost_sheet_slitted_template_list"/>
     </record>
 
-    <menuitem
-        id="menu_bom_costing_sheet"
-        name="Cost Sheet"
+     <menuitem
+        id="menu_cost_sheet_slitted_template"
+        name="Sliited Template(Cost Sheet)"
         parent="sale.sale_order_menu"
-        action="action_open_bom_form"
-        sequence="11"/>
+        action="action_cost_sheet_slitted_template"
+        sequence="12"
+       groups="group_cost_sheet_templates_modify_access,base.group_system"/>
+
 
 </odoo>

@@ -31,27 +31,37 @@
                 </xpath>
 
                 <xpath expr="//field[@name='transport_type']" position="after">
-                    <field name="etd" />
-                    
+                    <field name="bl_number" readonly="state in 'done'"/>               
                 </xpath>
-                <xpath expr="//field[@name='agent_id']" position="after">
-                    <field name="gross_weight" readonly="state in 'done'"/>
-                </xpath>
+ 
 
                 <xpath expr="//field[@name='incoterm_id']" position="after">
                     <field name="purchase_id" readonly="state in 'done'" invisible="not purchase_id"/>
                     <field name="sale_id" readonly="state in 'done'" invisible="not sale_id"/>
                 </xpath>
+
                 <xpath expr="//field[@name='loading_port_id']" position="after">
-                    <field name="etd_discharge_port"/>
-                    <field name="final_destination_id"/>
+                    <!-- <field name="etd_discharge_port"/> -->
+                    <field name="etd" />
                 </xpath>
+
                 <xpath expr="//field[@name='discharging_port_id']" position="after">
-                    <field name="eta_destination"/>
-                    <field name="eta"/>
-                    <field name="net_weight" readonly="state in 'done'"/>
-                    <field name="bl_number" readonly="state in 'done'"/>
+                    <!-- <field name="eta_destination"/> -->
+                    <field name="eta"/>                                       
                 </xpath>
+
+                <xpath expr="//group[@col='2']" position="after">
+                    <group>                  
+                        <group string="Location Details">
+                            <field name="final_destination_id"/>
+                        </group> 
+                        <group string="Weight Details">
+                            <field name="gross_weight" readonly="state in 'done'"/>
+                            <field name="net_weight" readonly="state in 'done'"/> 
+                        </group>  
+                    </group>
+                </xpath>
+
                 <xpath expr="//notebook" position="inside">
                     <page string="Documents">
                         <field name="document_ids">
@@ -67,6 +77,23 @@
                 <xpath expr="//field[@name='order_ids']/list/field[@name='container_id']" position="after">
                     <field name="container_number"/>
                 </xpath>
+
+                <xpath expr="//notebook" position="inside">
+                    <page string="Carrier Information">
+                        <group col="2">
+                            <group>
+                                <field name="carrier_id"/>
+                                <field name="driver_name_id"/>
+                                <field name="driver_phone"/>
+                                <field name="driver_email"/>
+                            </group>
+                            <group>
+                                <field name="vehicle_number"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+
 
                 <!-- <xpath expr="//field[@name='order_ids']/list/field[@name='container_id']" position="before">
                     <field name="purchase_id" column_invisible="not parent.purchase_id"/>

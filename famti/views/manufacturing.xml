@@ -30,14 +30,23 @@
             
             <xpath expr="//field[@name='lot_producing_id']" position="attributes">
                 <attribute name="string">Serial Number</attribute>
-                <attribute name="invisible">mo_serial_no != 1</attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="replace">
+                <field name="user_id" options="{'no_open': True}"/>
             </xpath>
 
             <xpath expr="//label[@for='lot_producing_id']" position="attributes">
-                <attribute name="invisible">mo_serial_no != 1</attribute>
+                <attribute name="invisible">1</attribute>
             </xpath>
             <xpath expr="//button[@name='action_generate_serial']" position="attributes">
-                <attribute name="invisible">mo_serial_no != 1</attribute>
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//div[@name='bom_div']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//label[@name='bom_label']" position="attributes">
+                <attribute name="invisible">1</attribute>
             </xpath>
             
             <xpath expr="//field[@name='product_id']" position="after">
@@ -106,7 +115,8 @@
                                 <create string="Add a line"/>
                                 <button name="action_add_from_catalog_raw" string="Catalog" type="object" class="px-4 btn-link" context="{'order_id': parent.id}"/>
                             </control>
-                            <field name="product_id" force_save="1" context="{'default_is_storable': True}" required="1" readonly="move_lines_count &gt; 0 or state == 'cancel' or (state != 'draft' and not additional)" domain="['&amp;', ('type', '=', 'consu'), ('id', '!=', parent.product_id)]"/>
+                            <!-- <field name="product_id" force_save="1" context="{'default_is_storable': True}" required="1" readonly="move_lines_count &gt; 0 or state == 'cancel' or (state != 'draft' and not additional)" domain="['&amp;', ('type', '=', 'consu'), ('id', '!=', parent.product_id)]"/> -->
+                            <field name="product_id" force_save="1" context="{'default_is_storable': True}" required="1" readonly="move_lines_count &gt; 0 or state == 'cancel' or (state != 'draft' and not additional)" domain="[('type', '=', 'consu')]"/>
                             <field name="location_id" string="From" readonly="1" force_save="1" groups="stock.group_stock_multi_locations" optional="show"/>
                             <!-- test_immediate_validate_uom_2, test_product_produce_different_uom -->
                             <field name="product_uom" column_invisible="True"/>
@@ -162,7 +172,7 @@
                                 <create string="Add a line"/>
                                 <button name="action_add_from_catalog_raw" string="Catalog" type="object" class="px-4 btn-link" context="{'order_id': parent.id}"/>
                             </control>
-                            <field name="product_id" force_save="1" context="{'default_is_storable': True}" required="1" readonly="move_lines_count &gt; 0 or state == 'cancel' or (state != 'draft' and not additional)" domain="['&amp;', ('type', '=', 'consu'), ('id', '!=', parent.product_id)]"/>
+                            <field name="product_id" force_save="1" context="{'default_is_storable': True}" required="1" readonly="move_lines_count &gt; 0 or state == 'cancel' or (state != 'draft' and not additional)" domain="['&amp;', ('type', '=', 'consu'), ('id', '!=', parent.product_id), ('product_tmpl_id.is_consumables', '=', True)]"/>
                             <field name="location_id" string="From" force_save="1" groups="stock.group_stock_multi_locations" optional="show"/>
                             <!-- test_immediate_validate_uom_2, test_product_produce_different_uom -->
                             <field name="product_uom" column_invisible="True"/>
@@ -274,6 +284,26 @@
         <field name="action" ref="action_mrp_production_metalizing"/>
         <field name="sequence">11</field>
     </record>
+
+
+    <record id="action_for_oil_greece_slitter" model="ir.actions.server">
+    <field name="name">
+        OandG Lubrication XLSX
+    </field>
+    <field name="model_id" ref="mrp.model_mrp_production"/>
+    <field name="state">code</field>
+    <field name="code">
+                action = model.generate_oil_grease_lubrication_xlsx()
+    </field>
+    </record>
+
+     <menuitem
+        id="reports_action_for_oil_greece_slitter"
+        name="OandG Lubirication Xlsx"
+        parent="mrp.menu_mrp_reporting"
+        action="action_for_oil_greece_slitter"
+        sequence="3"/>
+
 
 
 
