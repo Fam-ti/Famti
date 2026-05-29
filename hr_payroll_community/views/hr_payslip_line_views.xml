@@ -139,6 +139,7 @@
                         <field name="struct_id" readonly="state != 'draft'"/>
                         <field name="name" readonly="state != 'draft'"/>
                         <field name="credit_note" readonly="state != 'draft'"/>
+                        <field name="ytd_amount" readonly="1"/>
                     </group>
                     <notebook>
                         <page string="Worked Days &amp; Inputs">

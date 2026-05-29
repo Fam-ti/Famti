@@ -89,6 +89,40 @@ class HrPayslip(models.Model):
     payslip_count = fields.Integer(compute='_compute_payslip_count',
                                    string="Payslip Computation Details",
                                    help="Set Payslip Count")
+    
+    ytd_amount = fields.Float(string='YTD Amount',
+                            compute='_compute_ytd_amount',
+                            store=True)
+    
+    @api.depends('employee_id', 'date_to')
+    def _compute_ytd_amount(self):
+        for slip in self:
+
+            slip.ytd_amount = 0.0
+
+            if not slip.employee_id or not slip.date_to:
+                continue
+
+            year_start = date(slip.date_to.year, 1, 1)
+
+            payslips = self.env['hr.payslip'].search([
+                ('employee_id', '=', slip.employee_id.id),
+                ('date_to', '>=', year_start),
+                ('date_to', '<=', slip.date_to),
+                ('state', 'in', ['done', 'paid']),
+            ])
+
+            total = 0.0
+
+            for payslip in payslips:
+
+                basic_line = payslip.line_ids.filtered(
+                    lambda l: l.code == 'BASIC'
+                )[:1]
+
+                total += basic_line.total if basic_line else 0.0
+
+            slip.ytd_amount = total
 
     def _compute_details_by_salary_rule_category_ids(self):
         """Compute function for Salary Rule Category for getting
