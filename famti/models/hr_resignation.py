@@ -180,9 +180,6 @@ class EmployeeResignation(models.Model):
             rec.message_post(body="Resignation Approved")
 
     def action_reject(self):
-        self.ensure_one()
-        self.state = 'rejected'
-        self.message_post(body="Resignation Rejected")
 
         return {
             'type': 'ir.actions.act_window',
@@ -191,6 +188,6 @@ class EmployeeResignation(models.Model):
             'view_mode': 'form',
             'target': 'new',
             'context': {
-                'default_resignation_id': self.id
+                'default_employee_resignation_id': self.id
             }
         }
