@@ -2,7 +2,7 @@ import io
 import base64
 import xlsxwriter
 from odoo import models, fields
-from datetime import date
+from datetime import date, datetime
 from collections import defaultdict
 
 class SaleReportWizard(models.TransientModel):
@@ -262,7 +262,20 @@ class MisMonthlyReportWizard(models.TransientModel):
         ('december', 'December'),
     ], string="Month")
 
-    year = fields.Char(string="Year")
+    def _get_year_selection(self):
+        current_year = datetime.now().year
+
+        years = []
+        for year in range(current_year - 5, current_year + 10):
+            years.append((str(year), str(year)))
+
+        return years
+
+    year = fields.Selection(
+        selection=_get_year_selection,
+        string="Year",
+        default=lambda self: str(datetime.now().year)
+    )
 
     machine = fields.Char(string="Machine")
 
@@ -313,7 +326,7 @@ class MisMonthlyReportWizard(models.TransientModel):
         sheet.merge_range('D2:H2', self.machine or '', bold_format)
         sheet.merge_range('A3:C3', 'Shifts', bold_format)
         sheet.merge_range('D3:H3', 'DAY SHIFT/8 HOURS ONLY PER DAY', bold_format)
-        sheet.merge_range('A5:H5', 'MIS SLITTING REPORT', header_format)
+        sheet.merge_range('A5:H5', 'MIS MONTHLY REPORT', header_format)
         labels = [
             'Slitting Input (Kgs)',
             'Slitting Output (Kgs)',
