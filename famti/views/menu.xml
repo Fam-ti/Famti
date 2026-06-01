@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
+         <record id="sale.sale_menu_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4, ref('famti.group_sale_order_readonly'))]"/>
+        </record>
+
+        <record id="sale.sale_order_menu" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4, ref('famti.group_sale_order_readonly'))]"/>
+        </record>
+
+        <record id="sale.menu_sale_order" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4, ref('famti.group_sale_order_readonly'))]"/>
+        </record>
 
        <menuitem
         id="customer_menu"
