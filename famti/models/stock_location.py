@@ -1,3 +1,7 @@
+from shutil import move
+
+from matplotlib.pylab import normal
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
@@ -276,6 +280,215 @@ class StockPicking(models.Model):
             'mimetype':
                 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         })
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/content/%s?download=true' % attachment.id,
+            'target': 'self',
+        }
+
+    
+    def action_packing_list_excel(self):
+
+        output = io.BytesIO()
+        workbook = xlsxwriter.Workbook(output)
+        sheet = workbook.add_worksheet('Packing List')
+        header = workbook.add_format({
+            'bold': True,
+            'border': 1,
+            'align': 'center',
+            'valign': 'vcenter'
+        })
+
+        normal = workbook.add_format({
+            'border': 1,
+        })
+
+        total_fmt = workbook.add_format({
+            'bold': True,
+            'border': 1,
+        })
+
+        sheet.set_column('A:A', 25)
+        sheet.set_column('B:B', 20)
+        sheet.set_column('C:N', 12)
+
+        picking = self[:1]
+
+
+        sheet.merge_range('F5:J5', 'PACKING LIST', header)
+
+
+        sheet.write('A6', 'SUPPLIER: FAM Ti, INC', total_fmt)
+        sheet.write('A7', '740 Oval Court')
+        sheet.write('A9', 'Burlington, ON L7L 6A9')
+    
+
+        sheet.write('A10', f'BUYER : {picking.partner_id.name or ""}', total_fmt)
+
+        address = ', '.join(filter(None, [
+            picking.partner_id.street,
+            picking.partner_id.city,
+            picking.partner_id.zip,
+        ]))
+        sheet.write('A11', address)
+
+
+        sheet.write(
+            'A14',
+            f'Delivery Dated : {picking.scheduled_date.strftime("%d %b %Y") if picking.scheduled_date else ""}'
+        )
+        sale_order = picking.sale_id
+        buyer_po = sale_order.buyer_po_number if sale_order else ''
+        sheet.write(
+            'A15',
+            f'PO Number # {buyer_po or ""}'
+        )
+
+        row = 18
+
+        sheet.set_column('A:A', 15) 
+        sheet.set_column('B:C', 10) 
+        sheet.set_column('D:D', 20) 
+        sheet.set_column('E:J', 10)  
+        sheet.set_column('K:K', 15) 
+        sheet.set_column('L:M', 10)  
+
+        sheet.merge_range(row, 0, row + 1, 0, 'Pallet No', header)
+        sheet.merge_range(row, 1, row + 1, 1, 'Roll', header)
+
+        sheet.merge_range(row, 2, row, 3, 'Thickness', header)
+
+        sheet.merge_range(row, 4, row + 1, 4, 'Type', header)
+
+        sheet.merge_range(row, 5, row, 6, 'Width', header)
+
+        sheet.merge_range(row, 7, row, 8, 'Core ID', header)
+
+        sheet.merge_range(row, 9, row, 10, 'Length', header)
+
+        sheet.merge_range(row, 11, row + 1, 11, 'TREATMENT', header)
+
+        sheet.merge_range(row, 12, row, 13, 'Net Wt', header)
+
+        sheet.write(row + 1, 2, 'Mic', header)
+        sheet.write(row + 1, 3, 'Guage', header)
+
+        sheet.write(row + 1, 5, 'mm', header)
+        sheet.write(row + 1, 6, 'inch', header)
+
+        sheet.write(row + 1, 7, 'mm', header)
+        sheet.write(row + 1, 8, 'inch', header)
+
+        sheet.write(row + 1, 9, 'Mtr', header)
+        sheet.write(row + 1, 10, 'Feet', header)
+
+        sheet.write(row + 1, 12, 'kgs', header)
+        sheet.write(row + 1, 13, 'lbs', header)
+
+        row += 2
+
+        total_kgs = 0
+        total_lbs = 0
+        for move in picking.move_ids_without_package:
+            qty = move.quantity or 0
+
+            lbs = qty * 2.20462
+            package_name = ''
+            serial_no = ''
+            thickness = 0
+            gauge = 0
+            width_mm = 0
+            width_inch = 0
+            core_mm = 0
+            core_inch = 0
+            length_mtr = 0
+            length_feet = 0
+
+            if move.move_line_ids:
+                move_line = move.move_line_ids[0]
+
+                package_name = move_line.result_package_id.name or ''
+                serial_no = move_line.lot_name or ''
+            if move.sale_line_id:
+                thickness = move.sale_line_id.thickness_val or ''
+                gauge = thickness * 4
+                width_mm = move.sale_line_id.width_val if move else 0
+                width_inch = round(width_mm / 25.4, 2) if width_mm else 0
+                core_id = move.sale_line_id.core_id if move else ''
+                core_mm = float(core_id) * 25.4 if core_id else 0
+                core_inch = core_id or ''
+                length_mtr = move.sale_line_id.length_val if move else 0
+                length_feet = round(length_mtr * 3.28084, 2) if length_mtr else 0
+
+            elif move.purchase_line_id:
+                line = move.purchase_line_id
+                thickness = line.thickness_val or 0
+                gauge = thickness * 4
+                width_mm = line.width_val or 0
+                width_inch = round(width_mm / 25.4, 2) if width_mm else 0
+                core_id = line.core_id or ''
+                core_mm = float(core_id) * 25.4 if core_id else 0
+                core_inch = core_id
+                length_mtr = line.length_val or 0
+                length_feet = round(length_mtr * 3.28084, 2) if length_mtr else 0
+
+            sheet.write(row, 0, package_name, normal)
+            sheet.write(row, 1, serial_no, normal)
+
+            sheet.write(row, 2, thickness, normal)
+            sheet.write(row, 3, gauge, normal)
+            sheet.write(row, 4, move.product_id.name or '', normal)
+            sheet.write(row, 5, width_mm, normal)    
+            sheet.write(row, 6, width_inch, normal) 
+
+            sheet.write(row, 7, core_mm, normal)    
+            sheet.write(row, 8, core_inch, normal)   
+
+            sheet.write(row, 9, length_mtr, normal)      
+            sheet.write(row, 10, length_feet, normal)
+            sheet.write(row, 11, '', normal)
+            sheet.write(row, 12, qty, normal)
+            sheet.write(row, 13, lbs, normal)
+
+            total_kgs += qty
+            total_lbs += lbs
+
+            row += 1
+
+        sheet.merge_range(row, 0, row, 11, 'TOTAL', total_fmt)
+        sheet.write(row, 12, total_kgs, total_fmt)
+        sheet.write(row, 13, total_lbs, total_fmt)
+
+        row += 5
+
+        sheet.write(row, 0,
+                    'Total Package Weight of Consignment (kg) :',
+                    total_fmt)
+        sheet.write(row, 4, total_kgs, total_fmt)
+
+        row += 1
+        sheet.write(row, 0, 'Total No of Pallet :', total_fmt)
+        sheet.write(row, 4, len(picking.move_ids_without_package), total_fmt)
+
+        row += 1
+        sheet.write(row, 0, 'Total No of Rolls :', total_fmt)
+        sheet.write(row, 4, len(picking.move_ids_without_package), total_fmt)
+
+        row += 1
+        sheet.write(row, 0, 'Total Net Weight (lbs) :', total_fmt)
+        sheet.write(row, 4, total_lbs, total_fmt)
+        workbook.close()
+        output.seek(0)
+
+        file_data = base64.b64encode(output.read())
+
+        attachment = self.env['ir.attachment'].create({
+            'name': 'Packing_List.xlsx',
+            'type': 'binary',
+            'datas': file_data,
+        })
+
 
         return {
             'type': 'ir.actions.act_url',
