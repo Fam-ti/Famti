@@ -4,6 +4,7 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
+            
             <xpath expr="//form/header/button[@name='action_confirm' and not(@id)]"
                    position="attributes">
                 <attribute name="invisible">True</attribute>
@@ -133,22 +134,22 @@
                 <field name="remarks"/>
             </xpath>
 
-            <xpath expr="//page[@name='order_lines']" position="after">
-                <page string="MO Valuation">
+<!--            <xpath expr="//page[@name='order_lines']" position="after">-->
+<!--                <page string="MO Valuation">-->
 
-                    <field name="valuation_line_ids">
-                        <list editable="bottom">
-                            <field name="date"/>
-                            <field name="reference"/>
-                            <field name="product_id"/>
-                            <field name="quantity"/>
-                            <field name="unit_cost"/>
-                            <field name="total_cost"/>
-                        </list>
-                    </field>
+<!--                    <field name="valuation_line_ids">-->
+<!--                        <list editable="bottom">-->
+<!--                            <field name="date"/>-->
+<!--                            <field name="reference"/>-->
+<!--                            <field name="product_id"/>-->
+<!--                            <field name="quantity"/>-->
+<!--                            <field name="unit_cost"/>-->
+<!--                            <field name="total_cost"/>-->
+<!--                        </list>-->
+<!--                    </field>-->
 
-                </page>
-            </xpath>
+<!--                </page>-->
+<!--            </xpath>-->
 
             <xpath expr="//field[@name='delivery_status']" position="after">
                 <field name="remarks"/>
@@ -195,6 +196,9 @@
                         string="Freight"/>
                 </button>
             </xpath>
+
+
+
 
             
         </field>
