@@ -90,5 +90,3 @@ access_slitting_log_book_wizard,access.slitting.log.book.wizard,model_slitting_l
 access_inventory_aging_report_wizard,access.inventory.aging.report.wizard,model_inventory_aging_report_wizard,stock.group_stock_user,1,1,1,1
 access_inventory_film_type_report_wizard,access.inventory.film.type.report.wizard,model_inventory_film_type_report_wizard,base.group_user,1,1,1,1
 
-access_sale_order_readonly,sale.order.readonly,sale.model_sale_order,famti.group_sale_order_readonly,1,0,0,0
-access_sale_order_line_readonly,sale.order.line.readonly,sale.model_sale_order_line,famti.group_sale_order_readonly,1,0,0,0
