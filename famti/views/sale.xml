@@ -97,15 +97,15 @@
                 </xpath>
 
 
-            <xpath expr="//field[@name='partner_id']" position="after">
-                <group col="2" string="Customer Credit Info">
-                    <field name="partner_credit_limit" readonly="1"/>
-                    <field name="partner_outstanding" readonly="1"/>
-                    <field name="partner_lc_document"/>
-                </group>
-                    <field name="customer_email"/>
-                    <field name="customer_phone"/>
-            </xpath>
+<!--            <xpath expr="//field[@name='partner_id']" position="after">-->
+<!--                <group col="2" string="Customer Credit Info">-->
+<!--                    <field name="partner_credit_limit" readonly="1"/>-->
+<!--                    <field name="partner_outstanding" readonly="1"/>-->
+<!--                    <field name="partner_lc_document"/>-->
+<!--                </group>-->
+<!--                    <field name="customer_email"/>-->
+<!--                    <field name="customer_phone"/>-->
+<!--            </xpath>-->
 
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <field name="customer_email" readonly="state in ['cancel', 'sale']"/>
@@ -288,19 +288,25 @@
                                 <field name="partner_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" placeholder="Type to find a customer..." readonly="state in ['cancel', 'sale']"/>
                                 <field name="partner_invoice_id" groups="account.group_delivery_invoice_address" options="{'no_quick_create': True}" context="{'default_type':'invoice', 'show_address': False, 'show_vat': False, 'default_parent_id': partner_id}" readonly="state == 'cancel' or locked"/>
                                 <field name="partner_shipping_id" groups="account.group_delivery_invoice_address" options="{'no_quick_create': True}" context="{'default_type':'delivery', 'show_address': False, 'show_vat': False, 'default_parent_id': partner_id}" readonly="state == 'cancel' or locked"/>
-                            
-                                <group col="2" string="Customer Credit Info">
-                                    <field name="partner_credit_limit" readonly="1"/>
-                                    <field name="partner_outstanding" readonly="1"/>
-                                    <field name="partner_lc_document"/>
-                                </group>
-                            </group>
-                            <group name="order_details">
-                                <field name="so_type" readonly="state in ['cancel', 'sale']"/>
+
+
+                                 <field name="so_type" readonly="state in ['cancel', 'sale']"/>
                                 <field name="buyer_po_number" readonly="state in ['cancel', 'sale']"/>
                                 <field name="buyer_po_date" readonly="state in ['cancel', 'sale']"/>
                                 <field name="expected_date" readonly="state in ['cancel', 'sale']"/>
-                                <field name="manufacturing_user_id"/>
+
+<!--                                <group col="2" string="Customer Credit Info">-->
+<!--                                    <field name="partner_credit_limit" readonly="1"/>-->
+<!--                                    <field name="partner_outstanding" readonly="1"/>-->
+<!--                                    <field name="partner_lc_document"/>-->
+<!--                                </group>-->
+                            </group>
+                            <group name="order_details">
+<!--                                <field name="so_type" readonly="state in ['cancel', 'sale']"/>-->
+<!--                                <field name="buyer_po_number" readonly="state in ['cancel', 'sale']"/>-->
+<!--                                <field name="buyer_po_date" readonly="state in ['cancel', 'sale']"/>-->
+<!--                                <field name="expected_date" readonly="state in ['cancel', 'sale']"/>-->
+<!--                                <field name="manufacturing_user_id"/>-->
                                 <field name="department_id"/>
                                 <field name="validity_date" invisible="state == 'sale'" readonly="state in ['cancel', 'sale']"/>
                                 <div class="o_td_label" groups="base.group_no_one" invisible="state in ['sale', 'cancel']">
