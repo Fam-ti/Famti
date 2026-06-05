@@ -11,6 +11,9 @@ class SaleOrder(models.Model):
         ('sent', 'Quotation Sent'),
         ('to_approve', 'To Approve'),
         ('sale', 'Sales Order'),
+        ('in_manf', 'In Manufacturing'),
+        ('in_progress', 'In Progress'),
+        ('closed', 'Closed'),
         ('done', 'Locked'),
         ('cancel', 'Cancelled'),
     ], string='Status', readonly=True, tracking=True, default='draft')
@@ -73,6 +76,14 @@ class SaleOrder(models.Model):
     buyer_po_date = fields.Date(string="Buyer PO Date")
     expected_date = fields.Date(string='Expected Date', help='The expected date'
                                                              'of the order', required=False)
+    manufacturing_user_id = fields.Many2one(
+        'res.users',
+        string='Manf. Person'
+    )
+    department_id = fields.Many2one(
+        'hr.department',
+        string='Department Id'
+    )
 
     def _compute_freight_count(self):
         for order in self:
@@ -300,6 +311,25 @@ class SaleOrder(models.Model):
             'view_mode': 'form',
             'target': 'new',
         }
+
+    def action_in_progress(self):
+        self.state = 'in_progress'
+
+
+    def action_closed(self):
+        self.state = 'closed'
+
+    def action_send_to_production(self):
+        if self.state == 'sale':
+            self.state = 'in_manf'
+        else:
+            raise UserError('Order Needs to be approved or Something went wrong!')
+
+    def action_sale_ready(self):
+        if self.state == 'closed':
+            self.state = 'sale'
+        else:
+            raise UserError('Order Needs to be approved or Something went wrong!')
 
 
 class SaleOrderLine(models.Model):

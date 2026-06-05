@@ -1,6 +1,6 @@
-from shutil import move
+# from shutil import move
 
-from matplotlib.pylab import normal
+# from matplotlib.pylab import normal
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError

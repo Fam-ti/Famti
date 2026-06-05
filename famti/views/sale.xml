@@ -4,7 +4,7 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            
+
             <xpath expr="//form/header/button[@name='action_confirm' and not(@id)]"
                    position="attributes">
                 <attribute name="invisible">True</attribute>
@@ -56,6 +56,15 @@
                     groups="famti.group_sales_dep_users"
                     invisible="state != 'draft'"
                 />
+
+                 <button name="action_send_to_production"
+                    type="object"
+                    string="Send to Production"
+                    class="btn-primary"
+                    groups="famti.group_sales_dep_users"
+                    invisible="state != 'sale'"
+                />
+
                 <button name="action_approve"
                     type="object"
                     string="Approve"
@@ -76,6 +85,8 @@
                     class="btn-primary"
                     invisible="1"/>
             </xpath>
+
+
             <xpath expr="//sheet/div[@class='oe_title']" position="inside">
                     <div class="oe_avatar_container" style="position:absolute; right:16px; top:4px;">
                         <field name="logo"
@@ -84,6 +95,7 @@
                                options='{"zoom": true}'/>
                     </div>
                 </xpath>
+
 
             <xpath expr="//field[@name='partner_id']" position="after">
                 <group col="2" string="Customer Credit Info">
@@ -94,6 +106,7 @@
                     <field name="customer_email"/>
                     <field name="customer_phone"/>
             </xpath>
+
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <field name="customer_email" readonly="state in ['cancel', 'sale']"/>
                 <field name="customer_phone" readonly="state in ['cancel', 'sale']"/>
@@ -103,6 +116,9 @@
                 <field name="buyer_po_number" readonly="state in ['cancel', 'sale']"/>
                 <field name="buyer_po_date" readonly="state in ['cancel', 'sale']"/>
                 <field name="expected_date" readonly="state in ['cancel', 'sale']"/>
+                            <field name="manufacturing_user_id"/>
+                            <field name="department_id"/>
+
             </xpath>
 
             <xpath expr="//field[@name='order_line']/list/field[@name='product_template_id']" position="after">
@@ -197,10 +213,117 @@
                 </button>
             </xpath>
 
-
-
-
-            
         </field>
     </record>
+
+
+
+<!--    Manufacturing Pending Order View-->
+
+    <record id="view_sale_order_tree_manufacturing" model="ir.ui.view">
+    <field name="name">sale.order.tree.manufacturing</field>
+    <field name="model">sale.order</field>
+    <field name="arch" type="xml">
+        <list create="0" edit="0" delete="0">
+            <field name="name"/>
+            <field name="partner_id"/>
+            <field name="date_order"/>
+            <field name="amount_total"/>
+            <field name="state"/>
+        </list>
+    </field>
+</record>
+
+
+    <record id="view_sale_order_form_manufacturing_old" model="ir.ui.view">
+    <field name="name">sale.order.form.manufacturing</field>
+    <field name="model">sale.order</field>
+    <field name="inherit_id" ref="sale.view_order_form"/>
+    <field name="priority">999</field>
+    <field name="arch" type="xml">
+        <xpath expr="//form" position="attributes">
+            <attribute name="create">0</attribute>
+            <attribute name="edit">0</attribute>
+            <attribute name="delete">0</attribute>
+        </xpath>
+    </field>
+</record>
+
+
+
+    <record id="view_sale_order_form_manufacturing"
+        model="ir.ui.view">
+    <field name="name">sale.order.form.manufacturing</field>
+    <field name="model">sale.order</field>
+    <field name="arch" type="xml">
+            <form create="0" edit="0" delete="0">
+                <header>
+                        <button name="action_in_progress" string="In Progress"
+                            type="object" class="oe_highlight" invisible="state not in ['in_manf']"/>
+
+                        <button name="action_closed" string="Manufacture Done"
+                            type="object" class="oe_highlight" invisible="state not in ['in_progress']"/>
+
+
+                        <button name="action_sale_ready" string="Sale Ready"
+                            type="object" class="oe_highlight" invisible="state not in ['closed']"/>
+
+                                    <field name="state" widget="statusbar" statusbar_visible="in_manf,in_progress,closed,sale"/>
+
+                </header>
+
+                <sheet>
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="partner_id" readonly="1"/>
+                        <field name="date_order" readonly="1"/>
+                        <field name="state" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Order Lines">
+                            <field name="order_line" readonly="1">
+                                <list>
+                                    <field name="product_id"/>
+                                    <field name="product_uom_qty"/>
+                                    <field name="price_unit"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_manufacturing_sales_orders" model="ir.actions.act_window">
+    <field name="name">Manufacturing Sales Orders</field>
+    <field name="res_model">sale.order</field>
+    <field name="view_mode">list,form</field>
+    <field name="domain">[('state','in',['sale','in_manf'])]</field>
+    </record>
+
+         <record id="action_manufacturing_sales_orders_tree" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">list</field>
+            <field name="view_id" ref="famti.view_sale_order_tree_manufacturing"/>
+            <field name="act_window_id" ref="famti.action_manufacturing_sales_orders"/>
+        </record>
+
+    <record id="action_manufacturing_sales_orders_form"  model="ir.actions.act_window.view">
+        <field name="sequence" eval="2"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="famti.view_sale_order_form_manufacturing"/>
+        <field name="act_window_id" ref="famti.action_manufacturing_sales_orders"/>
+    </record>
+
+
+               <menuitem
+        id="menu_manufacturing_sales_orders"
+        name="Pending Orders"
+        parent="mrp.menu_mrp_root"
+        action="action_manufacturing_sales_orders"
+        groups="famti.group_manufacture_users"
+        sequence="10"/>
+
+
 </odoo>
