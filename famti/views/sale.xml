@@ -97,15 +97,15 @@
                 </xpath>
 
 
-<!--            <xpath expr="//field[@name='partner_id']" position="after">-->
-<!--                <group col="2" string="Customer Credit Info">-->
-<!--                    <field name="partner_credit_limit" readonly="1"/>-->
-<!--                    <field name="partner_outstanding" readonly="1"/>-->
-<!--                    <field name="partner_lc_document"/>-->
-<!--                </group>-->
-<!--                    <field name="customer_email"/>-->
-<!--                    <field name="customer_phone"/>-->
-<!--            </xpath>-->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <group col="2" string="Customer Credit Info">
+                    <field name="partner_credit_limit" readonly="1"/>
+                    <field name="partner_outstanding" readonly="1"/>
+                    <field name="partner_lc_document"/>
+                </group>
+                    <field name="customer_email"/>
+                    <field name="customer_phone"/>
+            </xpath>
 
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <field name="customer_email" readonly="state in ['cancel', 'sale']"/>
@@ -229,26 +229,16 @@
                 <field name="partner_id"/>
                 <field name="date_order"/>
                 <field name="amount_total"/>
+                <field name="mo_status"
+                                   widget="badge"
+                                   decoration-success="mo_status == 'closed'"
+                                   decoration-warning="mo_status == 'in_progress'"
+                                   decoration-info="mo_status == 'in_manf'"
+                                   invisible="not mo_status"/>
                 <field name="state"/>
             </list>
         </field>
     </record>
-
-
-    <record id="view_sale_order_form_manufacturing_old" model="ir.ui.view">
-        <field name="name">sale.order.form.manufacturing</field>
-        <field name="model">sale.order</field>
-        <field name="inherit_id" ref="sale.view_order_form"/>
-        <field name="priority">999</field>
-        <field name="arch" type="xml">
-            <xpath expr="//form" position="attributes">
-                <attribute name="create">0</attribute>
-                <attribute name="edit">0</attribute>
-                <attribute name="delete">0</attribute>
-            </xpath>
-        </field>
-    </record>
-
 
 
     <record id="view_sale_order_form_manufacturing" model="ir.ui.view">
@@ -307,6 +297,13 @@
 <!--                                <field name="buyer_po_date" readonly="state in ['cancel', 'sale']"/>-->
 <!--                                <field name="expected_date" readonly="state in ['cancel', 'sale']"/>-->
 <!--                                <field name="manufacturing_user_id"/>-->
+                                <field name="mo_status"
+                                   widget="badge"
+                                   decoration-success="mo_status == 'closed'"
+                                   decoration-warning="mo_status == 'in_progress'"
+                                   decoration-info="mo_status == 'in_manf'"
+                                   invisible="not mo_status"/>
+<!--                                 <field name="mo_status" widget="selection_badge" invisible="not mo_status" decoration-success="mo_status == 'closed'"/>-->
                                 <field name="department_id"/>
                                 <field name="validity_date" invisible="state == 'sale'" readonly="state in ['cancel', 'sale']"/>
                                 <div class="o_td_label" groups="base.group_no_one" invisible="state in ['sale', 'cancel']">
@@ -409,7 +406,7 @@
         <field name="name">Manufacturing Sales Orders</field>
         <field name="res_model">sale.order</field>
         <field name="view_mode">list,form</field>
-        <field name="domain">[('state','in',['sale','in_manf'])]</field>
+        <field name="domain">[('state','in',['sale','in_manf','in_progress','closed'])]</field>
         </record>
 
             <record id="action_manufacturing_sales_orders_tree" model="ir.actions.act_window.view">

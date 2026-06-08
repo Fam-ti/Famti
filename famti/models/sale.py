@@ -84,6 +84,22 @@ class SaleOrder(models.Model):
         'hr.department',
         string='Department Id'
     )
+    mo_status = fields.Selection([('in_manf', 'In Manufacturing'),
+        ('in_progress', 'In Progress'),
+        ('closed', 'Closed')],
+        string="MO Status")
+
+    @api.model
+    def create(self, vals):
+        if not vals.get('department_id'):
+            dept = self.env['hr.department'].search(
+                [('name', 'ilike', 'manufacturing')],
+                limit=1
+            )
+            if dept:
+                vals['department_id'] = dept.id
+
+        return super().create(vals)
 
     def _compute_freight_count(self):
         for order in self:
@@ -317,11 +333,14 @@ class SaleOrder(models.Model):
 
 
     def action_closed(self):
+        self.mo_status = 'closed'
         self.state = 'closed'
+        # self.write({'state':'closed','mo_status':'closed'})
 
     def action_send_to_production(self):
         if self.state == 'sale':
             self.state = 'in_manf'
+            self.mo_status = 'in_manf'
         else:
             raise UserError('Order Needs to be approved or Something went wrong!')
 
