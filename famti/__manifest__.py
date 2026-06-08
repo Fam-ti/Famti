@@ -36,6 +36,7 @@
         'data/workcenter_demo.xml',
         'data/sequence.xml',
         'data/accounting_data.xml',
+        'data/hr_department_demo.xml',
         'wizard/converted_uoms.xml',
         'wizard/lot_import_wizard.xml',
         'wizard/stock_lot_wiz.xml',
