@@ -180,87 +180,86 @@ class FreightOrder(models.Model):
         # =====================================================
 
         for order in self:
-            for track in order.track_ids:
-                total_pallets = 0
-                total_weight = 0
-                for line in order.order_ids:
-                    total_weight += line.weight if hasattr(line, 'weight') else 0
-                    total_pallets += int(line.packing_no) if hasattr(line, 'packing_no') else 0
+            total_pallets = 0
+            total_weight = 0
+            for line in order.order_ids:
+                total_weight += line.weight if hasattr(line, 'weight') else 0
+                total_pallets += int(line.packing_no) if hasattr(line, 'packing_no') else 0
 
-                col = 0
+            col = 0
 
-                # COMPANY NAME
-                sheet.write(
-                    row,
-                    col,
-                    order.shipper_id.name or '',
-                    normal_format
-                )
-                col += 1
+            # COMPANY NAME
+            sheet.write(
+                row,
+                col,
+                order.shipper_id.name or '',
+                normal_format
+            )
+            col += 1
 
-                # CUSTOMER NAME
-                sheet.write(
-                    row,
-                    col,
-                    order.consignee_id.name or '',
-                    normal_format
-                )
-                col += 1
+            # CUSTOMER NAME
+            sheet.write(
+                row,
+                col,
+                order.consignee_id.name or '',
+                normal_format
+            )
+            col += 1
 
-                # DONE JOB
-                sheet.write(
-                    row,
-                    col,
-                    track.date or '',
-                    normal_format
-                )
-                col += 1
+            # DONE JOB
+            sheet.write(
+                row,
+                col,
+                order.name or '',
+                normal_format
+            )
+            col += 1
 
-                # TOTAL WEIGHT
-                sheet.write(
-                    row,
-                    col,
-                    order.total_weight or 0.0,
-                    amount_format
-                )
-                col += 1
+            # TOTAL WEIGHT
+            sheet.write(
+                row,
+                col,
+                order.total_weight or 0.0,
+                amount_format
+            )
+            col += 1
 
-                # NO OF PALLETS
-                sheet.write(
-                    row,
-                    col,
-                    total_pallets,
-                    normal_format
-                )
-                col += 1
+            # NO OF PALLETS
+            sheet.write(
+                row,
+                col,
+                total_pallets,
+                normal_format
+            )
+            col += 1
 
-                # TRANSPORTATION FEES
-                sheet.write(
-                    row,
-                    col,
-                    order.total_service_amount or 0.0,
-                    amount_format
-                )
-                col += 1
+            # TRANSPORTATION FEES
+            sheet.write(
+                row,
+                col,
+                order.total_service_amount or 0.0,
+                amount_format
+            )
+            col += 1
 
-                # PICKUP DATE
-                sheet.write(
-                    row,
-                    col,
-                    str(order.order_date or ''),
-                    date_format
-                )
-                col += 1
+            # PICKUP DATE
+            sheet.write(
+                row,
+                col,
+                str(order.order_date or ''),
+                date_format
+            )
+            col += 1
 
-                # NOTES
-                sheet.write(
-                    row,
-                    col,
-                    order.incoterm_id.name or '',
-                    normal_format
-                )
+            # NOTES
+            sheet.write(
+                row,
+                col,
+                order.incoterm_id.name or '',
+                normal_format
+            )
 
-                row += 1
+            row += 1
 
         workbook.close()
 
