@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="hr_department_admin" model="hr.department">
+        <field name="name">Administration</field>
+    </record>
+
+    <record id="hr_department_sales" model="hr.department">
+        <field name="name">Sales</field>
+    </record>
+
+    <record id="hr_department_purchase" model="hr.department">
+        <field name="name">Purchase</field>
+    </record>
+
+    <record id="hr_department_accounting" model="hr.department">
+        <field name="name">Accounting</field>
+    </record>
+
+    <record id="hr_department_inventory" model="hr.department">
+        <field name="name">Inventory and Warehouse</field>
+    </record>
+
+    <record id="hr_department_quality" model="hr.department">
+        <field name="name">Quality Management</field>
+    </record>
+
+    <record id="hr_department_logistics" model="hr.department">
+        <field name="name">Logistics</field>
+    </record>
+
+    <record id="hr_department_maintenance" model="hr.department">
+        <field name="name">Maintenance</field>
+    </record>
+
+    <record id="hr_department_manufacturing" model="hr.department">
+        <field name="name">Manufacturing</field>
+    </record>
+
+    <record id="hr_department_hr" model="hr.department">
+        <field name="name">HR</field>
+    </record>
+
+</odoo>
