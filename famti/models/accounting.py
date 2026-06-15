@@ -23,6 +23,8 @@ class AccountMove(models.Model):
     ], string="Ship Via")
 
     quickbook_id = fields.Char(string="QuickBook Id",index=True)
+    gst_number = fields.Char(string='GST Number',related='partner_id.vat',store=True,readonly=True)
+    buyer_po_number = fields.Char(string="Buyer PO Number")
 
     _sql_constraints = [
         ('quickbook_id_unique', 'unique(quickbook_id)', 'QuickBooks ID must be unique!')
@@ -84,6 +86,7 @@ class AccountMoveLine(models.Model):
     pieces_po = fields.Float(string="Pieces", related="purchase_line_id.pieces", store=True)
     rolls_uom_id = fields.Many2one('uom.uom', string="UoM",domain="[('name','=','rolls')]",
         default=lambda self: self.env['uom.uom'].search([('name','=','rolls')], limit=1))
+    description = fields.Char("Description")
 
 
 
