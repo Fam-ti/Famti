@@ -112,8 +112,6 @@
                     <field name="buyer_po_number" readonly="state in ['cancel', 'sale']"/>
                 <field name="buyer_po_date" readonly="state in ['cancel', 'sale']"/>
                 <field name="expected_date" readonly="state in ['cancel', 'sale']"/>
-
-                </group>
             </xpath>
 
 <!--            <xpath expr="//field[@name='customer_phone']" position="after">-->
