@@ -404,6 +404,7 @@ class StockPicking(models.Model):
             core_inch = 0
             length_mtr = 0
             length_feet = 0
+            lot_names = ', '.join(move.move_line_ids.mapped('lot_id.name'))
 
             if move.move_line_ids:
                 move_line = move.move_line_ids[0]
@@ -438,7 +439,7 @@ class StockPicking(models.Model):
 
             sheet.write(row, 2, thickness, normal)
             sheet.write(row, 3, gauge, normal)
-            sheet.write(row, 4, move.product_id.name or '', normal)
+            sheet.write(row, 4, lot_names or '', normal)
             sheet.write(row, 5, width_mm, normal)    
             sheet.write(row, 6, width_inch, normal) 
 

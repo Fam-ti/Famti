@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_barcode_generation_list" model="ir.ui.view">
+        <field name="name">barcode.generation.list</field>
+        <field name="model">barcode.generation</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="pallet_id"/>
+                <field name="serial_start"/>
+                <field name="serial_end"/>
+                <field name="total_sequence"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_barcode_generation_form" model="ir.ui.view">
+        <field name="name">barcode.generation.form</field>
+        <field name="model">barcode.generation</field>
+        <field name="arch" type="xml">
+            <form string="Barcode Generation">
+                <header>
+                    <button name="action_generate"
+                            string="Generate"
+                            type="object"
+                            class="btn-primary"/>
+
+                    <field name="state" widget="statusbar"/>
+                </header>
+
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="product_id"/>
+                            <field name="pallet_id" invisible="1"/>
+                            <field name="pallet_number"/>
+                        </group>
+
+                        <group>
+                            <field name="serial_start"/>
+                            <field name="serial_end" readonly="1"/>
+                            <field name="total_sequence"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Generated Lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="pallet_id" optional="hide"/>
+                                    <field name="serial_number_id" optional="hide"/>
+                                    <field name="pallet_number"/>
+                                    <field name="serial_number"/>
+                                    <field name="barcode_value"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_barcode_generation" model="ir.actions.act_window">
+        <field name="name">Barcode Generation</field>
+        <field name="res_model">barcode.generation</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem id="menu_barcode_root"
+              name="Barcode Management"
+              parent="stock.menu_stock_root"
+              sequence="90"/>
+
+    <menuitem id="menu_barcode_generation"
+              name="Barcode Generation"
+              parent="menu_barcode_root"
+              action="action_barcode_generation"
+              sequence="1"/>
+
+
+    <!-- <record id="view_picking_form_inherit_barcode" model="ir.ui.view">
+        <field name="name">stock.picking.form.barcode</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_generate_barcodes"
+                        string="Generate Barcode"
+                        type="object"
+                        class="btn-primary"
+                        invisible="picking_type_code != 'incoming'"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="mrp_production_form_inherit_barcode" model="ir.ui.view">
+        <field name="name">mrp.production.form.barcode</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_print_serial_barcodes"
+                        string="Print Barcode"
+                        type="object"
+                        class="btn-primary"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_lot_form_inherit_barcode" model="ir.ui.view">
+        <field name="name">stock.lot.form.barcode</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_print_lot_barcodes"
+                        string="Print Barcode"
+                        type="object"
+                        class="btn-primary"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="stock_quant_package_form_inherit_barcode" model="ir.ui.view">
+        <field name="name">stock.quant.package.form.barcode</field>
+        <field name="model">stock.quant.package</field>
+        <field name="inherit_id" ref="stock.view_quant_package_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_print_package_barcodes"
+                        string="Print Barcode"
+                        type="object"
+                        class="btn-primary"/>
+            </xpath>
+        </field>
+    </record>    -->
+
+</odoo>

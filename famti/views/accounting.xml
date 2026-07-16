@@ -20,11 +20,19 @@
                 <field name="pieces_po" column_invisible="parent.po_type != 'fgf'"/>
                 <field name="rolls_uom_id" column_invisible="parent.so_type != 'fgf' and parent.po_type != 'fgf'"/>
             </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='product_id']" position="after">
+                <field name="description" />
+            </xpath>
+
             <xpath expr="//field[@name='delivery_date']" position="before">
                 <field name="invoice_incoterm_id" string="Delivery terms" readonly="state in ['cancel', 'posted']"/>
                 <field name="ship_via"/>
                 <field name="quickbook_id" readonly="1"/>
 
+            </xpath>
+            <xpath expr="//div[@class='o_col']" position="after">
+                    <field name="gst_number" readonly="1"/>
+                    <field name="buyer_po_number" readonly="1"/>
             </xpath>
             
 
