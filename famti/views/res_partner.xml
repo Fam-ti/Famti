@@ -58,6 +58,9 @@
                     </page>
                 </xpath>             
 
+                <xpath expr="//field[@name='vat']" position="attributes">
+                    <attribute name="string">GST Number</attribute>
+                </xpath>    
 
             </field>
         </record>

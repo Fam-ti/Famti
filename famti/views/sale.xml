@@ -99,18 +99,34 @@
 
             <xpath expr="//field[@name='partner_id']" position="after">
                 <group col="2" string="Customer Credit Info">
+                    <field name="customer_gst_number" readonly="1"/>
                     <field name="partner_credit_limit" readonly="1"/>
                     <field name="partner_outstanding" readonly="1"/>
                     <field name="partner_lc_document"/>
                 </group>
-                    <field name="customer_email"/>
-                    <field name="customer_phone"/>
             </xpath>
 
             <xpath expr="//field[@name='payment_term_id']" position="after">
                 <field name="customer_email" readonly="state in ['cancel', 'sale']"/>
                 <field name="customer_phone" readonly="state in ['cancel', 'sale']"/>
+                    <field name="buyer_po_number" readonly="state in ['cancel', 'sale']"/>
+                <field name="buyer_po_date" readonly="state in ['cancel', 'sale']"/>
+                <field name="expected_date" readonly="state in ['cancel', 'sale']"/>
             </xpath>
+
+<!--            <xpath expr="//field[@name='customer_phone']" position="after">-->
+<!--                <group string="Buyers Po Details" col="2">-->
+<!--                <field name="buyer_po_number" readonly="state in ['cancel', 'sale']"/>-->
+<!--                <field name="buyer_po_date" readonly="state in ['cancel', 'sale']"/>-->
+<!--                <field name="expected_date" readonly="state in ['cancel', 'sale']"/>-->
+<!--                </group>-->
+<!--            </xpath>-->
+
+<!--            <xpath expr="//field[@name='payment_term_id']" position="after">-->
+<!--                <field name="customer_email" readonly="state in ['cancel', 'sale']"/>-->
+<!--                <field name="customer_phone" readonly="state in ['cancel', 'sale']"/>-->
+<!--            </xpath>-->
+<!--            -->
             <xpath expr="//field[@name='date_order']" position="before">
                 <field name="so_type" readonly="state in ['cancel', 'sale']"/>
                 <field name="buyer_po_number" readonly="state in ['cancel', 'sale']"/>
@@ -119,6 +135,14 @@
                             <field name="manufacturing_user_id"/>
                             <field name="department_id"/>
 
+            </xpath>
+
+            <xpath expr="//field[@name='incoterm']" position="after">
+                <field name="currency_id"/>
+            </xpath>
+
+            <xpath expr="//field[@name='order_line']/list/field[@name='price_unit']" position="after">
+                <field name="currency_id" readonly="0"/>
             </xpath>
 
             <xpath expr="//field[@name='order_line']/list/field[@name='product_template_id']" position="after">

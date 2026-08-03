@@ -8,3 +8,4 @@ from . import maintenance_wizard
 from . import wsib_wizard
 from . import remarks_wizard
 from .import report_wizard
+from . import barcode_print_wizard

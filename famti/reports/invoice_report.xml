@@ -30,7 +30,7 @@
                     <strong><span t-field="company.name"/></strong><br/>
 
                     <span t-field="company.partner_id"
-                        t-options='{"widget": "contact", "fields": ["address", "phone", "website"], "no_marker": true}'/>
+                        t-options='{"widget": "contact", "fields": ["address", "phone", "vat", "website"], "no_marker": true}'/>
 
                 </div>
 
@@ -169,6 +169,7 @@
                                                 <span t-field="o.partner_id.city"/>
                                                 <span t-field="o.partner_id.state_id.name"/><br/>
                                                 <span t-field="o.partner_id.country_id.name"/><br/>
+                                                <span t-field="o.partner_id.vat"/><br/>
 
                                                 <strong>Phone:</strong> <span t-field="o.partner_id.phone"/><br/>
                                                 <strong>Email:</strong> <span t-field="o.partner_id.email"/>
@@ -193,6 +194,7 @@
                                                 <span t-field="o.partner_shipping_id.city"/>
                                                 <span t-field="o.partner_shipping_id.state_id.name"/><br/>
                                                 <span t-field="o.partner_shipping_id.country_id.name"/><br/>
+                                                <span t-field="o.partner_id.vat"/><br/>
 
                                                 <strong>Phone:</strong> <span t-field="o.partner_shipping_id.phone"/><br/>
                                                 <strong>Email:</strong> <span t-field="o.partner_shipping_id.email"/>
@@ -264,7 +266,7 @@
                                         <span t-field="line.name"/>
                                     </td>
                                     <td>
-                                        <span t-field="line.product_id.film_description"/>
+                                        <span t-field="line.description"/>
                                     </td>
                                     <td>
                                         <span t-field="line.quantity"/>

@@ -88,7 +88,23 @@ class SaleOrder(models.Model):
         ('in_progress', 'In Progress'),
         ('closed', 'Closed')],
         string="MO Status")
+    
+    customer_gst_number = fields.Char(string='GST Number',related='partner_id.vat',store=True,readonly=True)
 
+    def _create_invoices(self, grouped=False, final=False, date=None):
+        invoices = super()._create_invoices(
+            grouped=grouped,
+            final=final,
+            date=date
+        )
+
+        for invoice in invoices:
+            sale_order = invoice.line_ids.sale_line_ids.order_id[:1]
+            if sale_order:
+                invoice.buyer_po_number = sale_order.buyer_po_number
+
+        return invoices
+    
     @api.model
     def create(self, vals):
         if not vals.get('department_id'):

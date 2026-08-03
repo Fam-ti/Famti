@@ -47,11 +47,13 @@
         'wizard/wsib_wizard.xml',
         'wizard/remarks_wizard.xml',
         'wizard/report_wizard.xml',
+        'wizard/barcode_print_wizard.xml',
         'reports/offer_letter_report.xml',
         'reports/purchase_order_report.xml',
         'reports/sale_order_report.xml',
         'reports/invoice_report.xml',
         'reports/customer_interaction.xml',
+        'reports/barcode_report.xml',
         'views/purchase.xml',
         'views/hr_expense.xml',
         'views/res_partner.xml',
@@ -74,7 +76,8 @@
         'views/hr_resignation.xml',
         'views/quickbook.xml',
         'views/performance.xml',
-        'views/cost_sheet.xml'
+        'views/cost_sheet.xml',
+        'views/barcode_generation_views.xml',
 
     ],
     'demo': [
