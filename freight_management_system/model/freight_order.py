@@ -748,20 +748,17 @@ class FreightOrder(models.Model):
         output.seek(0)
 
         file_data = base64.b64encode(output.read())
-
         attachment = self.env['ir.attachment'].create({
             'name': 'Container_Tracking.xlsx',
             'type': 'binary',
             'datas': file_data,
             'mimetype': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         })
-
         return {
             'type': 'ir.actions.act_url',
             'url': f'/web/content/{attachment.id}?download=true',
             'target': 'self',
         }
-
 
     @api.depends('order_ids.total_price', 'order_ids.volume',
                  'order_ids.weight')
