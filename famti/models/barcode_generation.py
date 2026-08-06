@@ -53,7 +53,8 @@ class BarcodeGeneration(models.Model):
         for rec in self:
             rec.line_ids.unlink()
 
-            match = re.match(r'([A-Za-z]+)(\d+)', rec.serial_start)
+            # match = re.match(r'([A-Za-z]+)(\d+)', rec.serial_start)
+            match = re.match(r'^(.*?)(\d+)$', rec.serial_start.strip())
             if not match:
                 raise ValidationError("Invalid Serial Start Format")
 
