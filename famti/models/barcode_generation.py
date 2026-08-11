@@ -126,6 +126,37 @@ class BarcodeGenerationLine(models.Model):
     barcode_value = fields.Char(
         string="Barcode"
     )
+    treatment_in = fields.Selection([
+            ('corona', 'Corona'),
+            ('met_corona', 'Met on Corona'),
+            ('met_chemical', 'Met on Chemical'),
+            ('met_plain', 'Met on Plain'),
+            ('plain', 'Plain'),
+            ('pvdc', 'PVDC COATED'),
+            ('soft_touch', 'SOFT TOUCH'),
+            ('alox', 'Top coat Alox'),
+        ], string="Treatment IN")
+
+    treatment_out = fields.Selection([
+            ('acrylic', 'ACRYLIC'),
+            ('corona', 'Corona'),
+            ('met_plain', 'Met on Plain'),
+            ('met_corona', 'Met on Corona'),
+            ('met_corona_out', 'Metallized on Corona Outside'),
+            ('met_chemical', 'Metallized on Chemical'),
+            ('plain', 'Plain'),
+            ('pvdc_out', 'PVDC COATED'),
+        ], string="Treatment OUT")
+
+    thickness = fields.Float(string="Thickness",tracking=True)
+    thickness_uom = fields.Selection(selection=[('guage','Guage'),('micron','Micron')],default='micron',string=" ")
+    weight = fields.Float(string="Weight",tracking=True)
+    weight_uom = fields.Selection(selection=[('kg', 'Kg'),('lbs', 'Lbs'),('gm', 'Gm'),],required=True,default='kg',string=" ")
+    width_val = fields.Float(string="Width",help="This helps to categorise specific product.")
+    width_uom = fields.Selection(selection=[('mm','MM'),('inch','Inch')],default='mm',string=" ")
+    length_val = fields.Float(string="Length", help="Product Length")
+    length_uom = fields.Selection(selection=[('m','M'),('feet','Feet')],default='feet',string=" ")
+
 
 
 class StockPicking(models.Model):
