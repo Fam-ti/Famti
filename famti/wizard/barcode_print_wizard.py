@@ -18,7 +18,6 @@ class BarcodeLabelWizard(models.TransientModel):
     print_format = fields.Selection([
         ('single', 'Single'),
         ('dymo', 'Dymo'),
-        ('2x2', '2 x 2'),
     ], string="Format", default="single", required=True)
 
 
