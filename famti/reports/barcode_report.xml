@@ -106,7 +106,7 @@
         </field>
     </record>
 
-    <record id="action_open_barcode_label_wizard_package" model="ir.actions.server">
+    <!-- <record id="action_open_barcode_label_wizard_package" model="ir.actions.server">
         <field name="name">Print Barcode Labels</field>
         <field name="model_id" ref="stock.model_stock_quant_package"/>
         <field name="binding_model_id" ref="stock.model_stock_quant_package"/>
@@ -125,67 +125,7 @@
                 }
             }
         </field>
-    </record>
-
-    <!-- <template id="report_barcode_labels">
-        <t t-call="web.basic_layout">
-            <t t-foreach="docs" t-as="doc">
-                <t t-foreach="doc.line_ids" t-as="line">
-                    <div style="
-                        width: 48%;
-                        height: 160px;
-                        border: 1px solid black;
-                        padding: 10px;
-                        margin: 5px;
-                        float: left;
-                        box-sizing: border-box;
-                        position: relative;
-                    ">
-
-                        <div style="
-                            position: absolute;
-                            top: 5px;
-                            left: 8px;
-                            right: 8px;
-                            font-size: 14px;
-                            font-weight: bold;
-                            line-height: 16px;
-                            max-height: 32px;
-                            overflow: hidden;
-                            word-wrap: break-word;
-                            white-space: normal;
-                        ">
-                            <span t-esc="line.product_id.display_name"/>
-                        </div>
-
-                        <div style="
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: center;
-                            align-items: center;
-                            height: 100%;
-                            padding-top: 10px;
-                        ">
-
-                            <strong>
-                                <span t-esc="line.serial_number"/>
-                            </strong>
-
-                            <div style="margin: 8px 0;">
-                                <div t-field="line.barcode_value"
-                                    t-options="{'widget': 'barcode', 'width': 300, 'height': 60}"/>
-                            </div>
-
-                            <span t-esc="line.pallet_number"/>
-
-                        </div>
-
-                    </div>
-
-                </t>
-            </t>
-        </t>
-    </template> -->
+    </record> -->
 
     <template id="report_barcode_labels">
         <t t-call="web.basic_layout">
@@ -193,71 +133,151 @@
             <t t-set="copies" t-value="env.context.get('copies', 1)"/>
             <t t-set="print_format" t-value="env.context.get('print_format', 'dymo')"/>
 
-            <t t-set="format_specs" t-value="{
-                'dymo': {'width': 48, 'height': 160, 'title_fs': 14, 'serial_fs': 14, 'pallet_fs': 11, 'bc_w': 260, 'bc_h': 60},
-                '4x12': {'width': 22, 'height': 120, 'title_fs': 10, 'serial_fs': 11, 'pallet_fs': 8,  'bc_w': 150, 'bc_h': 35},
-                '4x7':  {'width': 22, 'height': 170, 'title_fs': 11, 'serial_fs': 12, 'pallet_fs': 9,  'bc_w': 170, 'bc_h': 45},
-                '2x7':  {'width': 45, 'height': 170, 'title_fs': 13, 'serial_fs': 14, 'pallet_fs': 10, 'bc_w': 220, 'bc_h': 55},
-                '3x8':  {'width': 30, 'height': 150, 'title_fs': 12, 'serial_fs': 13, 'pallet_fs': 9,  'bc_w': 190, 'bc_h': 48},
-                '5x10': {'width': 18, 'height': 130, 'title_fs': 9,  'serial_fs': 10, 'pallet_fs': 7,  'bc_w': 130, 'bc_h': 30},
+            <t t-set="layout_specs" t-value="{
+                'single': {'per_page': 1, 'cols': 1},
+                'dymo':   {'per_page': 2, 'cols': 2},
+                '2x2':    {'per_page': 4, 'cols': 2},
             }"/>
+            <t t-set="layout" t-value="layout_specs.get(print_format, layout_specs['dymo'])"/>
 
-            <t t-set="spec" t-value="format_specs.get(print_format, format_specs['dymo'])"/>
+            <t t-set="all_lines" t-value="[line for doc in docs for c in range(copies) for line in doc.line_ids]"/>
 
-            <t t-foreach="docs" t-as="doc">
-                <t t-foreach="range(copies)" t-as="copy">
-                    <t t-foreach="doc.line_ids" t-as="line">
-                
+            <t t-set="per_page" t-value="layout['per_page']"/>
+            <t t-set="cols" t-value="layout['cols']"/>
+            <t t-set="chunks" t-value="[all_lines[i:i + per_page] for i in range(0, len(all_lines), per_page)]"/>
+
+            <t t-foreach="chunks" t-as="chunk">
+
+                <div t-attf-style="
+                    page-break-after: {{'avoid' if chunk_last else 'always'}};
+                    overflow: hidden;
+                ">
+                    <t t-foreach="chunk" t-as="line">
+
                         <div t-attf-style="
-                            width: {{spec['width']}}%;
-                            height: {{spec['height']}}px;
-                            border: 1px solid black;
-                            padding: 6px;
-                            margin: 5px;
+                            width: {{100.0 / cols}}%;
                             float: left;
                             box-sizing: border-box;
-                            page-break-inside: avoid;
-                            overflow: hidden;
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: space-between;
-                            align-items: center;
+                            padding: 12px;
+                            font-family: Arial, Helvetica, sans-serif;
                             text-align: center;
                         ">
-                            <div t-attf-style="
-                                font-size: {{spec['title_fs']}}px;
-                                font-weight: bold;
-                                line-height: 1.1;
-                                max-height: {{spec['title_fs'] * 1.2}}px;
-                                overflow: hidden;
-                                word-wrap: break-word;
-                                white-space: normal;
-                                width: 100%;
-                                text-align: left;
-                            ">
+
+                            <div style="margin-bottom: 16px;">
+                                <img t-if="env.company.logo"
+                                    t-att-src="image_data_uri(env.company.logo)"
+                                    style="max-height: 105px; max-width: 220px;"/>
+                                <div t-else="" style="font-size: 24px; font-weight: bold;">
+                                    <span t-esc="env.company.name"/>
+                                </div>
+                            </div>
+
+                            <div style="font-size: 20px; font-weight: bold; letter-spacing: 1px; margin-bottom: 6px;">
+                                <span>ROLL NUMBER</span>
+                            </div>
+                            <div style="font-size: 20px; font-weight: bold; letter-spacing: 1px; margin-bottom: 6px;">
                                 <span t-esc="line.product_id.display_name"/>
                             </div>
 
-                            <div t-attf-style="font-size: {{spec['serial_fs']}}px; font-weight: bold;">
+                            <div style="font-size: 28px; font-weight: bold; margin-bottom: 16px;">
                                 <span t-esc="line.serial_number"/>
                             </div>
 
-                            <div style="display:flex; justify-content:center; align-items:center; width:100%;">
-                                <div t-field="line.barcode_value"
-                                    t-options="{'widget': 'barcode', 'width': spec['bc_w'], 'height': spec['bc_h']}"/>
+                            <div style="display:flex; justify-content:center; margin-bottom: 6px;">
+                                <div t-out="line.barcode_value"
+                                    t-options="{'widget': 'barcode', 'width': 320, 'height': 70, 'humanreadable': 0}"/>
                             </div>
 
-                            <div t-attf-style="font-size: {{spec['pallet_fs']}}px; word-wrap: break-word; width: 100%;">
-                                <span t-esc="line.pallet_number"/>
+                            <div style="font-size: 15px; font-weight: bold; letter-spacing: 3px; margin-bottom: 20px;">
+                                <span>*</span> <span t-esc="line.serial_number"/> <span>*</span>
+                            </div>
+
+                            <table style="
+                                width: 100%;
+                                border-collapse: collapse;
+                                font-size: 14px;
+                                text-align: left;
+                            ">
+                                <tr>
+                                    <td style="border: 1px solid #000; padding: 4px 8px; font-weight: bold; width: 35%;">DATE</td>
+                                    <td style="border: 1px solid #000; padding: 4px 8px;">
+                                        <span t-esc="line.create_date" t-options="{'widget': 'date'}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #000; padding: 4px 8px; font-weight: bold;">Package</td>
+                                    <td style="border: 1px solid #000; padding: 4px 8px;">
+                                        <span t-esc="line.pallet_number"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #000; padding: 4px 8px; font-weight: bold;">THICKNESS</td>
+                                    <td style="border: 1px solid #000; padding: 4px 8px;">
+                                        <span t-esc="line.thickness"/> <span t-esc="line.thickness_uom"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #000; padding: 4px 8px; font-weight: bold;">WIDTH</td>
+                                    <td style="border: 1px solid #000; padding: 4px 8px;">
+                                        <span t-esc="line.width_val"/> <span t-esc="line.width_uom"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #000; padding: 4px 8px; font-weight: bold;">LENGTH</td>
+                                    <td style="border: 1px solid #000; padding: 4px 8px;">
+                                        <span t-esc="line.length_val"/> <span t-esc="line.length_uom"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #000; padding: 4px 8px; font-weight: bold;">WEIGHT</td>
+                                    <td style="border: 1px solid #000; padding: 4px 8px;">
+                                        <span t-esc="line.weight"/> <span t-esc="line.weight_uom"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #000; padding: 4px 8px; font-weight: bold;">TYPE</td>
+                                    <td style="border: 1px solid #000; padding: 4px 8px;">
+                                        <span t-esc="line.product_id.display_name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #000; padding: 4px 8px; font-weight: bold;">TREATMENT</td>
+                                    <td style="border: 1px solid #000; padding: 4px 8px;">
+                                        <span t-esc="dict(line._fields['treatment_in'].selection).get(line.treatment_in, '')"/> - INSIDE / <span t-esc="dict(line._fields['treatment_out'].selection).get(line.treatment_out, '')"/> - OUTSIDE
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div style="margin-top: 20px; display: flex; justify-content: center;">
+                                <svg width="220" height="150" viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="95" y1="8" x2="95" y2="24" stroke="black" stroke-width="2.5"/>
+                                    <polygon points="95,32 89,20 101,20" fill="black"/>
+                                    <text x="70" y="52" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" t-esc="dict(line._fields['treatment_out'].selection).get(line.treatment_out, '')"/>
+                                    <circle cx="45" cy="95" r="28" fill="none" stroke="black" stroke-width="3"/>
+                                    <circle cx="45" cy="95" r="8" fill="none" stroke="black" stroke-width="3"/>
+                                    <line x1="38" y1="67.5" x2="207" y2="67.5" stroke="black" stroke-width="3"/>
+                                    <text x="85" y="100" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" t-esc="dict(line._fields['treatment_in'].selection).get(line.treatment_in, '')"/>
+                                    <line x1="105" y1="140" x2="105" y2="126" stroke="black" stroke-width="2.5"/>
+                                    <polygon points="105,114 99,126 111,126" fill="black"/>
+                                </svg>
+                            </div>
+
+                            <div style="margin-top: 22px; font-size: 12px; color: #333;">
+                                <span t-esc="env.company.street"/><t t-if="env.company.street2">, <span t-esc="env.company.street2"/></t>,
+                                <span t-esc="env.company.city"/>,
+                                <span t-esc="env.company.state_id.code"/>,
+                                <span t-esc="env.company.country_id.name"/>
+                                <span t-esc="env.company.zip"/>
                             </div>
 
                         </div>
 
                     </t>
-                </t>
-            </t>
 
-            <div style="clear:both;"/>
+                    <div style="clear:both;"/>
+                </div>
+
+            </t>
 
         </t>
     </template>
@@ -275,72 +295,160 @@
 
             <t t-set="copies" t-value="env.context.get('copies', 1)"/>
             <t t-set="print_format" t-value="env.context.get('print_format', 'dymo')"/>
-
-            <t t-set="format_specs" t-value="{
-                'dymo': {'width': 48, 'height': 160, 'title_fs': 14, 'serial_fs': 14, 'pallet_fs': 11, 'bc_w': 260, 'bc_h': 60},
-                '4x12': {'width': 22, 'height': 120, 'title_fs': 10, 'serial_fs': 11, 'pallet_fs': 8,  'bc_w': 150, 'bc_h': 35},
-                '4x7':  {'width': 22, 'height': 170, 'title_fs': 11, 'serial_fs': 12, 'pallet_fs': 9,  'bc_w': 170, 'bc_h': 45},
-                '2x7':  {'width': 45, 'height': 170, 'title_fs': 13, 'serial_fs': 14, 'pallet_fs': 10, 'bc_w': 220, 'bc_h': 55},
-                '3x8':  {'width': 30, 'height': 150, 'title_fs': 12, 'serial_fs': 13, 'pallet_fs': 9,  'bc_w': 190, 'bc_h': 48},
-                '5x10': {'width': 18, 'height': 130, 'title_fs': 9,  'serial_fs': 10, 'pallet_fs': 7,  'bc_w': 130, 'bc_h': 30},
-            }"/>
-
-            <t t-set="spec" t-value="format_specs.get(print_format, format_specs['dymo'])"/>
-
             
-            <t t-foreach="range(copies)" t-as="copy">
-                <t t-foreach="lines" t-as="line">
 
-                    <div t-attf-style="
-                        width: {{spec['width']}}%;
-                        height: {{spec['height']}}px;
-                        border: 1px solid black;
-                        padding: 6px;
-                        margin: 5px;
-                        float: left;
-                        box-sizing: border-box;
-                        page-break-inside: avoid;
-                        overflow: hidden;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: space-between;
-                        align-items: center;
-                        text-align: center;
-                    ">
+            <t t-set="layout_specs" t-value="{
+                'single': {'per_page': 1, 'cols': 1, 'scale': 1.0},
+                'dymo':   {'per_page': 2, 'cols': 2, 'scale': 0.55},
+                '2x2':    {'per_page': 4, 'cols': 2, 'scale': 0.42},
+            }"/>
+            <t t-set="layout" t-value="layout_specs.get(print_format, layout_specs['dymo'])"/>
+            <t t-set="sc" t-value="layout['scale']"/>
+
+            <t t-set="all_lines" t-value="[line for c in range(copies) for line in lines]"/>
+
+            <t t-set="per_page" t-value="layout['per_page']"/>
+            <t t-set="cols" t-value="layout['cols']"/>
+            <t t-set="chunks" t-value="[all_lines[i:i + per_page] for i in range(0, len(all_lines), per_page)]"/>
+
+            <t t-foreach="chunks" t-as="chunk">
+
+                <div t-attf-style="
+                    page-break-after: {{'avoid' if chunk_last else 'always'}};
+                    overflow: hidden;
+                ">
+                    <t t-foreach="chunk" t-as="line">
 
                         <div t-attf-style="
-                            font-size: {{spec['title_fs']}}px;
-                            font-weight: bold;
-                            line-height: 1.1;
-                            max-height: {{spec['title_fs'] * 1.6}}px;
-                            overflow: hidden;
-                            word-wrap: break-word;
-                            white-space: normal;
-                            width: 100%;
-                            text-align: left;
+                            width: {{100.0 / cols}}%;
+                            float: left;
+                            box-sizing: border-box;
+                            padding: {{8 * sc}}px;
+                            font-family: Arial, Helvetica, sans-serif;
+                            text-align: center;
                         ">
-                            <span t-esc="line['product_name']"/>
+
+                            <div t-attf-style="margin-bottom: {{16 * sc}}px;">
+                                <img t-if="env.company.logo"
+                                    t-att-src="image_data_uri(env.company.logo)"
+                                    t-attf-style="max-height: {{105 * sc}}px; max-width: 100%;"/>
+                                <div t-else="" t-attf-style="font-size: {{24 * sc}}px; font-weight: bold;">
+                                    <span t-esc="env.company.name"/>
+                                </div>
+                            </div>
+
+                            <div t-attf-style="font-size: {{20 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
+                                <span>ROLL NUMBER</span>
+                            </div>
+                            <div t-attf-style="font-size: {{20 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
+                                <span t-esc="line.get('product_name')"/>
+                            </div>
+
+                            <div t-attf-style="font-size: {{28 * sc}}px; font-weight: bold; margin-bottom: {{16 * sc}}px;">
+                                <span t-esc="line.get('serial_number')"/>
+                            </div>
+
+                            <div style="display:flex; justify-content:center; margin-bottom: 6px;">
+                                <div t-out="line.get('barcode_value')"
+                                    t-options="{'widget': 'barcode', 'width': int(320 * sc), 'height': int(70 * sc), 'humanreadable': 0}"/>
+                            </div>
+
+                            <div t-attf-style="font-size: {{15 * sc}}px; font-weight: bold; letter-spacing: {{3 * sc}}px; margin-bottom: {{20 * sc}}px;">
+                                <span>*</span> <span t-esc="line.get('serial_number')"/> <span>*</span>
+                            </div>
+
+                            <table t-attf-style="
+                                width: 100%;
+                                border-collapse: collapse;
+                                font-size: {{14 * sc}}px;
+                                text-align: left;
+                            ">
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold; width: 35%;">DATE</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('date')" t-options="{'widget': 'date'}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">Package</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('package_number')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">THICKNESS</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('thickness')"/> <span t-esc="line.get('thickness_uom')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">WIDTH</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('width')"/> <span t-esc="line.get('width_uom')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">LENGTH</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('length')"/> <span t-esc="line.get('length_uom')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">WEIGHT</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('quantity')"/> <span t-esc="line.get('uom_id')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">TYPE</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('product')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">TREATMENT</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('treatment_in')"/> - INSIDE / <span t-esc="line.get('treatment_out')"/> - OUTSIDE
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">SOURCE</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('po_product_code')"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div t-attf-style="margin-top: {{20 * sc}}px; display: flex; justify-content: center;">
+                                <svg t-attf-width="{{220 * sc}}" t-attf-height="{{150 * sc}}" viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="95" y1="8" x2="95" y2="24" stroke="black" stroke-width="2.5"/>
+                                    <polygon points="95,32 89,20 101,20" fill="black"/>
+                                    <text x="70" y="52" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" t-esc="line.get('treatment_out')"/>
+                                    <circle cx="45" cy="95" r="28" fill="none" stroke="black" stroke-width="3"/>
+                                    <circle cx="45" cy="95" r="8" fill="none" stroke="black" stroke-width="3"/>
+                                    <line x1="38" y1="67.5" x2="207" y2="67.5" stroke="black" stroke-width="3"/>
+                                    <text x="85" y="100" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" t-esc="line.get('treatment_in')"/>
+                                    <line x1="105" y1="140" x2="105" y2="126" stroke="black" stroke-width="2.5"/>
+                                    <polygon points="105,114 99,126 111,126" fill="black"/>
+                                </svg>
+                            </div>
+
+                            <div t-attf-style="margin-top: {{22 * sc}}px; font-size: {{12 * sc}}px; color: #333;">
+                                <span t-esc="env.company.street"/><t t-if="env.company.street2">, <span t-esc="env.company.street2"/></t>,
+                                <span t-esc="env.company.city"/>,
+                                <span t-esc="env.company.state_id.code"/>,
+                                <span t-esc="env.company.country_id.name"/>
+                                <span t-esc="env.company.zip"/>
+                            </div>
+
                         </div>
 
-                        <div t-attf-style="font-size: {{spec['serial_fs']}}px; font-weight: bold;">
-                            <span t-esc="line['serial_number']"/>
-                        </div>
+                    </t>
 
-                        <div style="display:flex; justify-content:center; align-items:center; width:100%;">
-                            <div t-out="line['barcode_value']"
-                                t-options="{'widget': 'barcode', 'width': spec['bc_w'], 'height': spec['bc_h']}"/>
-                        </div>
+                    <div style="clear:both;"/>
+                </div>
 
-                        <div t-attf-style="font-size: {{spec['pallet_fs']}}px; word-wrap: break-word; width: 100%;">
-                            <span t-esc="line['package_number']"/>
-                        </div>
-
-                    </div>
-
-                </t>
             </t>
-
-            <div style="clear:both;"/>
 
         </t>
     </template>
@@ -354,7 +462,7 @@
         <field name="report_file">famti.report_mrp_barcode_labels</field>
     </record>
 
-    <template id="report_mrp_barcode_labels">
+    <!-- <template id="report_mrp_barcode_labels">
         <t t-call="web.basic_layout">
 
             <t t-set="copies" t-value="env.context.get('copies', 1)"/>
@@ -423,6 +531,162 @@
             <div style="clear:both;"/>
 
         </t>
+    </template> -->
+
+    <template id="report_mrp_barcode_labels">
+        <t t-call="web.basic_layout">
+
+            <t t-set="copies" t-value="env.context.get('copies', 1)"/>
+            <t t-set="print_format" t-value="env.context.get('print_format', 'dymo')"/>
+
+            <t t-set="layout_specs" t-value="{
+                'single': {'per_page': 1, 'cols': 1, 'scale': 1.0},
+                'dymo':   {'per_page': 2, 'cols': 2, 'scale': 0.55},
+                '2x2':    {'per_page': 4, 'cols': 2, 'scale': 0.42},
+            }"/>
+            <t t-set="layout" t-value="layout_specs.get(print_format, layout_specs['dymo'])"/>
+            <t t-set="sc" t-value="layout['scale']"/>
+
+            <t t-set="all_lines" t-value="[line for c in range(copies) for line in lines]"/>
+
+            <t t-set="per_page" t-value="layout['per_page']"/>
+            <t t-set="cols" t-value="layout['cols']"/>
+            <t t-set="chunks" t-value="[all_lines[i:i + per_page] for i in range(0, len(all_lines), per_page)]"/>
+
+            <t t-foreach="chunks" t-as="chunk">
+
+                <div t-attf-style="
+                    page-break-after: {{'avoid' if chunk_last else 'always'}};
+                    overflow: hidden;
+                ">
+                    <t t-foreach="chunk" t-as="line">
+
+                        <div t-attf-style="
+                            width: {{100.0 / cols}}%;
+                            float: left;
+                            box-sizing: border-box;
+                            padding: {{8 * sc}}px;
+                            font-family: Arial, Helvetica, sans-serif;
+                            text-align: center;
+                        ">
+
+                            <div t-attf-style="margin-bottom: {{16 * sc}}px;">
+                                <img t-if="env.company.logo"
+                                    t-att-src="image_data_uri(env.company.logo)"
+                                    t-attf-style="max-height: {{105 * sc}}px; max-width: 100%;"/>
+                                <div t-else="" t-attf-style="font-size: {{24 * sc}}px; font-weight: bold;">
+                                    <span t-esc="env.company.name"/>
+                                </div>
+                            </div>
+
+                            <div t-attf-style="font-size: {{20 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
+                                <span>ROLL NUMBER</span>
+                            </div>
+                            <div t-attf-style="font-size: {{20 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
+                                <span t-esc="line.get('product_name')"/>
+                            </div>
+
+                            <div t-attf-style="font-size: {{28 * sc}}px; font-weight: bold; margin-bottom: {{16 * sc}}px;">
+                                <span t-esc="line.get('serial_number')"/>
+                            </div>
+
+                            <div style="display:flex; justify-content:center; margin-bottom: 6px;">
+                                <div t-out="line.get('barcode_value')"
+                                    t-options="{'widget': 'barcode', 'width': int(320 * sc), 'height': int(70 * sc), 'humanreadable': 0}"/>
+                            </div>
+
+                            <div t-attf-style="font-size: {{15 * sc}}px; font-weight: bold; letter-spacing: {{3 * sc}}px; margin-bottom: {{20 * sc}}px;">
+                                <span>*</span> <span t-esc="line.get('serial_number')"/> <span>*</span>
+                            </div>
+
+                            <table t-attf-style="
+                                width: 100%;
+                                border-collapse: collapse;
+                                font-size: {{14 * sc}}px;
+                                text-align: left;
+                            ">
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold; width: 35%;">DATE</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('date')" t-options="{'widget': 'date'}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">THICKNESS</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('thickness')"/> <span t-esc="line.get('thickness_uom')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">WIDTH</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('width')"/> <span t-esc="line.get('width_uom')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">LENGTH</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('length')"/> <span t-esc="line.get('length_uom')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">WEIGHT</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('quantity')"/> <span t-esc="line.get('uom_id')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">TYPE</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('product')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">TREATMENT</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('treatment_in')"/> - INSIDE / <span t-esc="line.get('treatment_out')"/> - OUTSIDE
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">MO</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('mo_number')"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div t-attf-style="margin-top: {{20 * sc}}px; display: flex; justify-content: center;">
+                                <svg t-attf-width="{{220 * sc}}" t-attf-height="{{150 * sc}}" viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="95" y1="8" x2="95" y2="24" stroke="black" stroke-width="2.5"/>
+                                    <polygon points="95,32 89,20 101,20" fill="black"/>
+                                    <text x="70" y="52" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" t-esc="line.get('treatment_out')"/>
+                                    <circle cx="45" cy="95" r="28" fill="none" stroke="black" stroke-width="3"/>
+                                    <circle cx="45" cy="95" r="8" fill="none" stroke="black" stroke-width="3"/>
+                                    <line x1="38" y1="67.5" x2="207" y2="67.5" stroke="black" stroke-width="3"/>
+                                    <text x="85" y="100" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" t-esc="line.get('treatment_in')"/>
+                                    <line x1="105" y1="140" x2="105" y2="126" stroke="black" stroke-width="2.5"/>
+                                    <polygon points="105,114 99,126 111,126" fill="black"/>
+                                </svg>
+                            </div>
+
+                            <div t-attf-style="margin-top: {{22 * sc}}px; font-size: {{12 * sc}}px; color: #333;">
+                                <span t-esc="env.company.street"/><t t-if="env.company.street2">, <span t-esc="env.company.street2"/></t>,
+                                <span t-esc="env.company.city"/>,
+                                <span t-esc="env.company.state_id.code"/>,
+                                <span t-esc="env.company.country_id.name"/>
+                                <span t-esc="env.company.zip"/>
+                            </div>
+
+                        </div>
+
+                    </t>
+
+                    <div style="clear:both;"/>
+                </div>
+
+            </t>
+
+        </t>
     </template>
 
     <record id="action_report_lot_barcode" model="ir.actions.report">
@@ -439,70 +703,152 @@
             <t t-set="copies" t-value="env.context.get('copies', 1)"/>
             <t t-set="print_format" t-value="env.context.get('print_format', 'dymo')"/>
 
-            <t t-set="format_specs" t-value="{
-                'dymo': {'width': 48, 'height': 160, 'title_fs': 14, 'serial_fs': 14, 'pallet_fs': 11, 'bc_w': 260, 'bc_h': 60},
-                '4x12': {'width': 22, 'height': 120, 'title_fs': 10, 'serial_fs': 11, 'pallet_fs': 8,  'bc_w': 150, 'bc_h': 35},
-                '4x7':  {'width': 22, 'height': 170, 'title_fs': 11, 'serial_fs': 12, 'pallet_fs': 9,  'bc_w': 170, 'bc_h': 45},
-                '2x7':  {'width': 45, 'height': 170, 'title_fs': 13, 'serial_fs': 14, 'pallet_fs': 10, 'bc_w': 220, 'bc_h': 55},
-                '3x8':  {'width': 30, 'height': 150, 'title_fs': 12, 'serial_fs': 13, 'pallet_fs': 9,  'bc_w': 190, 'bc_h': 48},
-                '5x10': {'width': 18, 'height': 130, 'title_fs': 9,  'serial_fs': 10, 'pallet_fs': 7,  'bc_w': 130, 'bc_h': 30},
+            <t t-set="layout_specs" t-value="{
+                'single': {'per_page': 1, 'cols': 1, 'scale': 1.0},
+                'dymo':   {'per_page': 2, 'cols': 2, 'scale': 0.55},
+                '2x2':    {'per_page': 4, 'cols': 2, 'scale': 0.42},
             }"/>
+            <t t-set="layout" t-value="layout_specs.get(print_format, layout_specs['dymo'])"/>
+            <t t-set="sc" t-value="layout['scale']"/>
 
-            <t t-set="spec" t-value="format_specs.get(print_format, format_specs['dymo'])"/>
+            <t t-set="all_lines" t-value="[line for c in range(copies) for line in lines]"/>
 
-            <t t-foreach="range(copies)" t-as="copy">
-                <t t-foreach="lines" t-as="line">
+            <t t-set="per_page" t-value="layout['per_page']"/>
+            <t t-set="cols" t-value="layout['cols']"/>
+            <t t-set="chunks" t-value="[all_lines[i:i + per_page] for i in range(0, len(all_lines), per_page)]"/>
 
-                    <div t-attf-style="
-                        width: {{spec['width']}}%;
-                        height: {{spec['height']}}px;
-                        border: 1px solid black;
-                        padding: 6px;
-                        margin: 5px;
-                        float: left;
-                        box-sizing: border-box;
-                        page-break-inside: avoid;
-                        overflow: hidden;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: space-between;
-                        align-items: center;
-                        text-align: center;
-                    ">
+            <t t-foreach="chunks" t-as="chunk">
+
+                <div t-attf-style="
+                    page-break-after: {{'avoid' if chunk_last else 'always'}};
+                    overflow: hidden;
+                ">
+                    <t t-foreach="chunk" t-as="line">
 
                         <div t-attf-style="
-                            font-size: {{spec['title_fs']}}px;
-                            font-weight: bold;
-                            line-height: 1.1;
-                            max-height: {{spec['title_fs'] * 1.6}}px;
-                            overflow: hidden;
-                            word-wrap: break-word;
-                            white-space: normal;
-                            width: 100%;
-                            text-align: left;
+                            width: {{100.0 / cols}}%;
+                            float: left;
+                            box-sizing: border-box;
+                            padding: {{8 * sc}}px;
+                            font-family: Arial, Helvetica, sans-serif;
+                            text-align: center;
                         ">
-                            <span t-esc="line['product_name']"/>
+
+                            <div t-attf-style="margin-bottom: {{16 * sc}}px;">
+                                <img t-if="env.company.logo"
+                                    t-att-src="image_data_uri(env.company.logo)"
+                                    t-attf-style="max-height: {{55 * sc}}px; max-width: 100%;"/>
+                                <div t-else="" t-attf-style="font-size: {{24 * sc}}px; font-weight: bold;">
+                                    <span t-esc="env.company.name"/>
+                                </div>
+                            </div>
+
+                            <div t-attf-style="font-size: {{20 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
+                                <span>ROLL NUMBER</span>
+                            </div>
+                            <div t-attf-style="font-size: {{20 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
+                                <span t-esc="line.get('product_name')"/>
+                            </div>
+
+                            <div t-attf-style="font-size: {{28 * sc}}px; font-weight: bold; margin-bottom: {{16 * sc}}px;">
+                                <span t-esc="line.get('serial_number')"/>
+                            </div>
+
+                            <div style="display:flex; justify-content:center; margin-bottom: 6px;">
+                                <div t-out="line.get('barcode_value')"
+                                    t-options="{'widget': 'barcode', 'width': int(320 * sc), 'height': int(70 * sc), 'humanreadable': 0}"/>
+                            </div>
+
+                            <div t-attf-style="font-size: {{15 * sc}}px; font-weight: bold; letter-spacing: {{3 * sc}}px; margin-bottom: {{20 * sc}}px;">
+                                <span>*</span> <span t-esc="line.get('serial_number')"/> <span>*</span>
+                            </div>
+
+                            <table t-attf-style="
+                                width: 100%;
+                                border-collapse: collapse;
+                                font-size: {{14 * sc}}px;
+                                text-align: left;
+                            ">
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold; width: 35%;">DATE</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('date')" t-options="{'widget': 'date'}"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">THICKNESS</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('thickness')"/> <span t-esc="line.get('thickness_uom')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">WIDTH</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('width')"/> <span t-esc="line.get('width_uom')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">LENGTH</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('length')"/> <span t-esc="line.get('length_uom')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">WEIGHT</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('weight')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">TYPE</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('product')"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">TREATMENT</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('treatment_in')"/> - INSIDE / <span t-esc="line.get('treatment_out')"/> - OUTSIDE
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px; font-weight: bold;">MO</td>
+                                    <td t-attf-style="border: 1px solid #000; padding: {{4 * sc}}px {{8 * sc}}px;">
+                                        <span t-esc="line.get('po_product_code')"/>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div t-attf-style="margin-top: {{20 * sc}}px; display: flex; justify-content: center;">
+                                <svg t-attf-width="{{220 * sc}}" t-attf-height="{{150 * sc}}" viewBox="0 0 220 150" xmlns="http://www.w3.org/2000/svg">
+                                    <line x1="95" y1="8" x2="95" y2="24" stroke="black" stroke-width="2.5"/>
+                                    <polygon points="95,32 89,20 101,20" fill="black"/>
+                                    <text x="70" y="52" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" t-esc="line.get('treatment_out')"/>
+                                    <circle cx="45" cy="95" r="28" fill="none" stroke="black" stroke-width="3"/>
+                                    <circle cx="45" cy="95" r="8" fill="none" stroke="black" stroke-width="3"/>
+                                    <line x1="38" y1="67.5" x2="207" y2="67.5" stroke="black" stroke-width="3"/>
+                                    <text x="85" y="100" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" t-esc="line.get('treatment_in')"/>
+                                    <line x1="105" y1="140" x2="105" y2="126" stroke="black" stroke-width="2.5"/>
+                                    <polygon points="105,114 99,126 111,126" fill="black"/>
+                                </svg>
+                            </div>
+
+                            <div t-attf-style="margin-top: {{22 * sc}}px; font-size: {{12 * sc}}px; color: #333;">
+                                <span t-esc="env.company.street"/><t t-if="env.company.street2">, <span t-esc="env.company.street2"/></t>,
+                                <span t-esc="env.company.city"/>,
+                                <span t-esc="env.company.state_id.code"/>,
+                                <span t-esc="env.company.country_id.name"/>
+                                <span t-esc="env.company.zip"/>
+                            </div>
+
                         </div>
 
-                        <div t-attf-style="font-size: {{spec['serial_fs']}}px; font-weight: bold;">
-                            <span t-esc="line['serial_number']"/>
-                        </div>
+                    </t>
 
-                        <div style="display:flex; justify-content:center; align-items:center; width:100%;">
-                            <div t-out="line['barcode_value']"
-                                t-options="{'widget': 'barcode', 'width': spec['bc_w'], 'height': spec['bc_h']}"/>
-                        </div>
+                    <div style="clear:both;"/>
+                </div>
 
-                        <div t-attf-style="font-size: {{spec['pallet_fs']}}px; word-wrap: break-word; width: 100%;">
-                            <span t-esc="line['pallet_number']"/>
-                        </div>
-
-                    </div>
-
-                </t>
             </t>
-
-            <div style="clear:both;"/>
 
         </t>
     </template>

@@ -45,6 +45,27 @@ class StockLot(models.Model):
     product_code =fields.Char(string="Product Code")
     mo_product_code =fields.Char(string="MO Product Code")
     grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
+    treatment_in = fields.Selection([
+            ('corona', 'Corona'),
+            ('met_corona', 'Met on Corona'),
+            ('met_chemical', 'Met on Chemical'),
+            ('met_plain', 'Met on Plain'),
+            ('plain', 'Plain'),
+            ('pvdc', 'PVDC COATED'),
+            ('soft_touch', 'SOFT TOUCH'),
+            ('alox', 'Top coat Alox'),
+        ], string="Treatment IN")
+
+    treatment_out = fields.Selection([
+            ('acrylic', 'ACRYLIC'),
+            ('corona', 'Corona'),
+            ('met_plain', 'Met on Plain'),
+            ('met_corona', 'Met on Corona'),
+            ('met_corona_out', 'Metallized on Corona Outside'),
+            ('met_chemical', 'Metallized on Chemical'),
+            ('plain', 'Plain'),
+            ('pvdc_out', 'PVDC COATED'),
+        ], string="Treatment OUT")
 
     production_id = fields.Many2one(
         'mrp.production',
