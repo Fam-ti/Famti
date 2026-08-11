@@ -34,6 +34,7 @@
                 <xpath expr="//sheet/notebook" position="before">
                     <group string="QC Details" col="2">
                         <group>
+                            <field name="treatment_in"/>
                             <field name="grade_type"/>
                             <label for="thickness" />
                             <div class="o_row">
@@ -50,6 +51,7 @@
                             <field name="pallet_no"/>
                         </group>
                         <group>
+                            <field name="treatment_out"/>
                             <label for="width_val"/>
                             <div class="o_row">
                                 <field name="width_val"/>

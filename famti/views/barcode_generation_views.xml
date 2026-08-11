@@ -56,7 +56,17 @@
                                     <field name="serial_number_id" optional="hide"/>
                                     <field name="pallet_number"/>
                                     <field name="serial_number"/>
-                                    <field name="barcode_value"/>
+                                    <field name="barcode_value" optional="hide"/>
+                                    <field name="treatment_in"/>
+                                    <field name="treatment_out"/>
+                                    <field name="thickness"/>
+                                    <field name="thickness_uom"/>
+                                    <field name="width_val"/>
+                                    <field name="width_uom"/>
+                                    <field name="length_val"/>
+                                    <field name="length_uom"/>
+                                    <field name="weight"/>
+                                    <field name="weight_uom"/>
                                 </list>
                             </field>
                         </page>
