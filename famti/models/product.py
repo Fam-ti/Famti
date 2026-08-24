@@ -50,7 +50,7 @@ class ProductTemplate(models.Model):
 
     width_val = fields.Float(string="Width",help="This helps to categorise specific product.")
     width_uom = fields.Selection(selection=[('mm','MM'),('inch','Inch'),('mm','MM'),('mil','Mil')],default='inch',string="Width UOM")
-    pallet_no = fields.Char(String="Pallet Number",help='The pallet no. which are received from vendor end.')
+    pallet_no = fields.Char(string="Pallet Number",help='The pallet no. which are received from vendor end.')
     length = fields.Float(string="Length",help='The length of the product.')
     no_of_joint = fields.Char(string="No. Of Joint")
     aging = fields.Char(string="Aging")
