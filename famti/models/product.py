@@ -18,8 +18,8 @@ class ProductTemplate(models.Model):
         ('alox', 'Alox'),
     ], string='Film')
     film_description = fields.Text(string="Film Description")
-    treatment_in = fields.Char(string="Treatment In")
-    treatment_out = fields.Char(string="Treatment Out")
+    # treatment_in = fields.Char(string="Treatment In")
+    # treatment_out = fields.Char(string="Treatment Out")
     treatment_in_selection = fields.Selection([
             ('corona', 'Corona'),
             ('met_corona', 'Met on Corona'),
