@@ -1,5 +1,20 @@
 <odoo>
     <data>
+        <record id="product_template_form_view_roll_number" model="ir.ui.view">
+    <field name="name">product.template.form.roll.number</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_form_view"/>
+    <field name="arch" type="xml">
+
+        <xpath expr="//div[contains(@class, 'oe_title')]//label[@for='name']" position="attributes">
+            <attribute name="string">Roll Number</attribute>
+        </xpath>
+        <xpath expr="//field[@name='categ_id']" position="attributes">
+            <attribute name="invisible">1</attribute>
+        </xpath>
+
+    </field>
+</record>
          <record id="product_template_form_view_inherit" model="ir.ui.view">
             <field name="name">product.temp.form.inherit</field>
             <field name="model">product.template</field>
@@ -7,7 +22,10 @@
             <field name="arch" type="xml">
 
                 <xpath expr="//field[@name='default_code']" position="attributes">
-                <attribute name="string">SKU</attribute>
+                <attribute name="string">Product Code</attribute>
+                </xpath>
+                <xpath expr="//form//field[@name='name']" position="attributes">
+                    <attribute name="string">Roll Number</attribute>
                 </xpath>
                 <xpath expr="//field[@name='lot_valuated']" position="after">
                     <field name="mo_serial_no"/>
@@ -21,8 +39,12 @@
 
                     <group>
                         <field name="supplier_name"/>
-                        <field name="film_type"/>
+                        <field name="material_type"/>
+                        <field name="film_type" invisible="1"/>
                         <field name="type_reference"/>
+                        <field name="pallet_no"/>
+                        <field name="no_of_joint"/>
+                        <field name="received_date"/>
                         <label for="thickness_val"/>
                         <div class="o_row">
                             <field name="thickness_val"/>
@@ -34,6 +56,8 @@
                         <field name="treatment_in_selection"/>
                         <field name="treatment_out_selection"/>
                         <field name="density"/>
+                        <field name="length"/>
+                        <field name="aging"/>
                         <label for="width_val"/>
                         <div class="o_row">
                             <field name="width_val"/>
