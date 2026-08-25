@@ -49,12 +49,23 @@ jobs:
             git clean -fd
             git pull origin $BRANCH
 
-            echo "Installing qifparse..."
-            /home/ubuntu/odoo/odoo_venv/bin/python3 -m pip install qifparse
+            echo "Finding Odoo Python environment..."
             
-            echo "Verifying qifparse installation..."
-            /home/ubuntu/odoo/odoo_venv/bin/python3 -c "import qifparse; print('qifparse installed successfully')"
-
+            echo "System Python:"
+            which python3 || true
+            python3 --version || true
+            
+            echo "Odoo service configuration:"
+            sudo systemctl show $SERVICE -p ExecStart || true
+            
+            echo "Odoo service file:"
+            sudo systemctl cat $SERVICE || true
+            
+            echo "Possible Python environments:"
+            find /opt/odoo18 /home/ubuntu -type f -path "*/bin/python3" 2>/dev/null | head -30 || true
+            
+            echo "Checking pip:"
+            python3 -m pip --version || true
 
             echo "Starting service..."
             sudo systemctl start $SERVICE
