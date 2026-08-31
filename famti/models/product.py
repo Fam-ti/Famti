@@ -8,7 +8,7 @@ class ProductTemplate(models.Model):
     mo_serial_no = fields.Boolean(string="Is Metalize")
     is_consumables = fields.Boolean(string="Is Consumables")
     supplier_name = fields.Many2one('res.partner',string="Supplier Name")
-    material_type = fields.Char(string="Material Type")
+    material_type = fields.Char(string="Film Type")
     type_reference = fields.Char(string="Type")
     film_type = fields.Selection([
         ('bare', 'Bare'),
@@ -18,8 +18,8 @@ class ProductTemplate(models.Model):
         ('alox', 'Alox'),
     ], string='Film')
     film_description = fields.Text(string="Film Description")
-    # treatment_in = fields.Char(string="Treatment In")
-    # treatment_out = fields.Char(string="Treatment Out")
+    treatment_in = fields.Char(string="Treatment In")
+    treatment_out = fields.Char(string="Treatment Out")
     treatment_in_selection = fields.Selection([
             ('corona', 'Corona'),
             ('met_corona', 'Met on Corona'),

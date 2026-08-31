@@ -204,7 +204,7 @@ class DailyInventoryReportWizard(models.TransientModel):
                 sheet.write( row, 8,getattr(line, 'treatment', ''),cell_format)
                 sheet.write( row, 9,getattr(line, 'slit_roll_number', ''),cell_format)
                 sheet.write(row, 10,getattr(line, 'slit_width', ''),cell_format)
-                sheet.write(row, 11,lot.core_selection_id or '',cell_format)
+                sheet.write(row, 11,lot.core_id or '',cell_format)
                 sheet.write(row, 12,lot.length_val or '',cell_format)
                 sheet.write(row, 13,lot.product_qty or '',number_format)
                 sheet.write(row, 14,lot.product_qty or '',number_format)
