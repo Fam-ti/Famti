@@ -947,217 +947,83 @@ class RollImportWizard(models.TransientModel):
         )
 
     def _find_product(self, product_code, product_name=None):
-        """
-        Find the Odoo product reliably.
-
-        Priority:
-            1. Product Variant default_code
-            2. Product Template default_code
-            3. Product Variant barcode
-            4. Product Variant name
-            5. Product Template name
-
-        No value conversion is performed.
-        Matching is case-insensitive and ignores surrounding whitespace.
-        """
 
         Product = self.env["product.product"]
-        ProductTemplate = self.env["product.template"]
+        Template = self.env["product.template"]
 
         product_code = self._clean_string(product_code)
         product_name = self._clean_string(product_name)
 
-        _logger.info(
-            "=================================================="
-        )
-        _logger.info(
-            "PRODUCT SEARCH START"
-        )
-        _logger.info(
-            "Excel Product Code = [%s]",
-            product_code,
-        )
-        _logger.info(
-            "Excel Product Name = [%s]",
-            product_name,
-        )
-
-        # ============================================================
-        # 1. SEARCH PRODUCT VARIANT BY DEFAULT CODE
-        # ============================================================
+        # ------------------------------------------------------------
+        # 1. Search product variant by internal reference / barcode
+        # ------------------------------------------------------------
 
         if product_code:
 
-            product = Product.search(
-                [
-                    (
-                        "default_code",
-                        "=ilike",
-                        product_code,
-                    )
-                ],
-                limit=1,
-            )
+            product = Product.search([
+                "|",
+                ("default_code", "=", product_code),
+                ("barcode", "=", product_code),
+            ], limit=1)
 
             if product:
-                _logger.info(
-                    "PRODUCT FOUND BY product.product.default_code: "
-                    "id=%s name=%s default_code=%s",
-                    product.id,
-                    product.display_name,
-                    product.default_code,
-                )
-
                 return product
 
-        # ============================================================
-        # 2. SEARCH PRODUCT TEMPLATE BY DEFAULT CODE
-        # ============================================================
+        # ------------------------------------------------------------
+        # 2. Search product template by internal reference
+        # ------------------------------------------------------------
 
         if product_code:
 
-            template = ProductTemplate.search(
-                [
-                    (
-                        "default_code",
-                        "=ilike",
-                        product_code,
-                    )
-                ],
-                limit=1,
-            )
+            template = Template.search([
+                ("default_code", "=", product_code),
+            ], limit=1)
 
             if template:
 
-                _logger.info(
-                    "PRODUCT TEMPLATE FOUND BY default_code: "
-                    "id=%s name=%s default_code=%s",
-                    template.id,
-                    template.name,
-                    template.default_code,
-                )
-
-                # Get the variant
+                # Get the variant belonging to this template
                 product = template.product_variant_id
 
                 if product:
-                    _logger.info(
-                        "USING PRODUCT VARIANT: "
-                        "id=%s name=%s default_code=%s",
-                        product.id,
-                        product.display_name,
-                        product.default_code,
-                    )
-
                     return product
 
-        # ============================================================
-        # 3. SEARCH PRODUCT BY BARCODE
-        # ============================================================
+                # Fallback if there are multiple variants
+                product = template.product_variant_ids[:1]
 
-        if product_code:
+                if product:
+                    return product
 
-            product = Product.search(
-                [
-                    (
-                        "barcode",
-                        "=ilike",
-                        product_code,
-                    )
-                ],
-                limit=1,
-            )
-
-            if product:
-                _logger.info(
-                    "PRODUCT FOUND BY BARCODE: "
-                    "id=%s name=%s barcode=%s",
-                    product.id,
-                    product.display_name,
-                    product.barcode,
-                )
-
-                return product
-
-        # ============================================================
-        # 4. SEARCH PRODUCT VARIANT BY NAME
-        # ============================================================
+        # ------------------------------------------------------------
+        # 3. Search by product name
+        # ------------------------------------------------------------
 
         if product_name:
 
-            product = Product.search(
-                [
-                    (
-                        "name",
-                        "=ilike",
-                        product_name,
-                    )
-                ],
-                limit=1,
-            )
+            product = Product.search([
+                ("name", "=", product_name),
+            ], limit=1)
 
             if product:
-                _logger.info(
-                    "PRODUCT FOUND BY product.product.name: "
-                    "id=%s name=%s default_code=%s",
-                    product.id,
-                    product.display_name,
-                    product.default_code,
-                )
-
                 return product
 
-        # ============================================================
-        # 5. SEARCH PRODUCT TEMPLATE BY NAME
-        # ============================================================
-
-        if product_name:
-
-            template = ProductTemplate.search(
-                [
-                    (
-                        "name",
-                        "=ilike",
-                        product_name,
-                    )
-                ],
-                limit=1,
-            )
+            template = Template.search([
+                ("name", "=", product_name),
+            ], limit=1)
 
             if template:
-
-                _logger.info(
-                    "PRODUCT TEMPLATE FOUND BY NAME: "
-                    "id=%s name=%s default_code=%s",
-                    template.id,
-                    template.name,
-                    template.default_code,
-                )
 
                 product = template.product_variant_id
 
                 if product:
                     return product
 
-        # ============================================================
-        # NOT FOUND
-        # ============================================================
+                product = template.product_variant_ids[:1]
 
-        _logger.error(
-            "PRODUCT NOT FOUND"
-        )
+                if product:
+                    return product
 
-        _logger.error(
-            "Excel Product Code = [%s]",
-            product_code,
-        )
-
-        _logger.error(
-            "Excel Product Name = [%s]",
-            product_name,
-        )
-        return False
-
+        # IMPORTANT: return empty recordset
+        return Product.browse()
 
     def _find_partner(self, value):
 
