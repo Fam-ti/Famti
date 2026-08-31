@@ -19,7 +19,7 @@
             <field name="name">Roll Numbers</field>
         </record>
         <record id="mrp.menu_mrp_traceability" model="ir.ui.menu">
-            <field name="name">Serial Numbers</field>
+            <field name="name">Roll Numbers</field>
         </record>
 
                 <!-- Parent Menu -->
