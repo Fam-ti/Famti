@@ -69,6 +69,7 @@
         name="Import Rolls"
         parent="menu_import_root"
         action="action_roll_import"
+        groups="group_roll_import_serial_access"
         sequence="1"
     />
 
