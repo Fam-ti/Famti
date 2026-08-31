@@ -177,7 +177,7 @@ class PurchaseOrderLine(models.Model):
     # uom_conv_id = fields.Many2one('uom.convert.wizard',string="UOM Conversion Wizard")
     pieces = fields.Float(string="Pieces")
 
-    description = fields.Text(string="Product Description")
+    description = fields.Text(string="Filim Description")
     remarks = fields.Text(string="Remarks")
 
     treatment_in = fields.Selection([
@@ -244,3 +244,31 @@ class PurchaseOrderLine(models.Model):
             super(PurchaseOrderLine, rec).write(new_vals)
 
         return True
+
+    def _prepare_stock_moves(self, picking):
+        res = super()._prepare_stock_moves(picking)
+        for vals in res:
+            weight_kg = self.product_qty * 0.45359237
+            vals.update({
+                'film': self.film,
+                'film_type': self.film_type,
+                'weight_val':weight_kg,
+                'weight_uom': 'kg',
+                'thickness_val': self.thickness_val,
+                'thickness_uom': self.thickness_uom,
+                'width_val': self.width_val,
+                'width_uom': self.width_uom,
+                'core_id': self.core_id,
+                # 'category': self.category,
+                'film': self.film,
+                'film_type': self.film_type,
+                'length_val': self.length_val,
+                'length_uom': self.length_uom,
+                # 'pieces': self.pieces,
+                'description': self.description,
+                # 'remarks': self.remarks,
+                'treatment_in': self.treatment_in,
+                'treatment_out': self.treatment_out,
+            })
+            print("==========vals",vals)
+        return res

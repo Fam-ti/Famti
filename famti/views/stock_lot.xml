@@ -110,7 +110,7 @@
                                 type="action"
                                 class="btn btn-outline-primary btn-sm ms-2"
                                 name="%(action_open_excel_wiz)d"
-                                string="Upload Excel"/>
+                                string="Upload csv"/>
                         </span>
                     </xpath>
 
@@ -133,6 +133,8 @@
             </xpath>
 
             <xpath expr="//field[@name='lot_id']" position="after">
+                <field name="treatment_in"/>
+                <field name="treatment_out"/>
                 <field name="thickness"/>
                 <field name="thickness_uom"/>
                 <field name="width"/>
