@@ -8,7 +8,7 @@ class ProductTemplate(models.Model):
     mo_serial_no = fields.Boolean(string="Is Metalize")
     is_consumables = fields.Boolean(string="Is Consumables")
     supplier_name = fields.Many2one('res.partner',string="Supplier Name")
-    material_type = fields.Char(string="Material Type")
+    material_type = fields.Char(string="Film Type")
     type_reference = fields.Char(string="Type")
     film_type = fields.Selection([
         ('bare', 'Bare'),
@@ -16,7 +16,7 @@ class ProductTemplate(models.Model):
         ('gold_met', 'GOLD MET'),
         ('pvdc', 'PVDC'),
         ('alox', 'Alox'),
-    ], string='Film Type')
+    ], string='Film')
     film_description = fields.Text(string="Film Description")
     treatment_in = fields.Char(string="Treatment In")
     treatment_out = fields.Char(string="Treatment Out")
@@ -45,13 +45,17 @@ class ProductTemplate(models.Model):
     mo_service_cost = fields.Boolean(string="Is Manufacturing Cost")
     density = fields.Float(string="Roll Density", help="This helps to categorise specific product.")
     thickness_val = fields.Float(string="Thickness",help="This helps to categorise specific product.")
-    thickness_uom = fields.Selection(selection=[('guage','Guage'),('micron','Micron'),('mm','MM'),('mil','Mil')],default='micron',string=" ")
+    thickness_uom = fields.Selection(selection=[('guage','Guage'),('micron','Micron'),('mm','MM'),('mil','Mil')],default='micron',string="Thickness UOM")
 
 
     width_val = fields.Float(string="Width",help="This helps to categorise specific product.")
-    width_uom = fields.Selection(selection=[('mm','MM'),('inch','Inch'),('mm','MM'),('mil','Mil')],default='mm',string=" ")
+    width_uom = fields.Selection(selection=[('mm','MM'),('inch','Inch'),('mm','MM'),('mil','Mil')],default='inch',string="Width UOM")
+    pallet_no = fields.Char(string="Pallet Number",help='The pallet no. which are received from vendor end.')
+    length = fields.Float(string="Length",help='The length of the product.')
+    no_of_joint = fields.Char(string="No. Of Joint")
+    aging = fields.Char(string="Aging")
+    received_date = fields.Datetime(string="Received Date")
     
-
 
 
 class ProductProduct(models.Model):

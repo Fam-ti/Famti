@@ -46,9 +46,14 @@
                                 <field name="weight"/>
                                 <field name="weight_uom"/>
                             </div>
-                            <field name="core_selection_id"/>
+                            <field name="core_id"/>
                             <field name="lot_number" invisible="1"/>
                             <field name="pallet_no"/>
+                            <field name="film"/>
+                            <field name="film_type"/>
+                            <field name="film_description"/>
+                            <field name="qc_remark"/>
+
                         </group>
                         <group>
                             <field name="treatment_out"/>
@@ -64,7 +69,12 @@
                             </div>
                             <field name="qc_status" invisible="1"/>
                             <field name="upload_doc"/>
-                            <field name="qc_remark"/>
+                            <field name="no_of_joint"/>
+                            <field name="aging"/>
+                            <field name="received_date"/>
+
+                            <field name="supplier_name"/>
+                            <field name="received_date"/>
                         </group>
                     </group>
                 </xpath>
