@@ -93,4 +93,4 @@ access_inventory_film_type_report_wizard,access.inventory.film.type.report.wizar
 access_barcode_generation_user,barcode.generation.user,model_barcode_generation,stock.group_stock_user,1,1,1,1
 access_barcode_generation_line_user,barcode.generation.line.user,model_barcode_generation_line,stock.group_stock_user,1,1,1,1
 access_barcode_label_wizard_user,barcode.label.wizard.user,model_barcode_label_wizard,stock.group_stock_user,1,1,1,1
-
+access_roll_import_wizard,access.roll.import.wizard,model_roll_import_wizard,base.group_user,1,1,1,1

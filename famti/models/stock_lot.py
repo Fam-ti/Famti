@@ -6,7 +6,7 @@ from odoo.exceptions import ValidationError
 class StockLot(models.Model):
     _inherit = 'stock.lot'
 
-    name = fields.Char(string='Serial Numbers', required=True, index=True)
+    name = fields.Char(string='Roll Numbers', required=True, index=True)
     thickness = fields.Float(string="Thickness",tracking=True)
     weight = fields.Float(string="Weight",tracking=True)
     core_id = fields.Char(string="Core Id",tracking=True)
@@ -26,14 +26,14 @@ class StockLot(models.Model):
                                         ('others','Others')],
                                        string="Failure Reasons",tracking=True)
     category = fields.Char(string="Film Category",tracking=True,help="This helps to categorise specific product.")
-    film = fields.Char(string="Film",tracking=True,help="Product Film.")
+    film = fields.Char(string="Type",tracking=True,help="Type")
     film_type = fields.Char(string="Film Type",tracking=True,help="Film Type")
     lot_number = fields.Char(string="Lot Number",tracking=True,help="Lot Number")
     pallet_no = fields.Char(string="Pallet Number",tracking=True,help="Pallet Number")
     width_val = fields.Float(string="Width",help="This helps to categorise specific product.")
-    width_uom = fields.Selection(selection=[('mm','MM'),('inch','Inch')],default='mm',string=" ")
+    width_uom = fields.Selection(selection=[('mm','MM'),('inch','Inch')],default='mm',string="Weight UOM")
     length_val = fields.Float(string="Length", help="Product Length")
-    length_uom = fields.Selection(selection=[('m','M'),('feet','Feet')],default='feet',string=" ")
+    length_uom = fields.Selection(selection=[('m','M'),('feet','Feet')],default='m',string=" Length UOM")
     thickness_uom = fields.Selection(selection=[('guage','Guage'),('micron','Micron')],default='micron',string=" ")
     weight_uom = fields.Selection(selection=[
                                         ('kg', 'Kg'),
@@ -77,6 +77,11 @@ class StockLot(models.Model):
         compute='_compute_parent_location_id',
         store=True,
     )
+    no_of_joint = fields.Char(string="No. Of Joint")
+    aging = fields.Char(string="Aging")
+    received_date = fields.Datetime(string="Received Date")
+    supplier_name = fields.Many2one('res.partner', string="Supplier Name")
+    film_description = fields.Text(string="Film Description")
 
     @api.depends('location_id')
     def _compute_parent_location_id(self):

@@ -29,27 +29,85 @@ class StockMoveLine(models.Model):
     length_uom = fields.Selection(selection=[('m', 'M'), ('feet', 'Feet')], default='feet', string=" ", tracking=True)
     grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
     mo_product_code =fields.Char(string="MO Product Code")
+    #
+    # def _action_done(self):
+    #     res = super()._action_done()
+    #     for line in self:
+    #         if line.lot_id:
+    #             previous_code= line.product_id.default_code
+    #             line.lot_id.film = line.film
+    #             line.lot_id.category = line.category
+    #             line.lot_id.film_type = line.film_type
+    #             line.lot_id.thickness = line.thickness
+    #             line.lot_id.thickness_uom = line.thickness_uom
+    #             line.lot_id.weight = line.weight
+    #             line.lot_id.width_uom = line.width_uom
+    #             line.lot_id.core_id = line.core_id
+    #             line.lot_id.lot_number = line.lot_number
+    #             line.lot_id.pallet_no = line.pallet_no
+    #             line.lot_id.width_val = line.width
+    #             line.lot_id.width_uom = line.width_uom
+    #             line.lot_id.length_val = line.length
+    #             line.lot_id.length_uom = line.length_uom
+    #             line.lot_id.grade_type = line.grade_type
+    #     return res
 
     def _action_done(self):
         res = super()._action_done()
+
         for line in self:
-            if line.lot_id:
-                previous_code= line.product_id.default_code
-                line.lot_id.film = line.film
-                line.lot_id.category = line.category
-                line.lot_id.film_type = line.film_type
-                line.lot_id.thickness = line.thickness
-                line.lot_id.thickness_uom = line.thickness_uom
-                line.lot_id.weight = line.weight
-                line.lot_id.width_uom = line.width_uom
-                line.lot_id.core_selection_id = line.core_id
-                line.lot_id.lot_number = line.lot_number
-                line.lot_id.pallet_no = line.pallet_no
-                line.lot_id.width_val = line.width
-                line.lot_id.width_uom = line.width_uom
-                line.lot_id.length_val = line.length
-                line.lot_id.length_uom = line.length_uom
-                line.lot_id.grade_type = line.grade_type
+            if not line.lot_id:
+                continue
+            lot = line.lot_id
+            vals = {}
+            if line.film:
+                vals['film'] = line.film
+
+            if line.category:
+                vals['category'] = line.category
+
+            if line.film_type:
+                vals['film_type'] = line.film_type
+
+            if line.thickness not in (False, 0):
+                vals['thickness'] = line.thickness
+
+            # if line.thickness_uom:
+            #     vals['thickness_uom'] = line.thickness_uom
+
+            if line.weight not in (False, 0):
+                vals['weight'] = line.weight
+
+            # if line.weight_uom:
+            #     vals['weight_uom'] = line.weight_uom
+
+            if line.core_id:
+                vals['core_id'] = line.core_id
+
+            if line.lot_number:
+                vals['lot_number'] = line.lot_number
+
+            if line.pallet_no:
+                vals['pallet_no'] = line.pallet_no
+
+            if line.width not in (False, 0):
+                vals['width_val'] = line.width
+
+            # if line.width_uom:
+            #     vals['width_uom'] = line.width_uom
+
+            if line.length not in (False, 0):
+                vals['length_val'] = line.length
+
+            # if line.length_uom:
+            #     vals['length_uom'] = line.length_uom
+
+            if line.grade_type:
+                vals['grade_type'] = line.grade_type
+
+            if vals:
+                lot.write(vals)
+
         return res
 
     @api.onchange('lot_name')
@@ -85,8 +143,6 @@ class StockMove(models.Model):
     @api.depends('lot_id')
     def _compute_source_mo(self):
         for move in self:
-            print("------move",move.id)
-            print("------lot_id",move.lot_id)
             mo = False
             if move.lot_id:
                 move_line = self.env['stock.move.line'].search([

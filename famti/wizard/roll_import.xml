@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+    <record id="view_roll_import_wizard" model="ir.ui.view">
+
+        <field name="name">roll.import.wizard.form</field>
+
+        <field name="model">roll.import.wizard</field>
+
+        <field name="arch" type="xml">
+
+            <form string="Import Rolls">
+
+                <group>
+
+                    <field name="file" filename="filename"/>
+
+                    <field name="filename" invisible="1"/>
+
+                    <field name="location_id"/>
+
+                </group>
+
+                <footer>
+
+                    <button
+                        name="action_import"
+                        string="Import"
+                        type="object"
+                        class="btn-primary"
+                    />
+
+                    <button
+                        string="Cancel"
+                        special="cancel"
+                        class="btn-secondary"
+                    />
+
+                </footer>
+
+            </form>
+
+        </field>
+
+    </record>
+
+
+    <record id="action_roll_import" model="ir.actions.act_window">
+
+        <field name="name">Import Rolls</field>
+
+        <field name="res_model">roll.import.wizard</field>
+
+        <field name="view_mode">form</field>
+
+        <field name="target">new</field>
+
+    </record>
+
+
+    <menuitem id="menu_import_root"
+              name="Roll Import"
+              parent="stock.menu_stock_root"
+              sequence="90"/>
+
+    <menuitem
+        id="menu_roll_import"
+        name="Import Rolls"
+        parent="menu_import_root"
+        action="action_roll_import"
+        groups="group_roll_import_serial_access"
+        sequence="1"
+    />
+
+</odoo>
