@@ -4,42 +4,69 @@ from odoo.exceptions import ValidationError
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
-    film = fields.Char(related="move_id.film",string="Film")
+    # film = fields.Char(related="move_id.film",string="Film")
+    film = fields.Char(string="Film")
     category = fields.Char(string="Film Category", tracking=True, help="This helps to categorise specific product.")
-    film_type = fields.Char(related="move_id.film_type",string="Film Type", tracking=True, help="Film Type")
+    # film_type = fields.Char(related="move_id.film_type",string="Film Type", tracking=True, help="Film Type")
+    film_type = fields.Char(string="Film Type", tracking=True, help="Film Type")
     lot_number = fields.Char(string="Lot Number", tracking=True, help="Lot Number")
     pallet_no = fields.Char(string="Pallet Number", tracking=True, help="Pallet Number")
 
-    weight = fields.Float(related="move_id.weight_val",string="Weight (kg)", tracking=True)
+    # weight = fields.Float(related="move_id.weight_val",string="Weight (kg)", tracking=True)
+    weight = fields.Float(string="Weight (kg)", tracking=True)
     lot_id = fields.Many2one('stock.lot',string='Serial Numbers')
     lot_name = fields.Char(string="Serial Number Name")
 
-    weight_uom = fields.Selection(related="move_id.weight_uom",selection=[
+    # weight_uom = fields.Selection(related="move_id.weight_uom",selection=[
+    #     ('kg', 'Kg'),
+    #     ('lbs', 'Lbs'),
+    #     ('gm', 'Gm'),
+    # ], required=True, default='kg', string=" ")
+    # thickness = fields.Float(related="move_id.thickness_val",string="Thickness (micron)", tracking=True)
+    # thickness_uom = fields.Selection(related="move_id.thickness_uom",selection=[('guage', 'Guage'), ('micron', 'Micron')], default='micron', string=" ",
+    #                                  tracking=True)
+    # width = fields.Float(related="move_id.width_val",string="Width", help="This helps to categorise specific product.")
+    # width_uom = fields.Selection(related="move_id.width_uom",selection=[('mm', 'MM'), ('inch', 'Inch')], default='mm', string=" ", tracking=True)
+    # core_id = fields.Selection(related="move_id.core_id",selection=[('3', '3 Inch'), ('6', '6 Inch')], string="Core", tracking=True)
+    # length = fields.Float(related="move_id.length_val",string="Length", tracking=True, help="Product Length")
+    # length_uom = fields.Selection(related="move_id.length_uom",selection=[('m', 'M'), ('feet', 'Feet')], default='feet', string=" ", tracking=True)
+    weight_uom = fields.Selection(selection=[
         ('kg', 'Kg'),
         ('lbs', 'Lbs'),
         ('gm', 'Gm'),
     ], required=True, default='kg', string=" ")
-    thickness = fields.Float(related="move_id.thickness_val",string="Thickness (micron)", tracking=True)
-    thickness_uom = fields.Selection(related="move_id.thickness_uom",selection=[('guage', 'Guage'), ('micron', 'Micron')], default='micron', string=" ",
-                                     tracking=True)
-    width = fields.Float(related="move_id.width_val",string="Width", help="This helps to categorise specific product.")
-    width_uom = fields.Selection(related="move_id.width_uom",selection=[('mm', 'MM'), ('inch', 'Inch')], default='mm', string=" ", tracking=True)
-    core_id = fields.Selection(related="move_id.core_id",selection=[('3', '3 Inch'), ('6', '6 Inch')], string="Core", tracking=True)
-    length = fields.Float(related="move_id.length_val",string="Length", tracking=True, help="Product Length")
-    length_uom = fields.Selection(related="move_id.length_uom",selection=[('m', 'M'), ('feet', 'Feet')], default='feet', string=" ", tracking=True)
+    thickness = fields.Float(string="Thickness (micron)", tracking=True)
+    thickness_uom = fields.Selection(selection=[('guage', 'Guage'), ('micron', 'Micron')], default='micron', string=" ",
+                                        tracking=True)
+    width = fields.Float(string="Width", help="This helps to categorise specific product.")
+    width_uom = fields.Selection(selection=[('mm', 'MM'), ('inch', 'Inch')], default='mm', string=" ", tracking=True)
+    core_id = fields.Selection(selection=[('3', '3 Inch'), ('6', '6 Inch')], string="Core", tracking=True)
+    length = fields.Float(string="Length", tracking=True, help="Product Length")
+    length_uom = fields.Selection(selection=[('m', 'M'), ('feet', 'Feet')], default='feet', string=" ", tracking=True)
     grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
     mo_product_code =fields.Char(string="MO Product Code")
+    # treatment_in = fields.Selection([
+    #     ('corona', 'Corona'), ('met_corona', 'Met on Corona'), ('met_chemical', 'Met on Chemical'),
+    #     ('met_plain', 'Met on Plain'), ('plain', 'Plain'), ('pvdc', 'PVDC COATED'),
+    #     ('soft_touch', 'SOFT TOUCH'), ('alox', 'Top coat Alox'),
+    # ], related="move_id.treatment_in", string="Treatment IN")
+    # treatment_out = fields.Selection([
+    #     ('acrylic', 'ACRYLIC'), ('corona', 'Corona'), ('met_plain', 'Met on Plain'),
+    #     ('met_corona', 'Met on Corona'), ('met_corona_out', 'Metallized on Corona Outside'),
+    #     ('met_chemical', 'Metallized on Chemical'), ('plain', 'Plain'), ('pvdc_out', 'PVDC COATED'),
+    # ], related="move_id.treatment_out", string="Treatment OUT")
+    # description = fields.Text(related="move_id.description",string="Film Description")
     treatment_in = fields.Selection([
         ('corona', 'Corona'), ('met_corona', 'Met on Corona'), ('met_chemical', 'Met on Chemical'),
         ('met_plain', 'Met on Plain'), ('plain', 'Plain'), ('pvdc', 'PVDC COATED'),
         ('soft_touch', 'SOFT TOUCH'), ('alox', 'Top coat Alox'),
-    ], related="move_id.treatment_in", string="Treatment IN")
+    ], string="Treatment IN")
     treatment_out = fields.Selection([
         ('acrylic', 'ACRYLIC'), ('corona', 'Corona'), ('met_plain', 'Met on Plain'),
         ('met_corona', 'Met on Corona'), ('met_corona_out', 'Metallized on Corona Outside'),
         ('met_chemical', 'Metallized on Chemical'), ('plain', 'Plain'), ('pvdc_out', 'PVDC COATED'),
-    ], related="move_id.treatment_out", string="Treatment OUT")
-    description = fields.Text(related="move_id.description",string="Film Description")
+    ], string="Treatment OUT")
+    description = fields.Text(string="Film Description")
     #
     # def _action_done(self):
     #     res = super()._action_done()
