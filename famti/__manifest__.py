@@ -49,6 +49,7 @@
         'wizard/report_wizard.xml',
         'wizard/barcode_print_wizard.xml',
         'wizard/roll_import.xml',
+        "wizard/customer_import.xml",
         'reports/offer_letter_report.xml',
         'reports/purchase_order_report.xml',
         'reports/sale_order_report.xml',

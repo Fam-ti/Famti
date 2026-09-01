@@ -94,3 +94,4 @@ access_barcode_generation_user,barcode.generation.user,model_barcode_generation,
 access_barcode_generation_line_user,barcode.generation.line.user,model_barcode_generation_line,stock.group_stock_user,1,1,1,1
 access_barcode_label_wizard_user,barcode.label.wizard.user,model_barcode_label_wizard,stock.group_stock_user,1,1,1,1
 access_roll_import_wizard,access.roll.import.wizard,model_roll_import_wizard,base.group_user,1,1,1,1
+access_customer_import_wizard,customer.import.wizard,model_customer_import_wizard,base.group_user,1,1,1,1
