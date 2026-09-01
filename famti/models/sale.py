@@ -52,7 +52,7 @@ class SaleOrder(models.Model):
         ('sample', 'Sample'),
         ('normal', 'Normal'),
         ('tolling', 'Tolling'),
-        ('fgf', 'FGF'),
+        ('fgf', 'RO'),
     ], string='SO Type', tracking=True, default='normal')
 
     mo_count = fields.Integer(
