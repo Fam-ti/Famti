@@ -946,63 +946,172 @@ class RollImportWizard(models.TransientModel):
             "=================================================="
         )
 
-
-    def _find_product(
-        self,
-        product_code,
-        product_name=None,
-    ):
+    def _find_product(self, product_code, product_name=None):
 
         Product = self.env["product.product"]
+        Template = self.env["product.template"]
 
-        product_code = self._clean_string(
-            product_code
+        product_code = self._clean_string(product_code)
+        product_name = self._clean_string(product_name)
+
+        _logger.info(
+            "========== PRODUCT SEARCH =========="
         )
+        _logger.info(
+            "Product Code from Excel: %r",
+            product_code,
+        )
+        _logger.info(
+            "Product Name from Excel: %r",
+            product_name,
+        )
+
+        # ------------------------------------------------------------
+        # 1. PRODUCT VARIANT - DEFAULT CODE
+        # ------------------------------------------------------------
 
         if product_code:
 
             product = Product.search(
                 [
-                    "|",
-                    (
-                        "default_code",
-                        "=",
-                        product_code,
-                    ),
-                    (
-                        "barcode",
-                        "=",
-                        product_code,
-                    ),
+                    ("default_code", "=", product_code),
                 ],
                 limit=1,
+            )
+
+            _logger.info(
+                "Variant default_code search result: %s",
+                product.ids,
             )
 
             if product:
                 return product
 
-        product_name = self._clean_string(
-            product_name
-        )
+        # ------------------------------------------------------------
+        # 2. PRODUCT VARIANT - BARCODE
+        # ------------------------------------------------------------
 
-        if product_name:
+        if product_code:
 
             product = Product.search(
                 [
-                    (
-                        "name",
-                        "=",
-                        product_name,
-                    ),
+                    ("barcode", "=", product_code),
                 ],
                 limit=1,
+            )
+
+            _logger.info(
+                "Variant barcode search result: %s",
+                product.ids,
             )
 
             if product:
                 return product
 
-        return Product
+        # ------------------------------------------------------------
+        # 3. PRODUCT TEMPLATE - DEFAULT CODE
+        # ------------------------------------------------------------
 
+        if product_code:
+
+            template = Template.search(
+                [
+                    ("default_code", "=", product_code),
+                ],
+                limit=1,
+            )
+
+            _logger.info(
+                "Template default_code search result: %s",
+                template.ids,
+            )
+
+            if template:
+
+                product = template.product_variant_id
+
+                if product:
+                    return product
+
+                product = template.product_variant_ids[:1]
+
+                if product:
+                    return product
+
+        # ------------------------------------------------------------
+        # 4. PRODUCT NAME
+        #
+        # Odoo 18 product.template.name is translated JSONB.
+        # Use the ORM's name search instead of comparing name directly.
+        # ------------------------------------------------------------
+
+        if product_name:
+
+            templates = Template.with_context(
+                lang="en_US"
+            ).search(
+                [
+                    ("name", "=", product_name),
+                ],
+                limit=1,
+            )
+
+            _logger.info(
+                "Template name search result: %s",
+                templates.ids,
+            )
+
+            if templates:
+
+                product = templates.product_variant_id
+
+                if product:
+                    return product
+
+                product = templates.product_variant_ids[:1]
+
+                if product:
+                    return product
+
+        # ------------------------------------------------------------
+        # 5. NAME SEARCH - CASE INSENSITIVE FALLBACK
+        # ------------------------------------------------------------
+
+        if product_name:
+
+            templates = Template.with_context(
+                lang="en_US"
+            ).search(
+                [
+                    ("name", "ilike", product_name),
+                ],
+                limit=1,
+            )
+
+            _logger.info(
+                "Template name ilike search result: %s",
+                templates.ids,
+            )
+
+            if templates:
+
+                product = templates.product_variant_id
+
+                if product:
+                    return product
+
+                product = templates.product_variant_ids[:1]
+
+                if product:
+                    return product
+
+        _logger.warning(
+            "PRODUCT NOT FOUND | code=%r | name=%r",
+            product_code,
+            product_name,
+        )
+
+        return Product.browse()
 
     def _find_partner(self, value):
 
@@ -1254,13 +1363,22 @@ class RollImportWizard(models.TransientModel):
             _("Invalid Received date: %s") % value
         )
 
-
     def _clean_string(self, value):
 
         if value is None:
             return None
 
-        value = str(value).strip()
+        if isinstance(value, float):
+            if value.is_integer():
+                value = int(value)
+
+        value = str(value)
+
+        # Replace Excel/non-breaking spaces
+        value = value.replace("\u00A0", " ")
+        value = value.replace("\u200B", "")
+
+        value = value.strip()
 
         if not value:
             return None

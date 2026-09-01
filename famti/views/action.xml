@@ -3,7 +3,7 @@
     <data>
 
         <record id="stock.action_production_lot_form" model="ir.actions.act_window">
-            <field name="name">Serial Numbers</field>
+            <field name="name">Roll Numbers</field>
         </record>
 
     </data>
