@@ -71,7 +71,7 @@
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,list,form</field>
             <!-- <field name="domain">[('customer_rank', '>', 0)]</field> -->
-            <field name="domain">[('is_supplier','=',False)]</field>
+            <field name="domain">[('is_company', '=', True),('commercial_partner_id.is_supplier','=',False)]</field>
             <field name="context">
                 {
                     'default_is_supplier': False
@@ -85,7 +85,7 @@
             <field name="res_model">res.partner</field>
             <field name="view_mode">kanban,list,form</field>
             <!-- <field name="domain">[('supplier_rank', '>', 0)]</field> -->
-            <field name="domain">[('is_supplier','=',True)]</field>
+            <field name="domain">[('is_company', '=', True),('commercial_partner_id.is_supplier','=',True)]</field>
             <field name="context">
                 {
                     'default_is_supplier': True
