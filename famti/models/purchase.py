@@ -46,7 +46,7 @@ class Purchase(models.Model):
         ('sample', 'Sample'),
         ('normal', 'Normal'),
         ('tolling', 'Tolling'),
-        ('fgf', 'FGF'),
+        ('fgf', 'RO'),
     ], string='PO Type', tracking=True, default='normal')
     due_date = fields.Date(string="Due Date")
     advance_amount = fields.Float(string="Advance Amount")
