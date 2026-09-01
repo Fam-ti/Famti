@@ -121,8 +121,8 @@
                     <field name="length_val"  column_invisible="parent.is_tolling"/>
                     <field name="length_uom" no_label="1"  column_invisible="parent.is_tolling"/>
                     <field name="category"  optional="hide"  column_invisible="parent.is_tolling"/>
-                    <field name="film"  optional="hide"  column_invisible="parent.is_tolling"/>
-                    <field name="film_type" optional="hide"  column_invisible="parent.is_tolling"/>
+                    <field name="film"  column_invisible="parent.is_tolling"/>
+                    <field name="film_type" column_invisible="parent.is_tolling"/>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/list/field[@name='taxes_id']" position="before">
                     <field name="remarks"/>

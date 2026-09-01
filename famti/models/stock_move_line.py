@@ -4,16 +4,32 @@ from odoo.exceptions import ValidationError
 class StockMoveLine(models.Model):
     _inherit = 'stock.move.line'
 
+    # film = fields.Char(related="move_id.film",string="Film")
     film = fields.Char(string="Film")
     category = fields.Char(string="Film Category", tracking=True, help="This helps to categorise specific product.")
+    # film_type = fields.Char(related="move_id.film_type",string="Film Type", tracking=True, help="Film Type")
     film_type = fields.Char(string="Film Type", tracking=True, help="Film Type")
     lot_number = fields.Char(string="Lot Number", tracking=True, help="Lot Number")
     pallet_no = fields.Char(string="Pallet Number", tracking=True, help="Pallet Number")
 
+    # weight = fields.Float(related="move_id.weight_val",string="Weight (kg)", tracking=True)
     weight = fields.Float(string="Weight (kg)", tracking=True)
     lot_id = fields.Many2one('stock.lot',string='Roll Numbers')
     lot_name = fields.Char(string="Roll Number Name")
 
+    # weight_uom = fields.Selection(related="move_id.weight_uom",selection=[
+    #     ('kg', 'Kg'),
+    #     ('lbs', 'Lbs'),
+    #     ('gm', 'Gm'),
+    # ], required=True, default='kg', string=" ")
+    # thickness = fields.Float(related="move_id.thickness_val",string="Thickness (micron)", tracking=True)
+    # thickness_uom = fields.Selection(related="move_id.thickness_uom",selection=[('guage', 'Guage'), ('micron', 'Micron')], default='micron', string=" ",
+    #                                  tracking=True)
+    # width = fields.Float(related="move_id.width_val",string="Width", help="This helps to categorise specific product.")
+    # width_uom = fields.Selection(related="move_id.width_uom",selection=[('mm', 'MM'), ('inch', 'Inch')], default='mm', string=" ", tracking=True)
+    # core_id = fields.Selection(related="move_id.core_id",selection=[('3', '3 Inch'), ('6', '6 Inch')], string="Core", tracking=True)
+    # length = fields.Float(related="move_id.length_val",string="Length", tracking=True, help="Product Length")
+    # length_uom = fields.Selection(related="move_id.length_uom",selection=[('m', 'M'), ('feet', 'Feet')], default='feet', string=" ", tracking=True)
     weight_uom = fields.Selection(selection=[
         ('kg', 'Kg'),
         ('lbs', 'Lbs'),
@@ -21,7 +37,7 @@ class StockMoveLine(models.Model):
     ], required=True, default='kg', string=" ")
     thickness = fields.Float(string="Thickness (micron)", tracking=True)
     thickness_uom = fields.Selection(selection=[('guage', 'Guage'), ('micron', 'Micron')], default='micron', string=" ",
-                                     tracking=True)
+                                        tracking=True)
     width = fields.Float(string="Width", help="This helps to categorise specific product.")
     width_uom = fields.Selection(selection=[('mm', 'MM'), ('inch', 'Inch')], default='mm', string=" ", tracking=True)
     core_id = fields.Selection(selection=[('3', '3 Inch'), ('6', '6 Inch')], string="Core", tracking=True)
@@ -29,6 +45,28 @@ class StockMoveLine(models.Model):
     length_uom = fields.Selection(selection=[('m', 'M'), ('feet', 'Feet')], default='feet', string=" ", tracking=True)
     grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
     mo_product_code =fields.Char(string="MO Product Code")
+    # treatment_in = fields.Selection([
+    #     ('corona', 'Corona'), ('met_corona', 'Met on Corona'), ('met_chemical', 'Met on Chemical'),
+    #     ('met_plain', 'Met on Plain'), ('plain', 'Plain'), ('pvdc', 'PVDC COATED'),
+    #     ('soft_touch', 'SOFT TOUCH'), ('alox', 'Top coat Alox'),
+    # ], related="move_id.treatment_in", string="Treatment IN")
+    # treatment_out = fields.Selection([
+    #     ('acrylic', 'ACRYLIC'), ('corona', 'Corona'), ('met_plain', 'Met on Plain'),
+    #     ('met_corona', 'Met on Corona'), ('met_corona_out', 'Metallized on Corona Outside'),
+    #     ('met_chemical', 'Metallized on Chemical'), ('plain', 'Plain'), ('pvdc_out', 'PVDC COATED'),
+    # ], related="move_id.treatment_out", string="Treatment OUT")
+    # description = fields.Text(related="move_id.description",string="Film Description")
+    treatment_in = fields.Selection([
+        ('corona', 'Corona'), ('met_corona', 'Met on Corona'), ('met_chemical', 'Met on Chemical'),
+        ('met_plain', 'Met on Plain'), ('plain', 'Plain'), ('pvdc', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'), ('alox', 'Top coat Alox'),
+    ], string="Treatment IN")
+    treatment_out = fields.Selection([
+        ('acrylic', 'ACRYLIC'), ('corona', 'Corona'), ('met_plain', 'Met on Plain'),
+        ('met_corona', 'Met on Corona'), ('met_corona_out', 'Metallized on Corona Outside'),
+        ('met_chemical', 'Metallized on Chemical'), ('plain', 'Plain'), ('pvdc_out', 'PVDC COATED'),
+    ], string="Treatment OUT")
+    description = fields.Text(string="Film Description")
     #
     # def _action_done(self):
     #     res = super()._action_done()
@@ -69,17 +107,20 @@ class StockMoveLine(models.Model):
             if line.film_type:
                 vals['film_type'] = line.film_type
 
+            if line.description:
+                vals['film_description'] = line.description
+
             if line.thickness not in (False, 0):
                 vals['thickness'] = line.thickness
 
-            # if line.thickness_uom:
-            #     vals['thickness_uom'] = line.thickness_uom
+            if line.thickness_uom:
+                vals['thickness_uom'] = line.thickness_uom
 
-            if line.weight not in (False, 0):
+            if line.weight:
                 vals['weight'] = line.weight
 
-            # if line.weight_uom:
-            #     vals['weight_uom'] = line.weight_uom
+            if line.weight_uom:
+                vals['weight_uom'] = line.weight_uom
 
             if line.core_id:
                 vals['core_id'] = line.core_id
@@ -93,17 +134,34 @@ class StockMoveLine(models.Model):
             if line.width not in (False, 0):
                 vals['width_val'] = line.width
 
-            # if line.width_uom:
-            #     vals['width_uom'] = line.width_uom
+            if line.width_uom:
+                vals['width_uom'] = line.width_uom
 
             if line.length not in (False, 0):
                 vals['length_val'] = line.length
 
-            # if line.length_uom:
-            #     vals['length_uom'] = line.length_uom
+            if line.length_uom:
+                vals['length_uom'] = line.length_uom
 
             if line.grade_type:
                 vals['grade_type'] = line.grade_type
+
+            if line.treatment_in:
+                vals['treatment_in'] = line.treatment_in
+
+            if line.treatment_out:
+                vals['treatment_out'] = line.treatment_out
+
+            if line.result_package_id:
+                vals['pallet_no'] = line.result_package_id.name
+
+            purchase_line = line.move_id.purchase_line_id
+
+            if purchase_line and purchase_line.order_id.partner_id:
+                vals['supplier_name'] = purchase_line.order_id.partner_id.id
+
+            if line.date:
+                vals['received_date'] = line.date
 
             if vals:
                 lot.write(vals)
@@ -192,3 +250,35 @@ class StockMove(models.Model):
                 count = len(rec.move_line_ids)
                 rec.units_display = "Rolls"
                 rec.pieces = count
+
+    weight_val = fields.Float(string="Weight")
+    weight_uom = fields.Selection(selection=[
+        ('kg', 'Kg'), ('lbs', 'Lbs'), ('gm', 'Gm'),
+    ], string=" ")
+    thickness_val = fields.Float(string="Thickness")
+    thickness_uom = fields.Selection(selection=[
+        ('guage', 'Guage'), ('micron', 'Micron'), ('mm', 'MM'), ('mil', 'Mil'),
+    ], string=" ")
+    width_val = fields.Float(string="Width")
+    width_uom = fields.Selection(selection=[
+        ('mm', 'MM'), ('inch', 'Inch'), ('mil', 'Mil'),
+    ], string=" ")
+    core_id = fields.Selection(selection=[('3', '3 Inch'), ('6', '6 Inch')], string="Core")
+    category = fields.Char(string="Film Category")
+    film = fields.Char(string="Film")
+    film_type = fields.Char(string="Film Type")
+    length_val = fields.Float(string="Length")
+    length_uom = fields.Selection(selection=[('m', 'M'), ('feet', 'Feet')], string=" ")
+    pieces = fields.Float(string="Pieces")
+    description = fields.Text(string="Film Description")
+    remarks = fields.Text(string="Remarks")
+    treatment_in = fields.Selection([
+        ('corona', 'Corona'), ('met_corona', 'Met on Corona'), ('met_chemical', 'Met on Chemical'),
+        ('met_plain', 'Met on Plain'), ('plain', 'Plain'), ('pvdc', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'), ('alox', 'Top coat Alox'),
+    ], string="Treatment IN")
+    treatment_out = fields.Selection([
+        ('acrylic', 'ACRYLIC'), ('corona', 'Corona'), ('met_plain', 'Met on Plain'),
+        ('met_corona', 'Met on Corona'), ('met_corona_out', 'Metallized on Corona Outside'),
+        ('met_chemical', 'Metallized on Chemical'), ('plain', 'Plain'), ('pvdc_out', 'PVDC COATED'),
+    ], string="Treatment OUT")
