@@ -11,8 +11,8 @@ class StockMoveLine(models.Model):
     pallet_no = fields.Char(string="Pallet Number", tracking=True, help="Pallet Number")
 
     weight = fields.Float(string="Weight (kg)", tracking=True)
-    lot_id = fields.Many2one('stock.lot',string='Serial Numbers')
-    lot_name = fields.Char(string="Serial Number Name")
+    lot_id = fields.Many2one('stock.lot',string='Roll Numbers')
+    lot_name = fields.Char(string="Roll Number Name")
 
     weight_uom = fields.Selection(selection=[
         ('kg', 'Kg'),
