@@ -71,6 +71,25 @@ class Purchase(models.Model):
     def button_approve(self, force=False):
         result = super(Purchase, self).button_approve(force=force)
         self._create_freight_cost()
+
+        template = self.env.ref(
+            'famti.email_template_po_approved',
+            raise_if_not_found=False
+        )
+
+        if template:
+            for order in self:
+                creator = order.create_uid
+
+                if creator and creator.email:
+                    template.send_mail(
+                        order.id,
+                        force_send=True,
+                        email_values={
+                            'email_to': creator.email,
+                        }
+                )
+                    
         return result
 
     def _create_freight_cost(self):
@@ -125,6 +144,32 @@ class Purchase(models.Model):
                 raise UserError(
                     f"Cannot send for CFO approval. Vendor '{order.partner_id.name}' certificate has expired. Please renew it."
                 )
+
+        cfo_group = self.env.ref(
+            'famti.group_cheif_financial_officer'
+        )
+
+        cfo_users = cfo_group.users.filtered(
+            lambda user: user.email
+        )
+
+        if not cfo_users:
+            raise UserError(
+                "No CFO user with an email address is configured."
+            )
+
+        template = self.env.ref(
+            'famti.email_template_cfo_approval'
+        )
+
+        for cfo_user in cfo_users:
+            template.send_mail(
+                order.id,
+                force_send=True,
+                email_values={
+                    'email_to': cfo_user.email,
+                }
+            )
 
         self.state='to approve'
 

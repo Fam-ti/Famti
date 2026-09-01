@@ -187,6 +187,32 @@ class SaleOrder(models.Model):
          for order in self:
             if not order.order_line:
                 raise UserError("Sales Order must have at least one order line.")
+
+            cfo_group = self.env.ref(
+                'famti.group_cheif_financial_officer'
+            )
+
+            cfo_users = cfo_group.users.filtered(
+                lambda user: user.email
+            )
+
+            if not cfo_users:
+                raise UserError(
+                    "No CFO user with an email address is configured."
+                )
+
+            template = self.env.ref(
+                'famti.email_template_sale_cfo_approval'
+            )
+
+            for cfo_user in cfo_users:
+                template.send_mail(
+                    order.id,
+                    force_send=True,
+                    email_values={
+                        'email_to': cfo_user.email,
+                    }
+                )
             self.write({'state': 'to_approve'})
 
     def action_approve(self):
@@ -197,6 +223,23 @@ class SaleOrder(models.Model):
             else:
                 if order.state == 'to_approve':
                     order.write({'state': 'draft'})
+
+                    template = self.env.ref(
+                        'famti.email_template_so_approved',
+                        raise_if_not_found=False
+                    )
+
+                    if template:
+                        creator = order.create_uid
+
+                        if creator and creator.email:
+                            template.send_mail(
+                                order.id,
+                                force_send=True,
+                                email_values={
+                                    'email_to': creator.email,
+                                }
+                            )
 
             order.action_confirm()
 
@@ -352,11 +395,54 @@ class SaleOrder(models.Model):
         self.mo_status = 'closed'
         self.state = 'closed'
         # self.write({'state':'closed','mo_status':'closed'})
+        template = self.env.ref(
+            'famti.email_template_so_manufacturing_completed',
+            raise_if_not_found=False
+        )
+
+        if template:
+            creator = self.create_uid
+
+            if creator and creator.email:
+                template.send_mail(
+                    self.id,
+                    force_send=True,
+                    email_values={
+                        'email_to': creator.email,
+                    }
+                )
 
     def action_send_to_production(self):
         if self.state == 'sale':
             self.state = 'in_manf'
             self.mo_status = 'in_manf'
+
+            template = self.env.ref(
+                'famti.email_template_so_send_to_production',
+                raise_if_not_found=False
+            )
+
+            if template:
+                manufacture_group = self.env.ref(
+                    'famti.group_manufacture_users',
+                    raise_if_not_found=False
+                )
+
+                if manufacture_group:
+                    users = manufacture_group.users.filtered(
+                        lambda u: u.email
+                    )
+
+                    email_to = ','.join(users.mapped('email'))
+
+                    if email_to:
+                        template.send_mail(
+                            self.id,
+                            force_send=True,
+                            email_values={
+                                'email_to': email_to,
+                            }
+                        )
         else:
             raise UserError('Order Needs to be approved or Something went wrong!')
 
