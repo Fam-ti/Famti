@@ -65,9 +65,10 @@
 
     <menuitem
         id="menu_customer_import"
-        name="Import Customers"
+        name="Import Contacts"
         parent="contacts.menu_contacts"
         action="action_customer_import"
+        groups="group_contacts_import_sheet_access"
         sequence="90"
     />
 
