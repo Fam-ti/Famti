@@ -69,5 +69,320 @@
             </field>
         </record>
 
+        <record id="email_template_cfo_approval" model="mail.template">
+            <field name="name">Purchase Order - CFO Approval</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="subject">CFO Approval Required - {{ object.name }}</field>
+            <field name="email_from">{{ user.email or object.company_id.email }}</field>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Dear CFO,</p>
+                    <p>A Purchase Order has been submitted for your approval.</p>
+                    <p><strong>Purchase Order:</strong><t t-out="object.name"/></p>
+                    <p><strong>Vendor:</strong><t t-out="object.partner_id.name"/></p>
+                    <p><strong>Total Amount:</strong><t t-out="format_amount(object.amount_total, object.currency_id)"/></p>
+                    <p>Please review the Purchase Order and approve or reject it.</p>
+                    <p>
+                        <a t-att-href="object.get_base_url() + '/web#id=%s&amp;model=purchase.order&amp;view_type=form' % object.id">
+                            Open Purchase Order
+                        </a>
+                    </p>
+                    <p>Thank you.</p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <record id="email_template_po_approved" model="mail.template">
+            <field name="name">Purchase Order - Approved</field>
+            <field name="model_id" ref="purchase.model_purchase_order"/>
+            <field name="subject">Purchase Order Approved - {{ object.name }}</field>
+            <field name="email_from">{{ user.email or object.company_id.email }}</field>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Dear <t t-out="object.create_uid.name"/>,</p>
+                    <p>Your Purchase Order has been approved by the CFO.</p>
+                    <p><strong>Purchase Order:</strong><t t-out="object.name"/></p>
+                    <p><strong>Vendor:</strong><t t-out="object.partner_id.name"/></p>
+                    <p><strong>Total Amount:</strong><t t-out="format_amount(object.amount_total, object.currency_id)"/></p>
+                    <p>You can now proceed with the Purchase Order.</p>
+                    <p>
+                        <a t-att-href="object.get_base_url() + '/web#id=%s&amp;model=purchase.order&amp;view_type=form' % object.id">
+                            Open Purchase Order
+                        </a>
+                    </p>
+                    <p>Thank you.</p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <record id="email_template_sale_cfo_approval" model="mail.template">
+            <field name="name">Sales Order - CFO Approval</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">CFO Approval Required - {{ object.name }}</field>
+            <field name="email_from">{{ user.email or object.company_id.email }}</field>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Dear CFO,</p>
+                    <p>A Sales Order has been submitted for your approval.</p>
+                    <p><strong>Sales Order:</strong><t t-out="object.name"/></p>
+                    <p><strong>Customer:</strong><t t-out="object.partner_id.name"/></p>
+                    <p><strong>Total Amount:</strong><t t-out="format_amount(object.amount_total, object.currency_id)"/></p>
+                    <p>Please review the Sales Order and approve it.</p>
+                    <p>
+                        <a t-att-href="'%s/web#id=%s&amp;model=sale.order&amp;view_type=form' % (object.get_base_url(), object.id)">
+                            Open Sales Order
+                        </a>
+                    </p>
+                    <p>Thank you.</p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <record id="email_template_so_approved" model="mail.template">
+            <field name="name">Sales Order - Approved</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Sales Order Approved - {{ object.name }}</field>
+            <field name="email_from">{{ user.email or object.company_id.email }}</field>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Dear <t t-out="object.create_uid.name"/>,</p>
+                    <p>Your Sales Order has been approved by the CFO.</p>
+                    <p><strong>Sales Order:</strong><t t-out="object.name"/></p>
+                    <p><strong>Customer:</strong><t t-out="object.partner_id.name"/></p>
+                    <p><strong>Total Amount:</strong><t t-out="format_amount(object.amount_total, object.currency_id)"/></p>
+                    <p>The Sales Order has now been confirmed successfully.</p>
+                    <p>
+                        <a t-att-href="object.get_base_url() + '/web#id=%s&amp;model=sale.order&amp;view_type=form' % object.id">
+                            Open Sales Order
+                        </a>
+                    </p>
+                    <p>Thank you.</p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <record id="email_template_so_send_to_production" model="mail.template">
+            <field name="name">Sales Order - Sent to Production</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Sales Order Sent to Production - {{ object.name }}</field>
+            <field name="email_from">{{ user.email or object.company_id.email }}</field>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Dear Production Team,</p>
+                    <p>The following Sales Order has been sent to production.
+                        Please review the product details and proceed with the manufacturing process.
+                    </p>
+                    <p><strong>Sales Order:</strong><t t-out="object.name"/></p>
+                    <p><strong>Customer:</strong><t t-out="object.partner_id.name"/></p>
+                    <p><strong>Order Date:</strong><t t-out="object.date_order"/></p>
+                    <br/>
+                    <h3>Product Details</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    Product
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    Treatment IN
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    Treatment OUT
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    Thickness
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    Width
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    Core
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    Length
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    Quantity
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="object.order_line" t-as="line">
+                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                    <t t-out="line.product_id.display_name"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="dict(line._fields['treatment_in'].selection).get(line.treatment_in, '')"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="dict(line._fields['treatment_out'].selection).get(line.treatment_out, '')"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.thickness_val"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.thickness_uom"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.width_val"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.width_uom"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="dict(line._fields['core_id'].selection).get(line.core_id, '')"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.length_val"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.length_uom"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.product_uom_qty"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                    <t t-out="line.product_uom.name"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br/>
+                    <p>
+                        <a t-att-href="object.get_base_url() + '/web#id=%s&amp;model=sale.order&amp;view_type=form' % object.id">
+                            Open Sales Order
+                        </a>
+                    </p>
+                    <p>Thank you.</p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <record id="email_template_so_manufacturing_completed" model="mail.template">
+            <field name="name">Sales Order - Manufacturing Completed</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="subject">Manufacturing Completed - {{ object.name }}</field>
+            <field name="email_from">{{ user.email or object.company_id.email }}</field>
+            <field name="body_html" type="html">
+                <div>
+                    <p>Dear <t t-out="object.create_uid.name"/>,</p>
+                    <p>Manufacturing has been completed successfully for your Sales Order.</p>
+                    <p><strong>Sales Order:</strong><t t-out="object.name"/></p>
+                    <p><strong>Customer:</strong><t t-out="object.partner_id.name"/></p>
+                    <p><strong>Order Date:</strong><t t-out="object.date_order"/></p>
+                    <br/>
+                    <h3>Manufactured Product Details</h3>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    Product
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    Treatment IN
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    Treatment OUT
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    Thickness
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    Width
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    Core
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    Length
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    Quantity
+                                </th>
+                                <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                    
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="object.order_line" t-as="line">
+                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                    <t t-out="line.product_id.display_name"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="dict(line._fields['treatment_in'].selection).get(line.treatment_in, '')"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="dict(line._fields['treatment_out'].selection).get(line.treatment_out, '')"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.thickness_val"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.thickness_uom"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.width_val"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.width_uom"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="dict(line._fields['core_id'].selection).get(line.core_id, '')"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.length_val"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.length_uom"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px; text-align: right;">
+                                    <t t-out="line.product_uom_qty"/>
+                                </td>
+                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                    <t t-out="line.product_uom.name"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br/>
+                    <p>Manufacturing for this Sales Order is now completed.</p>
+                    <p>
+                        <a t-att-href="object.get_base_url() + '/web#id=%s&amp;model=sale.order&amp;view_type=form' % object.id">
+                            Open Sales Order
+                        </a>
+                    </p>
+                    <p>Thank you.</p>
+                </div>
+            </field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
     </data>
 </odoo>

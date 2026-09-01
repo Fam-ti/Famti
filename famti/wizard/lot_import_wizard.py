@@ -44,8 +44,52 @@ class FamtiLotImportWizard(models.TransientModel):
 
         processed_lots = set()
         skipped_lots = []
+        rows = list(reader)
 
-        for row in reader:
+        roll_numbers = []
+        duplicate_rolls = set()
+        seen_rolls = set()
+
+        for row in rows:
+            lot_name = (row.get('Roll Numbers') or '').strip()
+
+            if not lot_name:
+                continue
+
+            if lot_name in seen_rolls:
+                duplicate_rolls.add(lot_name)
+
+            seen_rolls.add(lot_name)
+            roll_numbers.append(lot_name)
+
+        if duplicate_rolls:
+            raise ValidationError(
+                _("Duplicate Roll Numbers found in CSV:\n\n%s")
+                % "\n".join(
+                    "- %s" % x for x in sorted(duplicate_rolls)
+                )
+            )
+
+
+        existing_lots = StockLot.search([
+            ('name', 'in', roll_numbers),
+            ('product_id', '=', move.product_id.id),
+        ])
+
+        if existing_lots:
+            existing_rolls = existing_lots.mapped('name')
+
+            raise ValidationError(
+                _("The following Roll Numbers already exist for product '%s':\n\n%s")
+                % (
+                    move.product_id.display_name,
+                    "\n".join(
+                        "- %s" % x for x in sorted(existing_rolls)
+                    )
+                )
+            )
+        # for row in reader:
+        for row in rows:
             product = row.get('Product')
             product_code = row.get('Product Code')
             lot_name = (row.get('Roll Numbers') or '').strip()
@@ -104,8 +148,6 @@ class FamtiLotImportWizard(models.TransientModel):
             if not lot_name or qty <= 0:
                 continue
 
-            if not lot_name or qty <= 0:
-                continue
 
             if lot_name in processed_lots:
                 skipped_lots.append(lot_name)
