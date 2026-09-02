@@ -35,16 +35,114 @@ class FamtiLotImportWizard(models.TransientModel):
             raise UserError(_("Invalid CSV file."))
 
         # required_fields = {'lot_name', 'qty'}
-        required_fields = {'Roll Numbers', 'Quantity'}
+        # required_fields = {'Roll Numbers', 'Quantity'}
+        # if not required_fields.issubset(reader.fieldnames):
+        #     raise UserError(_("CSV must contain columns: lot_name, qty"))
+        imported_rolls = []
+        required_fields = {
+            'Product',
+            'Product Code',
+            'Roll Numbers',
+            'Quantity',
+        }
+
         if not required_fields.issubset(reader.fieldnames):
-            raise UserError(_("CSV must contain columns: lot_name, qty"))
+            raise UserError(
+                _("CSV must contain the following columns:\n%s")
+                % ", ".join(sorted(required_fields))
+            )
+        rows = list(reader)
+
+
+        Product = self.env['product.product']
+
+        missing_products = []
+
+        for row in rows:
+            csv_product = (row.get('Product') or '').strip()
+            csv_product_code = (row.get('Product Code') or '').strip()
+            roll_number = (row.get('Roll Numbers') or '').strip()
+
+            if not roll_number:
+                continue
+
+            if not csv_product_code:
+                missing_products.append(
+                    _("Roll Number: %s\nProduct: %s\nProduct Code: Missing")
+                    % (
+                        roll_number,
+                        csv_product or "N/A",
+                    )
+                )
+                continue
+
+            product = Product.search([
+                ('default_code', '=', csv_product_code),
+            ], limit=1)
+
+            if not product:
+                missing_products.append(
+                    _(
+                        "Product: %s\n"
+                        "Product Code: %s"
+                    )
+                    % (
+                        csv_product or "N/A",
+                        csv_product_code,
+                    )
+                )
+
+        if missing_products:
+            raise ValidationError(
+                _(
+                    "The following products do not exist in ERP:\n\n%s"
+                )
+                % "\n\n".join(
+                    "- %s" % product
+                    for product in missing_products
+                )
+            )
+
+        move_product = move.product_id
+
+        move_product_name = (move_product.name or '').strip()
+        move_product_code = (move_product.default_code or '').strip()
+
+        matched_rows = []
+
+        for row in rows:
+            csv_product = (row.get('Product') or '').strip()
+            csv_product_code = (row.get('Product Code') or '').strip()
+
+            if (
+                csv_product == move_product_name
+                and csv_product_code == move_product_code
+            ):
+                matched_rows.append(row)
+
+        if not matched_rows:
+            raise ValidationError(
+                _(
+                    "There was no product match.\n\n"
+                    "Selected Product:\n"
+                    "Product: %s\n"
+                    "Product Code: %s"
+                )
+                % (
+                    move_product_name,
+                    move_product_code or "N/A",
+                )
+            )
+
+        rows = matched_rows
+        
 
         StockLot = self.env['stock.lot']
         StockMoveLine = self.env['stock.move.line']
 
         processed_lots = set()
         skipped_lots = []
-        rows = list(reader)
+        # rows = list(reader)
 
         roll_numbers = []
         duplicate_rolls = set()
@@ -88,12 +186,68 @@ class FamtiLotImportWizard(models.TransientModel):
                     )
                 )
             )
+
+
+        missing_suppliers = []
+
+        for row in rows:
+
+            lot_name = self._clean_string(
+                row.get('Roll Numbers')
+            )
+
+            product = self._clean_string(
+                row.get('Product')
+            )
+
+            product_code = self._clean_string(
+                row.get('Product Code')
+            )
+
+            supplier_name = self._clean_string(
+                row.get('Supplier name')
+            )
+
+            if not supplier_name:
+                row['_supplier'] = False
+                continue
+
+            supplier = self._find_partner(supplier_name)
+
+            if not supplier:
+                missing_suppliers.append(
+                    _(
+                        "Roll Number: %s\n"
+                        "Product: %s\n"
+                        "Product Code: %s\n"
+                        "Supplier: %s"
+                    ) % (
+                        lot_name,
+                        product,
+                        product_code,
+                        supplier_name,
+                    )
+                )
+            else:
+                row['_supplier'] = supplier
+
+
+        if missing_suppliers:
+            raise ValidationError(
+                _(
+                    "The following suppliers were not found in system:\n\n%s"
+                )
+                % "\n\n".join(
+                    "- %s" % supplier
+                    for supplier in missing_suppliers
+                )
+            )
         # for row in reader:
         for row in rows:
             product = row.get('Product')
             product_code = row.get('Product Code')
             lot_name = (row.get('Roll Numbers') or '').strip()
-            supplier_name = row.get('Supplier name')
+            supplier = row.get('_supplier')
             film_type = row.get('Film Type')
             type_value = row.get('Type')
             film_description = row.get('Film Description')
@@ -166,40 +320,6 @@ class FamtiLotImportWizard(models.TransientModel):
 
                 existing_move_lines.unlink()
 
-            # lot = StockLot.search([
-            #     ('name', '=', lot_name),
-            #     ('product_id', '=', move.product_id.id),
-            #     '|',
-            #     ('company_id', '=', move.company_id.id),
-            #     ('company_id', '=', False),
-            # ], limit=1)
-
-            # # if lot:
-            # #     print("====already exit")
-            # #     skipped_lots.append(lot_name)
-            # #     continue
-
-            # # lot = StockLot.create({
-            # #     'name': lot_name,
-            # #     'product_id': move.product_id.id,
-            # #     'company_id': move.company_id.id,
-            # # })
-            # if lot:
-            #     existing_move_lines = StockMoveLine.search([
-            #         ('move_id', '=', move.id),
-            #         ('lot_id', '=', lot.id),
-            #     ])
-
-            #     if existing_move_lines:
-            #         existing_move_lines.unlink()
-
-            # else:
-            #     lot = StockLot.create({
-            #         'name': lot_name,
-            #         'product_id': move.product_id.id,
-            #         'company_id': move.company_id.id,
-            #     })
-
             StockMoveLine.create({
                 'move_id': move.id,
                 'lot_name': lot_name,
@@ -225,9 +345,29 @@ class FamtiLotImportWizard(models.TransientModel):
                 'length':length,
                 'length_uom':length_uom,
                 'description':film_description,
+                'supplier_name': supplier.id if supplier else False,
             })
+            imported_rolls.append(lot_name)
 
-        return {'type': 'ir.actions.act_window_close'}
+        # return {'type': 'ir.actions.act_window_close'}
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Import Successful'),
+                'message': _(
+                    '%s roll(s) imported successfully for product %s.'
+                ) % (
+                    len(imported_rolls),
+                    move_product_name,
+                ),
+                'type': 'success',
+                'sticky': False,
+                'next': {
+                    'type': 'ir.actions.act_window_close',
+                },
+            },
+        }
 
     def _clean_string(self, value):
         if value is None:
@@ -300,3 +440,22 @@ class FamtiLotImportWizard(models.TransientModel):
             )
 
         return result
+
+    def _find_partner(self, supplier_name):
+        supplier_name = self._clean_string(supplier_name)
+
+        if not supplier_name:
+            return False
+
+        supplier = self.env['res.partner'].search([
+            ('name', '=', supplier_name),
+        ], limit=1)
+
+        if supplier:
+            return supplier
+
+        supplier = self.env['res.partner'].search([
+            ('name', '=ilike', supplier_name),
+        ], limit=1)
+
+        return supplier
