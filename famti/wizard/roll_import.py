@@ -1206,38 +1206,55 @@ class RollImportWizard(models.TransientModel):
             return None
 
         mapping = {
+
+            # ------------------------------------------------------------
+            # CORONA
+            # ------------------------------------------------------------
             "corona": "corona",
 
+            # ------------------------------------------------------------
+            # METALLIZED ON CORONA
+            # ------------------------------------------------------------
             "met on corona": "met_corona",
             "met corona": "met_corona",
+            "metallized on corona": "met_corona",
+            "metallised on corona": "met_corona",
 
             "met on chemical": "met_chemical",
             "met chemical": "met_chemical",
+            "metallized on chemical": "met_chemical",
+            "metallised on chemical": "met_chemical",
 
             "met on plain": "met_plain",
             "met plain": "met_plain",
+            "metallized on plain": "met_plain",
+            "metallised on plain": "met_plain",
 
             "met on copolymer": "met_copolymer",
             "met copolymer": "met_copolymer",
-
+            "metallized on copolymer": "met_copolymer",
+            "metallised on copolymer": "met_copolymer",
             "plain": "plain",
-
-            "pvdc coated": "pvdc",
             "pvdc": "pvdc",
-
+            "pvdc coated": "pvdc",
+            "pvdc coated film": "pvdc",
             "soft touch": "soft_touch",
-
-            "top coat alox": "alox",
+            "soft-touch": "soft_touch",
             "alox": "alox",
-
+            "top coat alox": "alox",
+            "topcoat alox": "alox",
+            "top coat aloxed": "alox",
             "chemical coated": "chemical_coat",
             "chemical coat": "chemical_coat",
-
+            "chemical coating": "chemical_coat",
             "acrylic": "acrylic",
-
+            "acrylic coated": "acrylic",
             "copolymer": "copolymer",
-
+            "co-polymer": "copolymer",
+            "co polymer": "copolymer",
             "special chemical": "special_chemical",
+            "special chemical coated": "special_chemical",
+            "special chemical coating": "special_chemical",
         }
 
         result = mapping.get(value.lower())
@@ -1257,32 +1274,100 @@ class RollImportWizard(models.TransientModel):
             return None
 
         mapping = {
-            "acrylic": "acrylic",
 
+            # ------------------------------------------------------------
+            # CORONA
+            # ------------------------------------------------------------
             "corona": "corona",
 
-            "met on plain": "met_plain",
-            "met plain": "met_plain",
-
+            # ------------------------------------------------------------
+            # METALLIZED ON CORONA
+            # ------------------------------------------------------------
             "met on corona": "met_corona",
             "met corona": "met_corona",
+            "metallized on corona": "met_corona",
+            "metallised on corona": "met_corona",
 
-            "met on chemical": "met_chemical",
-            "met chemical": "met_chemical",
-
-            "met on copolymer": "met_copolymer",
-            "met copolymer": "met_copolymer",
-
+            # Existing client wording
             "metallized on corona outside": "met_corona_out",
             "met corona outside": "met_corona_out",
+            "metallised on corona outside": "met_corona_out",
 
-            "metallized on chemical": "met_chemical",
+            # ------------------------------------------------------------
+            # METALLIZED ON CHEMICAL
+            # ------------------------------------------------------------
+            "met on chemical": "met_chemical",
             "met chemical": "met_chemical",
+            "metallized on chemical": "met_chemical",
+            "metallised on chemical": "met_chemical",
 
+            # ------------------------------------------------------------
+            # METALLIZED ON PLAIN
+            # ------------------------------------------------------------
+            "met on plain": "met_plain",
+            "met plain": "met_plain",
+            "metallized on plain": "met_plain",
+            "metallised on plain": "met_plain",
+
+            # ------------------------------------------------------------
+            # METALLIZED ON COPOLYMER
+            # ------------------------------------------------------------
+            "met on copolymer": "met_copolymer",
+            "met copolymer": "met_copolymer",
+            "metallized on copolymer": "met_copolymer",
+            "metallised on copolymer": "met_copolymer",
+
+            # ------------------------------------------------------------
+            # PLAIN
+            # ------------------------------------------------------------
             "plain": "plain",
 
-            "pvdc coated": "pvdc_out",
+            # ------------------------------------------------------------
+            # PVDC
+            # ------------------------------------------------------------
             "pvdc": "pvdc_out",
+            "pvdc coated": "pvdc_out",
+            "pvdc coated film": "pvdc_out",
+
+            # ------------------------------------------------------------
+            # ACRYLIC
+            # ------------------------------------------------------------
+            "acrylic": "acrylic",
+            "acrylic coated": "acrylic",
+
+            # ------------------------------------------------------------
+            # COPOLYMER
+            # ------------------------------------------------------------
+            "copolymer": "copolymer",
+            "co-polymer": "copolymer",
+            "co polymer": "copolymer",
+
+            # ------------------------------------------------------------
+            # SOFT TOUCH
+            # ------------------------------------------------------------
+            "soft touch": "soft_touch",
+            "soft-touch": "soft_touch",
+
+            # ------------------------------------------------------------
+            # ALOX
+            # ------------------------------------------------------------
+            "alox": "alox",
+            "top coat alox": "alox",
+            "topcoat alox": "alox",
+
+            # ------------------------------------------------------------
+            # CHEMICAL COATED
+            # ------------------------------------------------------------
+            "chemical coated": "chemical_coat",
+            "chemical coat": "chemical_coat",
+            "chemical coating": "chemical_coat",
+
+            # ------------------------------------------------------------
+            # SPECIAL CHEMICAL
+            # ------------------------------------------------------------
+            "special chemical": "special_chemical",
+            "special chemical coated": "special_chemical",
+            "special chemical coating": "special_chemical",
         }
 
         result = mapping.get(value.lower())
@@ -1293,7 +1378,6 @@ class RollImportWizard(models.TransientModel):
             )
 
         return result
-
 
     def _selection_value(
         self,
