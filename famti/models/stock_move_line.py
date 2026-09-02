@@ -87,6 +87,7 @@ class StockMoveLine(models.Model):
         ('special_chemical', 'Special Chemical'),
     ], string="Treatment OUT")
     description = fields.Text(string="Film Description")
+    supplier_name = fields.Many2one('res.partner', string="Supplier Name")
     #
     # def _action_done(self):
     #     res = super()._action_done()
@@ -177,8 +178,10 @@ class StockMoveLine(models.Model):
 
             purchase_line = line.move_id.purchase_line_id
 
-            if purchase_line and purchase_line.order_id.partner_id:
-                vals['supplier_name'] = purchase_line.order_id.partner_id.id
+            # if purchase_line and purchase_line.order_id.partner_id:
+            #     vals['supplier_name'] = purchase_line.order_id.partner_id.id
+            if line.supplier_name:
+                vals['supplier_name'] = line.supplier_name.id
 
             if line.date:
                 vals['received_date'] = line.date
