@@ -1255,6 +1255,7 @@ class RollImportWizard(models.TransientModel):
             "special chemical": "special_chemical",
             "special chemical coated": "special_chemical",
             "special chemical coating": "special_chemical",
+            "sp. chemical":"special_chemical",
         }
 
         result = mapping.get(value.lower())
