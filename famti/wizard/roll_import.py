@@ -1198,7 +1198,6 @@ class RollImportWizard(models.TransientModel):
                 _("Quantity cannot be negative.")
             )
 
-
     def _map_treatment_in(self, value):
 
         value = self._clean_string(value)
@@ -1208,23 +1207,40 @@ class RollImportWizard(models.TransientModel):
 
         mapping = {
             "corona": "corona",
+
             "met on corona": "met_corona",
             "met corona": "met_corona",
+
             "met on chemical": "met_chemical",
             "met chemical": "met_chemical",
+
             "met on plain": "met_plain",
             "met plain": "met_plain",
+
+            "met on copolymer": "met_copolymer",
+            "met copolymer": "met_copolymer",
+
             "plain": "plain",
+
             "pvdc coated": "pvdc",
             "pvdc": "pvdc",
+
             "soft touch": "soft_touch",
+
             "top coat alox": "alox",
             "alox": "alox",
+
+            "chemical coated": "chemical_coat",
+            "chemical coat": "chemical_coat",
+
+            "acrylic": "acrylic",
+
+            "copolymer": "copolymer",
+
+            "special chemical": "special_chemical",
         }
 
-        result = mapping.get(
-            value.lower()
-        )
+        result = mapping.get(value.lower())
 
         if result is None:
             raise ValidationError(
@@ -1232,7 +1248,6 @@ class RollImportWizard(models.TransientModel):
             )
 
         return result
-
 
     def _map_treatment_out(self, value):
 
@@ -1243,23 +1258,34 @@ class RollImportWizard(models.TransientModel):
 
         mapping = {
             "acrylic": "acrylic",
+
             "corona": "corona",
+
             "met on plain": "met_plain",
             "met plain": "met_plain",
+
             "met on corona": "met_corona",
             "met corona": "met_corona",
+
+            "met on chemical": "met_chemical",
+            "met chemical": "met_chemical",
+
+            "met on copolymer": "met_copolymer",
+            "met copolymer": "met_copolymer",
+
             "metallized on corona outside": "met_corona_out",
             "met corona outside": "met_corona_out",
+
             "metallized on chemical": "met_chemical",
             "met chemical": "met_chemical",
+
             "plain": "plain",
+
             "pvdc coated": "pvdc_out",
             "pvdc": "pvdc_out",
         }
 
-        result = mapping.get(
-            value.lower()
-        )
+        result = mapping.get(value.lower())
 
         if result is None:
             raise ValidationError(
