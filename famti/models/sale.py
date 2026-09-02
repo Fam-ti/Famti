@@ -461,24 +461,34 @@ class SaleOrderLine(models.Model):
 
     treatment_in = fields.Selection([
         ('corona', 'Corona'),
-        ('met_corona', 'Met on Corona'),
-        ('met_chemical', 'Met on Chemical'),
-        ('met_plain', 'Met on Plain'),
+        ('met_corona', 'Metalizzed on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('met_plain', 'Metallized on Plain'),
         ('plain', 'Plain'),
         ('pvdc', 'PVDC COATED'),
         ('soft_touch', 'SOFT TOUCH'),
         ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('acrylic', 'ACRYLIC'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
     ], string="Treatment IN")
 
     treatment_out = fields.Selection([
         ('acrylic', 'ACRYLIC'),
         ('corona', 'Corona'),
-        ('met_plain', 'Met on Plain'),
-        ('met_corona', 'Met on Corona'),
-        ('met_corona_out', 'Metallized on Corona Outside'),
+        ('met_plain', 'Metallized on Plain'),
+        ('met_corona', 'Metallized on Corona'),
         ('met_chemical', 'Metallized on Chemical'),
         ('plain', 'Plain'),
         ('pvdc_out', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
     ], string="Treatment OUT")
 
     thickness_val = fields.Float(string="Thickness",help="This helps to categorise specific product.")

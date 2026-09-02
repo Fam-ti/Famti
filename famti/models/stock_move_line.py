@@ -15,7 +15,7 @@ class StockMoveLine(models.Model):
     # weight = fields.Float(related="move_id.weight_val",string="Weight (kg)", tracking=True)
     weight = fields.Float(string="Weight (kg)", tracking=True)
     lot_id = fields.Many2one('stock.lot',string='Roll Numbers')
-    lot_name = fields.Char(string="Roll Number Name")
+    lot_name = fields.Char(string="Roll Number")
 
     # weight_uom = fields.Selection(related="move_id.weight_uom",selection=[
     #     ('kg', 'Kg'),
@@ -57,14 +57,34 @@ class StockMoveLine(models.Model):
     # ], related="move_id.treatment_out", string="Treatment OUT")
     # description = fields.Text(related="move_id.description",string="Film Description")
     treatment_in = fields.Selection([
-        ('corona', 'Corona'), ('met_corona', 'Met on Corona'), ('met_chemical', 'Met on Chemical'),
-        ('met_plain', 'Met on Plain'), ('plain', 'Plain'), ('pvdc', 'PVDC COATED'),
-        ('soft_touch', 'SOFT TOUCH'), ('alox', 'Top coat Alox'),
+        ('corona', 'Corona'),
+        ('met_corona', 'Metalizzed on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('met_plain', 'Metallized on Plain'),
+        ('plain', 'Plain'),
+        ('pvdc', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('acrylic', 'ACRYLIC'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
     ], string="Treatment IN")
     treatment_out = fields.Selection([
-        ('acrylic', 'ACRYLIC'), ('corona', 'Corona'), ('met_plain', 'Met on Plain'),
-        ('met_corona', 'Met on Corona'), ('met_corona_out', 'Metallized on Corona Outside'),
-        ('met_chemical', 'Metallized on Chemical'), ('plain', 'Plain'), ('pvdc_out', 'PVDC COATED'),
+        ('acrylic', 'ACRYLIC'),
+        ('corona', 'Corona'),
+        ('met_plain', 'Metallized on Plain'),
+        ('met_corona', 'Metallized on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('plain', 'Plain'),
+        ('pvdc_out', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
     ], string="Treatment OUT")
     description = fields.Text(string="Film Description")
     #
@@ -273,12 +293,32 @@ class StockMove(models.Model):
     description = fields.Text(string="Film Description")
     remarks = fields.Text(string="Remarks")
     treatment_in = fields.Selection([
-        ('corona', 'Corona'), ('met_corona', 'Met on Corona'), ('met_chemical', 'Met on Chemical'),
-        ('met_plain', 'Met on Plain'), ('plain', 'Plain'), ('pvdc', 'PVDC COATED'),
-        ('soft_touch', 'SOFT TOUCH'), ('alox', 'Top coat Alox'),
+        ('corona', 'Corona'),
+        ('met_corona', 'Metalizzed on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('met_plain', 'Metallized on Plain'),
+        ('plain', 'Plain'),
+        ('pvdc', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('acrylic', 'ACRYLIC'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
     ], string="Treatment IN")
     treatment_out = fields.Selection([
-        ('acrylic', 'ACRYLIC'), ('corona', 'Corona'), ('met_plain', 'Met on Plain'),
-        ('met_corona', 'Met on Corona'), ('met_corona_out', 'Metallized on Corona Outside'),
-        ('met_chemical', 'Metallized on Chemical'), ('plain', 'Plain'), ('pvdc_out', 'PVDC COATED'),
+        ('acrylic', 'ACRYLIC'),
+        ('corona', 'Corona'),
+        ('met_plain', 'Metallized on Plain'),
+        ('met_corona', 'Metallized on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('plain', 'Plain'),
+        ('pvdc_out', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
     ], string="Treatment OUT")
