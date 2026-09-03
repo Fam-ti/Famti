@@ -459,12 +459,15 @@ class FamtiLotImportWizard(models.TransientModel):
             treatment_out = self._map_treatment_out(treatment_out_excel)
             pallet_number = row.get('Pallet Number')
             thickness = row.get('Thickness')
-            thickness_uom = row.get('Thickness UOM')
+            # thickness_uom = row.get('Thickness UOM')
+            thickness_uom_excel = row.get('Thickness UOM')
+            thickness_uom = self._map_thickness_uom(thickness_uom_excel)
             width = row.get('Width')
-            width_uom = row.get('Width UOM')
+            width_uom_excel = row.get('Width UOM')
+            width_uom = self._map_width_uom(width_uom_excel)
             weight = row.get('Weight')
-            weight_uom = row.get('Weight UOM')
-
+            weight_uom_excel = row.get('Weight UOM')
+            weight_uom = self._map_weight_uom(weight_uom_excel)
             quantity_value = row.get('Quantity')
             pallet_number = (row.get('Pallet Number') or '').strip()
 
@@ -492,10 +495,12 @@ class FamtiLotImportWizard(models.TransientModel):
             length = float(
                     str(row.get('Length') or 0).replace(',', '').strip()
                 )
-            length_uom = row.get('Length UOM')
+            length_uom_excel = row.get('Length UOM')
+            length_uom = self._map_length_uom(length_uom_excel)
             received_date = row.get('Received date')
             aging = row.get('Aging')
-            core_id = row.get('Core Id')
+            core_id_excel = row.get('Core Id')
+            core_id = self._map_core_id(core_id_excel)
             no_of_joint = row.get('no_of_joint')
 
             if not lot_name or qty <= 0:
@@ -525,6 +530,7 @@ class FamtiLotImportWizard(models.TransientModel):
                 'film': type_value,
                 'film_type': film_type,
                 'thickness': thickness,
+                'thickness_uom': thickness_uom,
                 'weight': weight,
                 'weight_uom':weight_uom,
                 'core_id': core_id,
@@ -761,3 +767,148 @@ class FamtiLotImportWizard(models.TransientModel):
         ], limit=1)
 
         return supplier
+
+    def _map_weight_uom(self, value):
+        value = self._clean_string(value)
+
+        if not value:
+            return False
+
+        mapping = {
+            'kg': 'kg',
+            'kgs': 'kg',
+            'kilogram': 'kg',
+            'kilograms': 'kg',
+
+            'lbs': 'lbs',
+            'lb': 'lbs',
+            'pound': 'lbs',
+            'pounds': 'lbs',
+
+            'gm': 'gm',
+            'g': 'gm',
+            'gram': 'gm',
+            'grams': 'gm',
+        }
+
+        result = mapping.get(value.lower())
+
+        if result is None:
+            raise ValidationError(
+                _("Invalid Weight UOM '%s'. Allowed values are: Kg, Lbs, Gm.")
+                % value
+            )
+
+        return result
+
+
+    def _map_thickness_uom(self, value):
+        value = self._clean_string(value)
+
+        if not value:
+            return False
+
+        mapping = {
+            'micron': 'micron',
+            'microns': 'micron',
+            'um': 'micron',
+            'µm': 'micron',
+
+            'guage': 'guage',
+            'gauge': 'guage',
+        }
+
+        result = mapping.get(value.lower())
+
+        if result is None:
+            raise ValidationError(
+                _("Invalid Thickness UOM '%s'. Allowed values are: Guage, Micron.")
+                % value
+            )
+
+        return result
+
+
+    def _map_width_uom(self, value):
+        value = self._clean_string(value)
+
+        if not value:
+            return False
+
+        mapping = {
+            'mm': 'mm',
+            'millimeter': 'mm',
+            'millimeters': 'mm',
+
+            'inch': 'inch',
+            'inches': 'inch',
+            'in': 'inch',
+        }
+
+        result = mapping.get(value.lower())
+
+        if result is None:
+            raise ValidationError(
+                _("Invalid Width UOM '%s'. Allowed values are: MM, Inch.")
+                % value
+            )
+
+        return result
+
+
+    def _map_length_uom(self, value):
+        value = self._clean_string(value)
+
+        if not value:
+            return False
+
+        mapping = {
+            'm': 'm',
+            'meter': 'm',
+            'meters': 'm',
+            'metre': 'm',
+            'metres': 'm',
+
+            'feet': 'feet',
+            'foot': 'feet',
+            'ft': 'feet',
+        }
+
+        result = mapping.get(value.lower())
+
+        if result is None:
+            raise ValidationError(
+                _("Invalid Length UOM '%s'. Allowed values are: M, Feet.")
+                % value
+            )
+
+        return result
+
+
+    def _map_core_id(self, value):
+        value = self._clean_string(value)
+
+        if not value:
+            return False
+
+        mapping = {
+            '3': '3',
+            '3 inch': '3',
+            '3in': '3',
+            '3"': '3',
+
+            '6': '6',
+            '6 inch': '6',
+            '6in': '6',
+            '6"': '6',
+        }
+
+        result = mapping.get(value.lower())
+
+        if result is None:
+            raise ValidationError(
+                _("Invalid Core '%s'. Allowed values are: 3 Inch, 6 Inch.")
+                % value
+            )
+
+        return result
