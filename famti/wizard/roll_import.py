@@ -31,6 +31,11 @@ class RollImportWizard(models.TransientModel):
         "stock.location",
         string="Location",
         required=True,
+        default=lambda self: self.env["stock.location"].search(
+            [("complete_name", "=", "FM/Stock/QC HOLD")],
+            limit=1,
+        ),
+        readonly=True,
     )
 
     # ============================================================
@@ -1427,46 +1432,49 @@ class RollImportWizard(models.TransientModel):
 
         return float(value)
 
-
     def _parse_date(self, value):
 
         if value is None:
             return None
 
+        # ------------------------------------------------------------
+        # Excel datetime
+        # ------------------------------------------------------------
         if isinstance(value, datetime):
+            return value.date()
+
+        # ------------------------------------------------------------
+        # Excel date
+        # ------------------------------------------------------------
+        if isinstance(value, date):
             return value
 
-        if isinstance(value, date):
-
-            return datetime.combine(
-                value,
-                datetime.min.time(),
-            )
-
+        # ------------------------------------------------------------
+        # String date
+        # ------------------------------------------------------------
         value = str(value).strip()
 
         if not value:
             return None
 
         formats = [
-            "%m/%d/%y",
-            "%m/%d/%Y",
+            "%m/%d/%y",  # 2/25/25
+            "%m/%d/%Y",  # 2/25/2025
+            "%m-%d-%y",  # 2-25-25
+            "%m-%d-%Y",  # 2-25-2025
+
             "%d/%m/%y",
             "%d/%m/%Y",
+            "%d-%m-%y",
+            "%d-%m-%Y",
+
             "%Y-%m-%d",
             "%Y/%m/%d",
-            "%m-%d-%Y",
-            "%d-%m-%Y",
         ]
 
         for fmt in formats:
-
             try:
-                return datetime.strptime(
-                    value,
-                    fmt,
-                )
-
+                return datetime.strptime(value, fmt).date()
             except ValueError:
                 continue
 

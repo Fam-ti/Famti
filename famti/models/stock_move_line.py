@@ -183,7 +183,7 @@ class StockMoveLine(models.Model):
             if line.supplier_name:
                 vals['supplier_name'] = line.supplier_name.id
 
-            if line.date:
+            if line.date and not lot.received_date:
                 vals['received_date'] = line.date
 
             if vals:
