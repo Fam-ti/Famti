@@ -72,9 +72,7 @@
                             <field name="no_of_joint"/>
                             <field name="aging"/>
                             <field name="received_date"/>
-
                             <field name="supplier_name"/>
-                            <field name="received_date"/>
                         </group>
                     </group>
                 </xpath>
