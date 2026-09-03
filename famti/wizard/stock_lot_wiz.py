@@ -116,7 +116,7 @@ class COAFailedWiz(models.TransientModel):
 
 
     def action_failed_coa_rolls(self):
-        rolls = self.lot_ids.filtered(lambda r: r.qc_status == 'pending' and r.company_id == self.env.user.company_id)
+        rolls = self.lot_ids.filtered(lambda r: r.qc_status == 'pending')
         if not rolls:
             return True
         rolls.write({'qc_status': 'failed', 'qc_remark': self.reason if self.reason else ''})
