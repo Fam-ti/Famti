@@ -58,7 +58,7 @@
             </xpath>
 
             <xpath expr="//notebook" position="inside">
-                <page string="Serial / Batch Details">
+                <page string="Roll / Batch Details">
                     <field name="serial_line_ids">
                         <list editable="bottom">
                             <field name="serial_number"/>
