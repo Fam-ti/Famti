@@ -709,7 +709,7 @@ class MrpProductionSerialLine(models.Model):
     production_id = fields.Many2one( 'mrp.production', string='Manufacturing Order',
         ondelete='cascade', required=True
     )
-    serial_number = fields.Char(string='Serial Number')
+    serial_number = fields.Char(string='Roll Number')
     location_id = fields.Many2one('stock.location', string='Location', domain="[('usage', '=', 'internal')]")
     quantity = fields.Float(string='Quantity')
     uom_id = fields.Many2one('uom.uom', string='Unit of Measure')
@@ -783,7 +783,7 @@ class MrpProductionScrapLine(models.Model):
         ondelete='cascade', required=True
     )
     serial_number_id = fields.Many2one('stock.lot',store=True)
-    serial_number = fields.Char(string='Serial Number')
+    serial_number = fields.Char(string='Roll Number')
     location_id = fields.Many2one('stock.location', string='Destination Location', domain="[('usage', '=', 'internal')]")
     source_location_id = fields.Many2one('stock.location', string='Source Location')
     quantity = fields.Float(string='Scrap Qty')

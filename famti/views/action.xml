@@ -6,5 +6,9 @@
             <field name="name">Roll Numbers</field>
         </record>
 
+        <record id="stock.action_product_production_lot_form" model="ir.actions.act_window">
+            <field name="name">Roll Numbers</field>
+        </record>
+
     </data>
 </odoo>

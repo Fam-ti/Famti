@@ -25,11 +25,11 @@ class BarcodeGeneration(models.Model):
     pallet_number = fields.Char(string="Pallet Number")
 
     serial_start = fields.Char(
-        string="Serial Number Start",
+        string="Roll Number Start",
     )
 
     serial_end = fields.Char(
-        string="Serial Number End",
+        string="Roll Number End",
         readonly=True
     )
 
@@ -118,10 +118,10 @@ class BarcodeGenerationLine(models.Model):
 
     serial_number_id = fields.Many2one(
         'stock.lot',
-        string="Serial Number"
+        string="Roll Number"
     )
 
-    serial_number = fields.Char(string="Serial Number")
+    serial_number = fields.Char(string="Roll Number")
 
     barcode_value = fields.Char(
         string="Barcode"

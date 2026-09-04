@@ -42,7 +42,7 @@ class StockMoveLine(models.Model):
     width_uom = fields.Selection(selection=[('mm', 'MM'), ('inch', 'Inch')], default='mm', string=" ", tracking=True)
     core_id = fields.Selection(selection=[('3', '3 Inch'), ('6', '6 Inch')], string="Core", tracking=True)
     length = fields.Float(string="Length", tracking=True, help="Product Length")
-    length_uom = fields.Selection(selection=[('m', 'M'), ('feet', 'Feet')], default='feet', string=" ", tracking=True)
+    length_uom = fields.Selection(selection=[('m', 'M'), ('feet', 'Feet')], default='m', string=" ", tracking=True)
     grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
     mo_product_code =fields.Char(string="MO Product Code")
     # treatment_in = fields.Selection([
