@@ -76,6 +76,9 @@
                     </div>
 
                 </xpath>
+                <xpath expr="//button[@name='action_open_product_lot']//span[contains(@class, 'o_stat_text')]" position="replace">
+                    <span class="o_stat_text">Roll Numbers</span>
+                </xpath>
             </field>
         </record>
 

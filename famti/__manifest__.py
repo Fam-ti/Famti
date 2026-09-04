@@ -88,6 +88,7 @@
 'assets': {
         'web.assets_backend': [
             'famti/static/src/xml/import_lot_patch.xml',
+            'famti/static/src/js/roll_name_patch.js',
         ],
         'web.assets_frontend': [
                     'famti/static/src/js/import_lot_patch.js',
