@@ -338,11 +338,9 @@ class StockPicking(models.Model):
             'A14',
             f'Delivery Dated : {picking.scheduled_date.strftime("%d %b %Y") if picking.scheduled_date else ""}'
         )
-        sale_order = picking.sale_id
-        buyer_po = sale_order.buyer_po_number if sale_order else ''
         sheet.write(
             'A15',
-            f'PO Number # {buyer_po or ""}'
+            f'PO Number # {picking.origin or ""}'
         )
 
         row = 18
@@ -367,9 +365,11 @@ class StockPicking(models.Model):
 
         sheet.merge_range(row, 9, row, 10, 'Length', header)
 
-        sheet.merge_range(row, 11, row + 1, 11, 'TREATMENT', header)
+        sheet.merge_range(row, 11, row + 1, 11, 'TREATMENT IN', header)
 
-        sheet.merge_range(row, 12, row, 13, 'Net Wt', header)
+        sheet.merge_range(row, 12, row + 1, 12, 'TREATMENT OUT', header)
+
+        sheet.merge_range(row, 13, row, 14, 'Net Wt', header)
 
         sheet.write(row + 1, 2, 'Mic', header)
         sheet.write(row + 1, 3, 'Guage', header)
@@ -383,102 +383,147 @@ class StockPicking(models.Model):
         sheet.write(row + 1, 9, 'Mtr', header)
         sheet.write(row + 1, 10, 'Feet', header)
 
-        sheet.write(row + 1, 12, 'kgs', header)
-        sheet.write(row + 1, 13, 'lbs', header)
+        sheet.write(row + 1, 13, 'kgs', header)
+        sheet.write(row + 1, 14, 'lbs', header)
 
         row += 2
 
+
         total_kgs = 0
         total_lbs = 0
-        for move in picking.move_ids_without_package:
-            qty = move.quantity or 0
 
+        for move_line in picking.move_line_ids:
+
+            qty = move_line.quantity or 0
             lbs = qty * 2.20462
-            package_name = ''
-            serial_no = ''
+
+            package_name = move_line.result_package_id.name or ''
+            serial_no = move_line.lot_name or ''
+
             thickness = 0
             gauge = 0
             width_mm = 0
             width_inch = 0
             core_mm = 0
-            core_inch = 0
+            core_inch = ''
             length_mtr = 0
             length_feet = 0
-            lot_names = ', '.join(move.move_line_ids.mapped('lot_id.name'))
+            treatment_in = ''
+            treatment_out = ''
 
-            if move.move_line_ids:
-                move_line = move.move_line_ids[0]
+            thickness = move_line.thickness or 0
+            gauge = thickness * 4
 
-                package_name = move_line.result_package_id.name or ''
-                serial_no = move_line.lot_name or ''
-            if move.sale_line_id:
-                thickness = move.sale_line_id.thickness_val or ''
-                gauge = thickness * 4
-                width_mm = move.sale_line_id.width_val if move else 0
-                width_inch = round(width_mm / 25.4, 2) if width_mm else 0
-                core_id = move.sale_line_id.core_id if move else ''
-                core_mm = float(core_id) * 25.4 if core_id else 0
-                core_inch = core_id or ''
-                length_mtr = move.sale_line_id.length_val if move else 0
-                length_feet = round(length_mtr * 3.28084, 2) if length_mtr else 0
+            width_mm = move_line.width or 0
+            width_inch = round(width_mm / 25.4, 2) if width_mm else 0
 
-            elif move.purchase_line_id:
-                line = move.purchase_line_id
-                thickness = line.thickness_val or 0
-                gauge = thickness * 4
-                width_mm = line.width_val or 0
-                width_inch = round(width_mm / 25.4, 2) if width_mm else 0
-                core_id = line.core_id or ''
-                core_mm = float(core_id) * 25.4 if core_id else 0
-                core_inch = core_id
-                length_mtr = line.length_val or 0
-                length_feet = round(length_mtr * 3.28084, 2) if length_mtr else 0
+            core_id = move_line.core_id or ''
+            core_mm = float(core_id) * 25.4 if core_id else 0
+            core_inch = core_id
+
+            length_mtr = move_line.length or 0
+            length_feet = round(length_mtr * 3.28084, 2) if length_mtr else 0
+
+            treatment_in = dict(move_line._fields['treatment_in'].selection).get(
+                move_line.treatment_in, ''
+            )
+
+            treatment_out = dict(move_line._fields['treatment_out'].selection).get(
+                move_line.treatment_out, ''
+            )
+            film_type = move_line.film
+
 
             sheet.write(row, 0, package_name, normal)
             sheet.write(row, 1, serial_no, normal)
 
             sheet.write(row, 2, thickness, normal)
             sheet.write(row, 3, gauge, normal)
-            sheet.write(row, 4, lot_names or '', normal)
-            sheet.write(row, 5, width_mm, normal)    
-            sheet.write(row, 6, width_inch, normal) 
 
-            sheet.write(row, 7, core_mm, normal)    
-            sheet.write(row, 8, core_inch, normal)   
+            sheet.write(row, 4, film_type, normal)
 
-            sheet.write(row, 9, length_mtr, normal)      
+            sheet.write(row, 5, width_mm, normal)
+            sheet.write(row, 6, width_inch, normal)
+
+            sheet.write(row, 7, core_mm, normal)
+            sheet.write(row, 8, core_inch, normal)
+
+            sheet.write(row, 9, length_mtr, normal)
             sheet.write(row, 10, length_feet, normal)
-            sheet.write(row, 11, '', normal)
-            sheet.write(row, 12, qty, normal)
-            sheet.write(row, 13, lbs, normal)
+
+            sheet.write(row, 11, treatment_in, normal)
+            sheet.write(row, 12, treatment_out, normal)
+
+            sheet.write(row, 13, qty, normal)
+            sheet.write(row, 14, lbs, normal)
 
             total_kgs += qty
             total_lbs += lbs
 
             row += 1
 
-        sheet.merge_range(row, 0, row, 11, 'TOTAL', total_fmt)
-        sheet.write(row, 12, total_kgs, total_fmt)
-        sheet.write(row, 13, total_lbs, total_fmt)
+        sheet.merge_range(
+            row, 0,
+            row, 12,
+            'TOTAL',
+            total_fmt
+        )
+
+        sheet.write(row, 13, total_kgs, total_fmt)
+        sheet.write(row, 14, total_lbs, total_fmt)
 
         row += 5
 
-        sheet.write(row, 0,
-                    'Total Package Weight of Consignment (kg) :',
-                    total_fmt)
+        sheet.write(
+            row,
+            0,
+            'Total Package Weight of Consignment (kg) :',
+            total_fmt
+        )
+
         sheet.write(row, 4, total_kgs, total_fmt)
 
         row += 1
-        sheet.write(row, 0, 'Total No of Pallet :', total_fmt)
-        sheet.write(row, 4, len(picking.move_ids_without_package), total_fmt)
+
+        sheet.write(
+            row,
+            0,
+            'Total No of Pallet :',
+            total_fmt
+        )
+
+        package_count = len(
+            picking.move_line_ids.mapped('result_package_id')
+        )
+
+        sheet.write(row, 4, package_count, total_fmt)
 
         row += 1
-        sheet.write(row, 0, 'Total No of Rolls :', total_fmt)
-        sheet.write(row, 4, len(picking.move_ids_without_package), total_fmt)
+
+        sheet.write(
+            row,
+            0,
+            'Total No of Rolls :',
+            total_fmt
+        )
+
+        roll_count = len(
+            picking.move_line_ids.filtered(lambda ml: ml.lot_id)
+        )
+
+        sheet.write(row, 4, roll_count, total_fmt)
 
         row += 1
-        sheet.write(row, 0, 'Total Net Weight (lbs) :', total_fmt)
+
+        sheet.write(
+            row,
+            0,
+            'Total Net Weight (lbs) :',
+            total_fmt
+        )
+
         sheet.write(row, 4, total_lbs, total_fmt)
+
         workbook.close()
         output.seek(0)
 
