@@ -29,12 +29,12 @@
             parent="purchase.menu_purchase_root"
             sequence="3"/>
 
-        <menuitem
-            id="tolling_customers_menu"
-            name="Customers PO"
-            parent="tolling_customers"
-            action="famti.action_tolling_orders"
-            sequence="4"/>
+<!--        <menuitem-->
+<!--            id="tolling_customers_menu"-->
+<!--            name="Customers PO"-->
+<!--            parent="tolling_customers"-->
+<!--            action="famti.action_tolling_orders"-->
+<!--            sequence="4"/>-->
 
         <menuitem
             id="tolling_receipts_menu"

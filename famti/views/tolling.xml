@@ -112,18 +112,19 @@
             <field name="name">Tolling Receipts</field>
             <field name="res_model">stock.picking</field>
             <field name="view_mode">kanban,list,form</field>
-
             <field name="views" eval="[
                 (ref('stock.vpicktree'), 'list'),
                 (ref('view_stock_picking_form_tolling'), 'form')
             ]"/>
 
             <field name="domain">
-                [
-                    ('picking_type_id.code', '=', 'incoming'),
-                    ('purchase_id.is_tolling', '=', True)
-                ]
-            </field>
+    [
+        ('picking_type_id.code', '=', 'incoming'),
+        '|',
+        ('purchase_id.is_tolling', '=', True),
+        ('is_tolling', '=', True)
+    ]
+</field>
 
             <field name="context">
                 {
@@ -131,7 +132,7 @@
                     'contact_display': 'partner_address', 
                     'restricted_picking_type_code': 'incoming', 
                     'search_default_reception': 1,
-                    'default_is_tolling': 'True'
+                    'default_is_tolling': True
                 }
             </field>
         </record>
