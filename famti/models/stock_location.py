@@ -397,8 +397,8 @@ class StockPicking(models.Model):
             qty = move_line.quantity or 0
             lbs = qty * 2.20462
 
-            package_name = move_line.result_package_id.name or ''
-            serial_no = move_line.lot_name or ''
+            package_name = move_line.result_package_id.name or move_line.package_id.name or''
+            serial_no = move_line.lot_id.name or ''
 
             thickness = 0
             gauge = 0
@@ -431,7 +431,7 @@ class StockPicking(models.Model):
             treatment_out = dict(move_line._fields['treatment_out'].selection).get(
                 move_line.treatment_out, ''
             )
-            film_type = move_line.film
+            film_type = move_line.film or ''
 
 
             sheet.write(row, 0, package_name, normal)

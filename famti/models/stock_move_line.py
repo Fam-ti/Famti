@@ -205,6 +205,53 @@ class StockMoveLine(models.Model):
                     % (self.lot_name, self.product_id.display_name)
                 )
 
+    @api.model_create_multi
+    def create(self, vals_list):
+        lines = super().create(vals_list)
+        sales_lines = lines.filtered(
+            lambda line: line.move_id.picking_id.picking_type_id.code == 'outgoing'
+        )
+        sales_lines._fetch_lot_specs()
+
+        return lines
+
+    def write(self, vals):
+        res = super().write(vals)
+
+        if 'lot_id' in vals or 'quant_id' in vals:
+            sales_lines = self.filtered(
+                lambda line: line.move_id.picking_id.picking_type_id.code == 'outgoing'
+            )
+            sales_lines._fetch_lot_specs()
+
+        return res
+
+
+    def _fetch_lot_specs(self):
+        for line in self:
+            lot = line.lot_id
+
+            if not lot and line.quant_id:
+                lot = line.quant_id.lot_id
+
+            if not lot:
+                continue
+
+            line.treatment_in = lot.treatment_in
+            line.treatment_out = lot.treatment_out
+            line.thickness = lot.thickness
+            line.thickness_uom = lot.thickness_uom
+            line.width = lot.width_val
+            line.width_uom = lot.width_uom
+            line.core_id = lot.core_id
+            line.length = lot.length_val
+            line.length_uom = lot.length_uom
+            line.weight = lot.weight
+            line.weight_uom = lot.weight_uom
+            line.film = lot.film
+            line.film_type = lot.film_type
+    
+
 class StockMove(models.Model):
     _inherit = 'stock.move'
 
