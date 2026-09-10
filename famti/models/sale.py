@@ -247,13 +247,39 @@ class SaleOrder(models.Model):
     def action_reject(self):
         return self.action_cancel()
 
+    # def action_confirm(self):
+    #     if self.state == 'to_approve' and not self.env.user.has_group(
+    #             'famti.group_cheif_financial_officer'):
+    #         raise UserError("Sale Order requires CFO approval.")
+    #     # return super().action_confirm()
+    #     res = super().action_confirm()
+    #     self._create_freight_cost()
+    #     return res
+
     def action_confirm(self):
-        if self.state == 'to_approve' and not self.env.user.has_group(
-                'famti.group_cheif_financial_officer'):
+        if self.state == 'to_approve' and not self.env.user.has_group('famti.group_cheif_financial_officer'):
             raise UserError("Sale Order requires CFO approval.")
-        # return super().action_confirm()
         res = super().action_confirm()
+        for order in self:
+            for line in order.order_line:
+                for move in line.move_ids:
+                    move.write({
+                        'treatment_in': line.treatment_in,
+                        'treatment_out': line.treatment_out,
+                        'thickness_val': line.thickness_val,
+                        'thickness_uom': line.thickness_uom,
+                        'width_val': line.width_val,
+                        'width_uom': line.width_uom,
+                        'core_id': line.core_id,
+                        'length_val': line.length_val,
+                        'length_uom': line.length_uom,
+                        'pieces': line.pieces,
+                        'remarks': line.remarks,
+                        'description': line.description,
+                    })
+
         self._create_freight_cost()
+
         return res
     
     def _create_freight_cost(self):
@@ -452,6 +478,38 @@ class SaleOrder(models.Model):
         else:
             raise UserError('Order Needs to be approved or Something went wrong!')
 
+    def _create_invoices(self, grouped=False, final=False, date=None):
+        invoices = super()._create_invoices(
+            grouped=grouped,
+            final=final,
+            date=date,
+        )
+
+        for invoice in invoices:
+            for invoice_line in invoice.invoice_line_ids:
+                sale_lines = invoice_line.sale_line_ids
+
+                if not sale_lines:
+                    continue
+
+                sale_line = sale_lines[0]
+
+                invoice_line.write({
+                    'description': sale_line.description,
+                    'treatment_in': sale_line.treatment_in,
+                    'treatment_out': sale_line.treatment_out,
+                    'thickness_val': sale_line.thickness_val,
+                    'thickness_uom': sale_line.thickness_uom,
+                    'width_val': sale_line.width_val,
+                    'width_uom': sale_line.width_uom,
+                    'core_id': sale_line.core_id,
+                    'length_val': sale_line.length_val,
+                    'length_uom': sale_line.length_uom,
+                    'remarks': sale_line.remarks,
+                })
+
+        return invoices
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -522,6 +580,7 @@ class SaleOrderLine(models.Model):
             super(SaleOrderLine, rec).write(new_vals)
 
         return True
+
 
 class SaleMoValuation(models.Model):
     _name = 'sale.mo.valuation'
