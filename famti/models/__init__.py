@@ -16,3 +16,4 @@ from . import quickbook
 from . import performance
 from . import cost_sheet
 from . import barcode_generation
+from . import stock_move

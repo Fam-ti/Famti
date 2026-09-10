@@ -15,6 +15,7 @@
             <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='product_uom_id']" position="attributes">
                 <attribute name="column_invisible">parent.so_type == 'fgf' or parent.po_type == 'fgf'</attribute>
             </xpath>
+
             <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='quantity']" position="after">
                 <field name="pieces" column_invisible="parent.so_type != 'fgf'"/>
                 <field name="pieces_po" column_invisible="parent.po_type != 'fgf'"/>
@@ -22,6 +23,20 @@
             </xpath>
             <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='product_id']" position="after">
                 <field name="description" />
+            </xpath>
+
+            <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='description']" position="after">
+
+                <field name="treatment_in"/>
+                <field name="treatment_out"/>
+                <field name="thickness_val"/>
+                <field name="thickness_uom"/>
+                <field name="width_val"/>
+                <field name="width_uom"/>
+                <field name="core_id"/>
+                <field name="length_val"/>
+                <field name="length_uom"/>
+                <field name="remarks"/>
             </xpath>
 
             <xpath expr="//field[@name='delivery_date']" position="before">

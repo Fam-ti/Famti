@@ -41,6 +41,9 @@ class StockPicking(models.Model):
             ('complete_name', '=', 'FM/Stock')
         ], limit=1)
     )
+
+
+
     
     def button_validate(self):
 

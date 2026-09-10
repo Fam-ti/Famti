@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_stock_picking_form_add_move_parameters" model="ir.ui.view">
+        <field name="name">stock.picking.form.add.move.parameters</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_id']" position="after">
+
+                <field name="treatment_in"/>
+                <field name="treatment_out"/>
+                <field name="thickness_val"/>
+                <field name="thickness_uom"/>
+                <field name="width_val"/>
+                <field name="width_uom"/>
+                <field name="core_id"/>
+                <field name="length_val"/>
+                <field name="length_uom"/>
+                <field name="remarks"/>
+
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>
