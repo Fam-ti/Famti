@@ -244,14 +244,14 @@
                         <group>
                             <field name="location_id" options="{'no_create': True}"
                                 groups="stock.group_stock_multi_locations"/>
-                            <field name="package_id" string="Source Package"
+                            <field name="package_id" string="Source Pallet"
                                 groups="stock.group_tracking_lot"/>
                         </group>
 
                         <group>
                             <field name="location_dest_id" options="{'no_create': True}"
                                 groups="stock.group_stock_multi_locations"/>
-                            <field name="result_package_id" string="Destination Package"
+                            <field name="result_package_id" string="Destination Pallet"
                                 groups="stock.group_tracking_lot"/>
                         </group>
 
