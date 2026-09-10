@@ -88,6 +88,11 @@ class StockMoveLine(models.Model):
     ], string="Treatment OUT")
     description = fields.Text(string="Film Description")
     supplier_name = fields.Many2one('res.partner', string="Supplier Name")
+    product_code = fields.Char(
+        related='product_id.default_code',
+        string='SKU',
+        readonly=True,
+    )
     #
     # def _action_done(self):
     #     res = super()._action_done()
