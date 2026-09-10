@@ -131,10 +131,10 @@
 <!--            -->
             <xpath expr="//field[@name='date_order']" position="before">
                 <field name="so_type" readonly="state in ['cancel', 'sale']"/>
-                <field name="buyer_po_number" readonly="state in ['cancel', 'sale']"/>
-                <field name="buyer_po_date" readonly="state in ['cancel', 'sale']"/>
-                <field name="expected_date" readonly="state in ['cancel', 'sale']"/>
-                            <field name="manufacturing_user_id"/>
+<!--                <field name="buyer_po_number" readonly="state in ['cancel', 'sale']"/>-->
+<!--                <field name="buyer_po_date" readonly="state in ['cancel', 'sale']"/>-->
+<!--                <field name="expected_date" readonly="state in ['cancel', 'sale']"/>-->
+                            <field name="manufacturing_user_id" readonly="1"/>
                             <field name="department_id"/>
 
             </xpath>
