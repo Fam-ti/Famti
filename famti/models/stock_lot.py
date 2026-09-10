@@ -89,7 +89,7 @@ class StockLot(models.Model):
     )
     no_of_joint = fields.Char(string="No. Of Joint")
     aging = fields.Char(string="Aging")
-    received_date = fields.Datetime(string="Received Date")
+    received_date = fields.Date(string="Received Date")
     supplier_name = fields.Many2one('res.partner', string="Supplier Name")
     film_description = fields.Text(string="Film Description")
 
