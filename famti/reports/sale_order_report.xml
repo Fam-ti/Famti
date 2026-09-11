@@ -221,9 +221,9 @@
                             <th style="padding:6px;font-weight:bold;">TREATMENT OUT</th>
                             <th style="padding:6px;font-weight:bold;">ROLL LENGTH (MTRS APPROX)</th>
                             <th t-if="o.so_type != 'fgf'" style="padding:6px;font-weight:bold;">QUANTITY (LBS)</th>
-                            <th t-if="o.so_type != 'fgf'" style="padding:6px;font-weight:bold;">PRICE / POUND (IN USD)</th>
+<!--                            <th t-if="o.so_type != 'fgf'" style="padding:6px;font-weight:bold;">PRICE / POUND (IN USD)</th>-->
                             <th t-if="o.so_type == 'fgf'" style="padding:6px;font-weight:bold;">QUANTITY (NO OF ROLLS)</th>
-                            <th t-if="o.so_type == 'fgf'" style="padding:6px;font-weight:bold;">PRICE / ROLL (IN USD)</th>
+<!--                            <th t-if="o.so_type == 'fgf'" style="padding:6px;font-weight:bold;">PRICE / ROLL (IN USD)</th>-->
                             <th style="padding:6px;font-weight:bold;">AMOUNT (IN USD)</th>
                         </tr>
                     </thead>
@@ -261,9 +261,9 @@
                                 <td t-if="o.so_type == 'fgf'" style="padding:6px;">
                                     <span t-field="line.pieces"/>
                                 </td>
-                                <td style="padding:6px;">
-                                    <span t-field="line.price_unit"/>
-                                </td>
+<!--                                <td style="padding:6px;">-->
+<!--                                    <span t-field="line.price_unit"/>-->
+<!--                                </td>-->
                                 <td style="padding:6px; text-align:right;">
                                     <span t-field="line.price_subtotal"/>
                                 </td>
