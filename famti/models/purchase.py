@@ -145,33 +145,25 @@ class Purchase(models.Model):
                     f"Cannot send for CFO approval. Vendor '{order.partner_id.name}' certificate has expired. Please renew it."
                 )
 
-        cfo_group = self.env.ref(
-            'famti.group_cheif_financial_officer'
-        )
-
-        cfo_users = cfo_group.users.filtered(
-            lambda user: user.email
-        )
+        cfo_group = self.env.ref('famti.group_cheif_financial_officer')
+        cfo_users = cfo_group.users.filtered(lambda user: user.email)
 
         if not cfo_users:
-            raise UserError(
-                "No CFO user with an email address is configured."
-            )
+            raise UserError("No CFO user with an email address is configured.")
 
-        template = self.env.ref(
-            'famti.email_template_cfo_approval'
-        )
+        template = self.env.ref('famti.email_template_cfo_approval')
+        email_to = ','.join(cfo_users.mapped('email'))
 
-        for cfo_user in cfo_users:
+        for order in self:
             template.send_mail(
                 order.id,
-                force_send=True,
+                force_send=False,
                 email_values={
-                    'email_to': cfo_user.email,
+                    'email_to': email_to,
                 }
             )
 
-        self.state='to approve'
+        self.write({'state': 'to approve'})
 
     def action_reject_coa(self):
         self.state = 'cancel'
