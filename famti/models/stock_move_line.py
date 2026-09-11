@@ -183,10 +183,10 @@ class StockMoveLine(models.Model):
 
             purchase_line = line.move_id.purchase_line_id
 
-            # if purchase_line and purchase_line.order_id.partner_id:
-            #     vals['supplier_name'] = purchase_line.order_id.partner_id.id
-            if line.supplier_name:
-                vals['supplier_name'] = line.supplier_name.id
+            if purchase_line and purchase_line.order_id.partner_id:
+                vals['supplier_name'] = purchase_line.order_id.partner_id.id
+            # if line.supplier_name:
+            #     vals['supplier_name'] = line.supplier_name.id
 
             if line.date and not lot.received_date:
                 vals['received_date'] = line.date
@@ -310,7 +310,7 @@ class StockMove(models.Model):
         string="SO Type",
         store=True
     )
-    pieces = fields.Float(string="Pieces",compute="_compute_units_display")
+    pieces = fields.Float(string="Pieces",compute="_compute_units_display", store=1)
     rolls_uom_id = fields.Many2one('uom.uom', string="Units",domain="[('name','=','rolls')]",
         default=lambda self: self.env['uom.uom'].search([('name','=','rolls')], limit=1))
    
