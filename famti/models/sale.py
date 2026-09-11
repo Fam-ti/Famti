@@ -269,6 +269,18 @@ class SaleOrder(models.Model):
                         'description': line.description,
                     })
 
+            attachments = self.env['ir.attachment'].search([
+                ('res_model', '=', 'sale.order'),
+                ('res_id', '=', order.id),
+            ])
+            if attachments and order.picking_ids:
+                for picking in order.picking_ids:
+                    for attachment in attachments:
+                        attachment.copy({
+                            'res_model': 'stock.picking',
+                            'res_id': picking.id,
+                        })
+
         self._create_freight_cost()
 
         return res
