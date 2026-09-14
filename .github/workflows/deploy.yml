@@ -5,6 +5,9 @@ on:
     branches:
       - dev
       - uat
+      - main
+
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -14,9 +17,10 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_EC2_HOST || secrets.UAT_EC2_HOST }}
+          host: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_EC2_HOST || github.ref == 'refs/heads/uat' && secrets.UAT_EC2_HOST || secrets.PROD_EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          key: ${{ github.ref == 'refs/heads/dev' && secrets.SSH_PRIVATE_KEY || secrets.UAT_SSH_PRIVATE_KEY }}
+          key: ${{ github.ref == 'refs/heads/dev' && secrets.SSH_PRIVATE_KEY || github.ref == 'refs/heads/uat' && secrets.UAT_SSH_PRIVATE_KEY || secrets.PROD_SSH_PRIVATE_KEY }}
+
           script: |
             set -e
 
@@ -24,43 +28,68 @@ jobs:
               BRANCH=dev
               SERVICE=odoo18
               PORT=8018
-            else
+
+            elif [ "${{ github.ref }}" = "refs/heads/uat" ]; then
               BRANCH=uat
               SERVICE=odoo18
               PORT=8018
+
+            elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+              BRANCH=main
+              SERVICE=odoo18
+              PORT=8018
+
+            else
+              echo "Unsupported branch: ${{ github.ref }}"
+              exit 1
             fi
 
             echo "-----------------------------------"
             echo "Deploying branch: $BRANCH"
             echo "Service: $SERVICE"
+            echo "Port: $PORT"
             echo "-----------------------------------"
 
             cd /opt/odoo18/custom
 
+            echo "Current branch:"
+            git branch --show-current
+
             echo "Stopping service..."
             sudo systemctl stop $SERVICE || true
 
-            echo "Freeing port $PORT (if stuck)..."
+            echo "Freeing port $PORT if stuck..."
             sudo fuser -k ${PORT}/tcp || true
 
-            echo "Pulling latest code..."
+            echo "Fetching latest code..."
             git fetch origin $BRANCH
+
+            echo "Checking out branch..."
+            git checkout $BRANCH
+
+            echo "Resetting to origin/$BRANCH..."
             git reset --hard origin/$BRANCH
-            git clean -fd
-            git pull origin $BRANCH
 
             echo "Installing qifparse..."
-
             /opt/odoo18/venv/bin/python -m pip install qifparse
-            
-            echo "Verifying qifparse installation..."
-            
+
+            echo "Verifying qifparse..."
             /opt/odoo18/venv/bin/python -c "import qifparse; print('qifparse installed successfully')"
 
             echo "Starting service..."
             sudo systemctl start $SERVICE
 
-            echo "Checking service status..."
-            sudo systemctl status $SERVICE --no-pager
+            echo "Waiting for Odoo to start..."
+            sleep 5
 
-            echo "Deployment successful ✅"
+            echo "Checking service status..."
+            sudo systemctl is-active --quiet $SERVICE
+
+            echo "Checking Odoo HTTP endpoint..."
+            curl -fsSI http://127.0.0.1:$PORT | head -n 1
+
+            echo "-----------------------------------"
+            echo "Deployment successful"
+            echo "Branch: $BRANCH"
+            echo "Commit: $(git rev-parse --short HEAD)"
+            echo "-----------------------------------"
