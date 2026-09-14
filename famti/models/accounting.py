@@ -79,6 +79,11 @@ class AccountMove(models.Model):
 
         return super().create(vals)
 
+    def action_print_pdf(self):
+        return self.env.ref(
+            'famti.action_report_invoice_custom'
+        ).report_action(self)
+
 
 class AccountMoveLine(models.Model):
     _inherit = "account.move.line"

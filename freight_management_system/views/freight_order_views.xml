@@ -22,34 +22,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_create_custom_clearance"
-                            string="Create Custom Clearance" type="object"
-                            class="oe_highlight"
-                            data-hotkey="w"
-                            invisible="1"/>
-
-                     <button name="action_export_tracking_xlsx"
-                    type="object"
-                    string="Container Tracking xlsx"
-                    class="btn-primary"/>
-
-                    <button
-                            name="action_export_warehouse_container_xlsx"
-                            string="WH Update Container xlsx"
-                            type="object"
-                            class="oe_highlight"/>
-
-                    <button
-                    name="action_export_container_payment_reminder_xlsx"
-                    string="Payment Reminder xlsx"
-                    type="object"
-                    class="oe_highlight"/>
-                     <button
-                            name="action_export_transport_summary_xlsx"
-                            string="Local Delv. Xlsx"
-                            type="object"
-                            class="oe_highlight"/>
-
+                    
                     <button name="action_submit" string="Submit"
                             type="object" class="oe_highlight"
                             data-hotkey="w" invisible="state != 'draft'"/>
