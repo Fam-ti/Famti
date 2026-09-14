@@ -19,7 +19,7 @@ jobs:
             set -e
 
             echo "==================================="
-            echo "GitHub Actions → PROD SSH TEST"
+            echo "GitHub Actions -> PROD SSH TEST"
             echo "==================================="
 
             echo "User:"
@@ -38,4 +38,4 @@ jobs:
             echo "Odoo service:"
             sudo systemctl is-active odoo18
 
-            echo "PROD SSH test successful ✅"
+            echo "PROD SSH test successful"
