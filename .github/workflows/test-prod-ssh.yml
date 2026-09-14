@@ -1,0 +1,41 @@
+name: Test PROD SSH
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Test PROD SSH connection
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+
+          script: |
+            set -e
+
+            echo "==================================="
+            echo "GitHub Actions → PROD SSH TEST"
+            echo "==================================="
+
+            echo "User:"
+            whoami
+
+            echo "Hostname:"
+            hostname
+
+            echo "Current branch:"
+            cd /opt/odoo18/custom
+            git branch --show-current
+
+            echo "Current commit:"
+            git rev-parse --short HEAD
+
+            echo "Odoo service:"
+            sudo systemctl is-active odoo18
+
+            echo "PROD SSH test successful ✅"
