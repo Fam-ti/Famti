@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="action_freight_container_tracking" model="ir.actions.server">
+        <field name="name">Container Tracking xlsx</field>
+        <field name="model_id" ref="model_freight_order"/>
+        <field name="binding_model_id" ref="model_freight_order"/>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_export_tracking_xlsx()</field>
+    </record>
+
+    <record id="action_freight_wh_update_container" model="ir.actions.server">
+        <field name="name">WH Update Container xlsx</field>
+        <field name="model_id" ref="model_freight_order"/>
+        <field name="binding_model_id" ref="model_freight_order"/>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_export_warehouse_container_xlsx()</field>
+    </record>
+
+    <record id="action_freight_payment_reminder" model="ir.actions.server">
+        <field name="name">Payment Reminder xlsx</field>
+        <field name="model_id" ref="model_freight_order"/>
+        <field name="binding_model_id" ref="model_freight_order"/>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_export_container_payment_reminder_xlsx()</field>
+    </record>
+
+    <record id="action_freight_local_delivery" model="ir.actions.server">
+        <field name="name">Local Delv. Xlsx</field>
+        <field name="model_id" ref="model_freight_order"/>
+        <field name="binding_model_id" ref="model_freight_order"/>
+        <field name="binding_type">action</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_export_transport_summary_xlsx()</field>
+    </record>
+</odoo>

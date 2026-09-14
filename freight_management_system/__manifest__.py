@@ -49,6 +49,7 @@
         'views/freight_vessel.xml',
         'report/freight_report_templates.xml',
         'report/tracking_report_templates.xml',
+        'report/fright_order_reports.xml',
         'wizard/custom_clearance_revision_views.xml'
     ],
     'images': ['static/description/banner.png'],
