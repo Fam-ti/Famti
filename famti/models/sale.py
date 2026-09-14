@@ -300,7 +300,7 @@ class SaleOrder(models.Model):
                     'price': line.price_unit,
                 }))
 
-            freight.create([{
+            freight_order = freight.create([{
                 'shipper_id': order.partner_id.id, 
                 'type': 'export', 
                 'transport_type': 'land',
@@ -312,6 +312,19 @@ class SaleOrder(models.Model):
                 'incoterm_id':order.incoterm.id,
                 'order_ids': line_vals,
                 'consignee_id': order.partner_id.id,}])
+
+            attachments = self.env['ir.attachment'].search([
+                ('res_model', '=', 'sale.order'),
+                ('res_id', '=', order.id),
+            ])
+
+
+            for attachment in attachments:
+                new_attachment = attachment.copy({
+                    'res_model': 'freight.order',
+                    'res_id': freight_order.id,
+                })
+
                 
         return
 
