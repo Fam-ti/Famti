@@ -8,7 +8,7 @@ class ProductTemplate(models.Model):
     mo_serial_no = fields.Boolean(string="Is Metalize")
     is_consumables = fields.Boolean(string="Is Consumables")
     supplier_name = fields.Many2one('res.partner',string="Supplier Name")
-    material_type = fields.Char(string="Material Type")
+    material_type = fields.Char(string="Film Type")
     type_reference = fields.Char(string="Type")
     film_type = fields.Selection([
         ('bare', 'Bare'),
@@ -16,42 +16,56 @@ class ProductTemplate(models.Model):
         ('gold_met', 'GOLD MET'),
         ('pvdc', 'PVDC'),
         ('alox', 'Alox'),
-    ], string='Film Type')
+    ], string='Film')
     film_description = fields.Text(string="Film Description")
     treatment_in = fields.Char(string="Treatment In")
     treatment_out = fields.Char(string="Treatment Out")
     treatment_in_selection = fields.Selection([
-            ('corona', 'Corona'),
-            ('met_corona', 'Met on Corona'),
-            ('met_chemical', 'Met on Chemical'),
-            ('met_plain', 'Met on Plain'),
-            ('plain', 'Plain'),
-            ('pvdc', 'PVDC COATED'),
-            ('soft_touch', 'SOFT TOUCH'),
-            ('alox', 'Top coat Alox'),
+        ('corona', 'Corona'),
+        ('met_corona', 'Metalizzed on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('met_plain', 'Metallized on Plain'),
+        ('plain', 'Plain'),
+        ('pvdc', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('acrylic', 'ACRYLIC'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
         ], string="Treatment IN")
 
     treatment_out_selection = fields.Selection([
-            ('acrylic', 'ACRYLIC'),
-            ('corona', 'Corona'),
-            ('met_plain', 'Met on Plain'),
-            ('met_corona', 'Met on Corona'),
-            ('met_corona_out', 'Metallized on Corona Outside'),
-            ('met_chemical', 'Metallized on Chemical'),
-            ('plain', 'Plain'),
-            ('pvdc_out', 'PVDC COATED'),
+        ('acrylic', 'ACRYLIC'),
+        ('corona', 'Corona'),
+        ('met_plain', 'Metallized on Plain'),
+        ('met_corona', 'Metallized on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('plain', 'Plain'),
+        ('pvdc_out', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
         ], string="Treatment OUT")
     product_reference_code = fields.Char(string="Product Code")
     mo_service_cost = fields.Boolean(string="Is Manufacturing Cost")
     density = fields.Float(string="Roll Density", help="This helps to categorise specific product.")
     thickness_val = fields.Float(string="Thickness",help="This helps to categorise specific product.")
-    thickness_uom = fields.Selection(selection=[('guage','Guage'),('micron','Micron'),('mm','MM'),('mil','Mil')],default='micron',string=" ")
+    thickness_uom = fields.Selection(selection=[('guage','Guage'),('micron','Micron'),('mm','MM'),('mil','Mil')],default='micron',string="Thickness UOM")
 
 
     width_val = fields.Float(string="Width",help="This helps to categorise specific product.")
-    width_uom = fields.Selection(selection=[('mm','MM'),('inch','Inch'),('mm','MM'),('mil','Mil')],default='mm',string=" ")
+    width_uom = fields.Selection(selection=[('mm','MM'),('inch','Inch'),('mm','MM'),('mil','Mil')],default='inch',string="Width UOM")
+    pallet_no = fields.Char(string="Pallet Number",help='The pallet no. which are received from vendor end.')
+    length = fields.Float(string="Length",help='The length of the product.')
+    no_of_joint = fields.Char(string="No. Of Joint")
+    aging = fields.Char(string="Aging")
+    received_date = fields.Datetime(string="Received Date")
     
-
 
 
 class ProductProduct(models.Model):
@@ -74,25 +88,35 @@ class ProductProduct(models.Model):
     treatment_in = fields.Char(string="Treatment In",related='product_tmpl_id.treatment_in')
     treatment_out = fields.Char(string="Treatment Out",related='product_tmpl_id.treatment_out')
     treatment_in_selection = fields.Selection([
-            ('corona', 'Corona'),
-            ('met_corona', 'Met on Corona'),
-            ('met_chemical', 'Met on Chemical'),
-            ('met_plain', 'Met on Plain'),
-            ('plain', 'Plain'),
-            ('pvdc', 'PVDC COATED'),
-            ('soft_touch', 'SOFT TOUCH'),
-            ('alox', 'Top coat Alox'),
+        ('corona', 'Corona'),
+        ('met_corona', 'Metalizzed on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('met_plain', 'Metallized on Plain'),
+        ('plain', 'Plain'),
+        ('pvdc', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('acrylic', 'ACRYLIC'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
         ], string="Treatment IN",related='product_tmpl_id.treatment_in_selection')
 
     treatment_out_selection = fields.Selection([
-            ('acrylic', 'ACRYLIC'),
-            ('corona', 'Corona'),
-            ('met_plain', 'Met on Plain'),
-            ('met_corona', 'Met on Corona'),
-            ('met_corona_out', 'Metallized on Corona Outside'),
-            ('met_chemical', 'Metallized on Chemical'),
-            ('plain', 'Plain'),
-            ('pvdc_out', 'PVDC COATED'),
+        ('corona', 'Corona'),
+        ('met_corona', 'Metalizzed on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('met_plain', 'Metallized on Plain'),
+        ('plain', 'Plain'),
+        ('pvdc', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('acrylic', 'ACRYLIC'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
         ], string="Treatment OUT",related='product_tmpl_id.treatment_out_selection')
     mo_service_cost = fields.Boolean(string="Is Manufacturing Cost",related='product_tmpl_id.mo_service_cost')
     density = fields.Float(string="Roll Density", help="This helps to categorise specific product.",related='product_tmpl_id.density')

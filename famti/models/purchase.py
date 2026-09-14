@@ -46,7 +46,7 @@ class Purchase(models.Model):
         ('sample', 'Sample'),
         ('normal', 'Normal'),
         ('tolling', 'Tolling'),
-        ('fgf', 'FGF'),
+        ('fgf', 'RO'),
     ], string='PO Type', tracking=True, default='normal')
     due_date = fields.Date(string="Due Date")
     advance_amount = fields.Float(string="Advance Amount")
@@ -71,6 +71,39 @@ class Purchase(models.Model):
     def button_approve(self, force=False):
         result = super(Purchase, self).button_approve(force=force)
         self._create_freight_cost()
+
+        template = self.env.ref(
+            'famti.email_template_po_approved',
+            raise_if_not_found=False
+        )
+
+        if template:
+            for order in self:
+                creator = order.create_uid
+
+                if creator and creator.email:
+                    template.send_mail(
+                        order.id,
+                        force_send=True,
+                        email_values={
+                            'email_to': creator.email,
+                        }
+                )
+
+        for order in self:
+            attachments = self.env['ir.attachment'].search([
+                ('res_model', '=', 'purchase.order'),
+                ('res_id', '=', order.id),
+            ])
+            if attachments and order.picking_ids:
+                for picking in order.picking_ids:
+                    for attachment in attachments:
+                        attachment.copy({
+                            'res_model': 'stock.picking',
+                            'res_id': picking.id,
+                        })
+
+                    
         return result
 
     def _create_freight_cost(self):
@@ -126,7 +159,25 @@ class Purchase(models.Model):
                     f"Cannot send for CFO approval. Vendor '{order.partner_id.name}' certificate has expired. Please renew it."
                 )
 
-        self.state='to approve'
+        cfo_group = self.env.ref('famti.group_cheif_financial_officer')
+        cfo_users = cfo_group.users.filtered(lambda user: user.email)
+
+        if not cfo_users:
+            raise UserError("No CFO user with an email address is configured.")
+
+        template = self.env.ref('famti.email_template_cfo_approval')
+        email_to = ','.join(cfo_users.mapped('email'))
+
+        for order in self:
+            template.send_mail(
+                order.id,
+                force_send=False,
+                email_values={
+                    'email_to': email_to,
+                }
+            )
+
+        self.write({'state': 'to approve'})
 
     def action_reject_coa(self):
         self.state = 'cancel'
@@ -177,29 +228,39 @@ class PurchaseOrderLine(models.Model):
     # uom_conv_id = fields.Many2one('uom.convert.wizard',string="UOM Conversion Wizard")
     pieces = fields.Float(string="Pieces")
 
-    description = fields.Text(string="Product Description")
+    description = fields.Text(string="Filim Description")
     remarks = fields.Text(string="Remarks")
 
     treatment_in = fields.Selection([
-            ('corona', 'Corona'),
-            ('met_corona', 'Met on Corona'),
-            ('met_chemical', 'Met on Chemical'),
-            ('met_plain', 'Met on Plain'),
-            ('plain', 'Plain'),
-            ('pvdc', 'PVDC COATED'),
-            ('soft_touch', 'SOFT TOUCH'),
-            ('alox', 'Top coat Alox'),
+        ('corona', 'Corona'),
+        ('met_corona', 'Metalizzed on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('met_plain', 'Metallized on Plain'),
+        ('plain', 'Plain'),
+        ('pvdc', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('acrylic', 'ACRYLIC'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
         ], string="Treatment IN")
 
     treatment_out = fields.Selection([
             ('acrylic', 'ACRYLIC'),
             ('corona', 'Corona'),
-            ('met_plain', 'Met on Plain'),
-            ('met_corona', 'Met on Corona'),
-            ('met_corona_out', 'Metallized on Corona Outside'),
+            ('met_plain', 'Metallized on Plain'),
+            ('met_corona', 'Metallized on Corona'),
             ('met_chemical', 'Metallized on Chemical'),
             ('plain', 'Plain'),
             ('pvdc_out', 'PVDC COATED'),
+            ('soft_touch', 'SOFT TOUCH'),
+            ('alox', 'Top coat Alox'),
+            ('chemical_coat', 'Chemical Coated'),
+            ('met_copolymer', 'Met on Copolymer'),
+            ('copolymer', 'Copolymer'),
+            ('special_chemical', 'Special Chemical'),
         ], string="Treatment OUT")
 
     rolls_uom_id = fields.Many2one('uom.uom', string="UoM",domain="[('name','=','rolls')]",
@@ -244,3 +305,31 @@ class PurchaseOrderLine(models.Model):
             super(PurchaseOrderLine, rec).write(new_vals)
 
         return True
+
+    def _prepare_stock_moves(self, picking):
+        res = super()._prepare_stock_moves(picking)
+        for vals in res:
+            weight_kg = self.product_qty * 0.45359237
+            vals.update({
+                'film': self.film,
+                'film_type': self.film_type,
+                'weight_val':weight_kg,
+                'weight_uom': 'kg',
+                'thickness_val': self.thickness_val,
+                'thickness_uom': self.thickness_uom,
+                'width_val': self.width_val,
+                'width_uom': self.width_uom,
+                'core_id': self.core_id,
+                # 'category': self.category,
+                'film': self.film,
+                'film_type': self.film_type,
+                'length_val': self.length_val,
+                'length_uom': self.length_uom,
+                # 'pieces': self.pieces,
+                'description': self.description,
+                # 'remarks': self.remarks,
+                'treatment_in': self.treatment_in,
+                'treatment_out': self.treatment_out,
+            })
+            print("==========vals",vals)
+        return res

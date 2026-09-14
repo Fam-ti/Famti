@@ -34,6 +34,7 @@
                 <xpath expr="//sheet/notebook" position="before">
                     <group string="QC Details" col="2">
                         <group>
+                            <field name="treatment_in"/>
                             <field name="grade_type"/>
                             <label for="thickness" />
                             <div class="o_row">
@@ -45,11 +46,17 @@
                                 <field name="weight"/>
                                 <field name="weight_uom"/>
                             </div>
-                            <field name="core_selection_id"/>
+                            <field name="core_id"/>
                             <field name="lot_number" invisible="1"/>
                             <field name="pallet_no"/>
+                            <field name="film"/>
+                            <field name="film_type"/>
+                            <field name="film_description"/>
+                            <field name="qc_remark"/>
+
                         </group>
                         <group>
+                            <field name="treatment_out"/>
                             <label for="width_val"/>
                             <div class="o_row">
                                 <field name="width_val"/>
@@ -62,7 +69,10 @@
                             </div>
                             <field name="qc_status" invisible="1"/>
                             <field name="upload_doc"/>
-                            <field name="qc_remark"/>
+                            <field name="no_of_joint"/>
+                            <field name="aging"/>
+                            <field name="received_date"/>
+                            <field name="supplier_name"/>
                         </group>
                     </group>
                 </xpath>
@@ -98,7 +108,7 @@
                                 type="action"
                                 class="btn btn-outline-primary btn-sm ms-2"
                                 name="%(action_open_excel_wiz)d"
-                                string="Upload Excel"/>
+                                string="Upload csv"/>
                         </span>
                     </xpath>
 
@@ -106,28 +116,156 @@
             </record>
 
 
-          <record id="view_stock_move_line_form_inherit_film" model="ir.ui.view">
+    <record id="view_stock_move_line_form_inherit_film" model="ir.ui.view">
         <field name="name">stock.move.line.form.inherit.film</field>
         <field name="model">stock.move.line</field>
         <field name="inherit_id" ref="stock.view_move_line_form"/>
-        <field name="arch" type="xml">
+        <field name="priority">100</field>
 
-            <xpath expr="//field[@name='product_id']" position="after">
-                <field name="film"/>
-                <field name="film_type"/>
-                <field name="category"/>
-                <field name="weight"/>
-                <field name="weight_uom"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="string">Roll Details</attribute>
+                <attribute name="edit">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='lot_id']" position="after">
-                <field name="thickness"/>
-                <field name="thickness_uom"/>
-                <field name="width"/>
-                <field name="width_uom"/>
-                <field name="core_id"/>
-                <field name="length"/>
-                <field name="length_uom"/>
+            <xpath expr="//form/sheet" position="replace">
+
+                <sheet>
+                    <field name="company_id" invisible="1"/>
+                    <field name="picking_id" invisible="1"/>
+                    <field name="product_uom_category_id" invisible="1"/>
+                    <field name="tracking" invisible="1"/>
+                    <separator string="Roll Information"/>
+
+                    <group col="2">
+
+                        <group>
+                            <field name="product_id" readonly="context.get('default_product_id')"/>
+                            <field name="product_code" readonly="1"/>
+                            <field name="lot_id" string="Roll Number" groups="stock.group_production_lot"
+                                context="{
+                                    'default_product_id': product_id,
+                                    'active_picking_id': picking_id
+                                }"
+                                invisible="tracking == 'none' or (not lot_id and lot_name)"/>
+                            <field name="lot_name" string="Roll Number" groups="stock.group_production_lot"
+                                invisible="tracking == 'none' or lot_id or not lot_name"/>
+                            
+                            <label for="quantity" string="Quantity"/>
+
+                            <div class="o_row">
+                                <field name="quantity" nolabel="1"/>
+                                <field name="product_uom_id" nolabel="1" options="{'no_create': True}"
+                                    string="Unit of Measure" groups="uom.group_uom"/>
+                            </div>
+
+                        </group>
+
+                        <group>
+                            <field name="date" readonly="state != 'done'"/>
+                            <field name="reference" string="Reference"/>
+                            <field name="origin" />
+                        </group>
+
+                    </group>
+
+                    <separator string="Film Information"/>
+                    <group col="2">
+
+                        <group>
+                            <field name="film" string="Film"/>
+                            <field name="film_type" string="Film Type"/>
+                        </group>
+
+                        <group>
+                            <field name="category" string="Film Category"/>
+                        </group>
+
+                    </group>
+
+                    <separator string="Treatment"/>
+                    <group col="2">
+                        <group>
+                            <field name="treatment_in" string="Treatment IN"/>
+                        </group>
+
+                        <group>
+                            <field name="treatment_out" string="Treatment OUT"/>
+                        </group>                        
+                    </group>
+
+
+
+                    <separator string="Roll Specifications"/>
+                    <group col="2">
+
+                        <group>
+
+                            <label for="weight"/>
+                            <div class="o_row">
+                                <field name="weight" nolabel="1"/>
+                                <field name="weight_uom" nolabel="1"/>
+                            </div>
+
+
+                            <label for="thickness"/>
+                            <div class="o_row">
+                                <field name="thickness" nolabel="1"/>
+                                <field name="thickness_uom" nolabel="1"/>
+                            </div>
+
+
+                            <label for="width"/>
+                            <div class="o_row">
+                                <field name="width" nolabel="1"/>
+                                <field name="width_uom" nolabel="1"/>
+                            </div>
+
+                        </group>
+
+
+                        <group>
+
+                            <label for="length"/>
+                            <div class="o_row">
+                                <field name="length" nolabel="1"/>
+                                <field name="length_uom" nolabel="1"/>
+                            </div>
+
+                            <field name="core_id" string="Core ID"/>
+
+                        </group>
+
+                    </group>
+
+                    <separator string="Stock Location"/>
+                    <group col="2">
+
+                        <group>
+                            <field name="location_id" options="{'no_create': True}"
+                                groups="stock.group_stock_multi_locations"/>
+                            <field name="package_id" string="Source Pallet"
+                                groups="stock.group_tracking_lot"/>
+                        </group>
+
+                        <group>
+                            <field name="location_dest_id" options="{'no_create': True}"
+                                groups="stock.group_stock_multi_locations"/>
+                            <field name="result_package_id" string="Destination Pallet"
+                                groups="stock.group_tracking_lot"/>
+                        </group>
+
+                    </group>
+
+
+                    <separator string="Additional Information"/>
+                    <group col="2">
+                        <field name="owner_id" string="Owner" groups="stock.group_tracking_owner"/>
+                        <field name="create_uid" string="Done By" widget="many2one_avatar_user" optional="hide"/>
+                    </group>
+
+                </sheet>
+
             </xpath>
 
         </field>
@@ -167,6 +305,56 @@
 		}
 	    </field>
 	</record>
+
+    <record id="view_stock_move_line_roll_number" model="ir.ui.view">
+        <field name="name">stock.move.line.roll.number</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='lot_name']" position="attributes">
+                <attribute name="string">Roll Number</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_quant_package_form_roll_number" model="ir.ui.view">
+        <field name="name">stock.quant.package.form.roll.number</field>
+        <field name="model">stock.quant.package</field>
+        <field name="inherit_id" ref="stock.view_quant_package_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='lot_id']" position="attributes">
+                <attribute name="string">Roll Number</attribute>
+            </xpath>
+
+        </field>
+    </record>
+    
+    <record id="view_stock_quant_tree_editable_roll_number" model="ir.ui.view">
+        <field name="name">stock.quant.tree.editable.roll.number</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.view_stock_quant_tree_editable"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='lot_id']" position="attributes">
+                <attribute name="string">Roll Number</attribute>
+            </xpath>
+
+        </field>
+    </record>
+
+    <record id="view_stock_quant_tree_simple_roll_label" model="ir.ui.view">
+        <field name="name">stock.quant.tree.simple.roll.label</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.view_stock_quant_tree_simple"/>
+        <field name="arch" type="xml">
+            <field name="lot_id" position="attributes">
+                <attribute name="string">Roll Number</attribute>
+            </field>
+        </field>
+    </record>
 
 
     </data>

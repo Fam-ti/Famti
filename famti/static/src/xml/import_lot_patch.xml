@@ -10,6 +10,30 @@
         </xpath>
     </t>
 
+    <t t-inherit="stock.GenerateSerials" t-inherit-mode="extension">
+        <xpath expr="//button" position="replace">
+            <button class="btn btn-link" t-on-click="openDialog">
+                Generate Roll Numbers
+            </button>
+        </xpath>
+    </t>
+
+    <t t-inherit="stock.ImportLots" t-inherit-mode="extension">
+        <xpath expr="//button" position="replace">
+            <button class="btn btn-link" t-on-click="openDialog">
+                Import Roll Numbers
+            </button>
+        </xpath>
+    </t>
+
+    <t t-inherit="stock.generate_serial_dialog" t-inherit-mode="extension">
+        <xpath expr="//label[@for='next_serial_0']" position="replace">
+            <label class="o_form_label" for="next_serial_0">
+                First Roll Number
+            </label>
+        </xpath>
+    </t>
+
 
 
 </templates>

@@ -99,6 +99,21 @@
                     <field name="rolls_uom_id" string="Units" column_invisible="parent.so_type != 'fgf' and parent.po_type != 'fgf'"/>
                 </xpath>
 
+                <xpath expr="//field[@name='move_ids_without_package']//field[@name='lot_ids']" position="attributes">
+                    <attribute name="string">Roll Numbers</attribute>
+                </xpath>
+
+            </field>
+        </record>
+
+        <record id="stock_quant_search_view_roll_number" model="ir.ui.view">
+            <field name="name">stock.quant.search.roll.number.groupby</field>
+            <field name="model">stock.quant</field>
+            <field name="inherit_id" ref="stock.quant_search_view"/>
+            <field name="arch" type="xml">
+                <filter name="Lot_Serial_number" position="attributes">
+                    <attribute name="string">Lot/Roll Number</attribute>
+                </filter>
             </field>
         </record>
 

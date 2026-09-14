@@ -84,7 +84,7 @@
                                 </div>
                                 <div style="padding:8px; font-size:12px; line-height:18px;">
                                     <strong t-field="doc.carrier_id.name"/><br/>
-                                    <strong>Driver:</strong> <span t-esc="doc.driver_name"/><br/>
+                                    <strong>Driver:</strong> <span t-esc="doc.driver_name_id.name"/><br/>
                                     <strong>Truck No:</strong> <span t-esc="doc.vehicle_number"/><br/>
                                     <strong>Driver Phone:</strong> <span t-esc="doc.driver_phone"/><br/>
                                     <strong>Driver Email:</strong> <span t-esc="doc.driver_email"/>

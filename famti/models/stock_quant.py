@@ -4,7 +4,7 @@ from datetime import datetime
 class StockQuant(models.Model):
     _inherit = 'stock.quant'
 
-    lot_id = fields.Many2one('stock.lot',string='Serial Numbers')
+    lot_id = fields.Many2one('stock.lot',string='Roll Numbers')
 
 class StockQuantPackage(models.Model):
     _inherit = 'stock.quant.package'

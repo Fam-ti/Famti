@@ -11,6 +11,9 @@ class SaleOrder(models.Model):
         ('sent', 'Quotation Sent'),
         ('to_approve', 'To Approve'),
         ('sale', 'Sales Order'),
+        ('in_manf', 'In Manufacturing'),
+        ('in_progress', 'In Progress'),
+        ('closed', 'Closed'),
         ('done', 'Locked'),
         ('cancel', 'Cancelled'),
     ], string='Status', readonly=True, tracking=True, default='draft')
@@ -49,7 +52,7 @@ class SaleOrder(models.Model):
         ('sample', 'Sample'),
         ('normal', 'Normal'),
         ('tolling', 'Tolling'),
-        ('fgf', 'FGF'),
+        ('fgf', 'RO'),
     ], string='SO Type', tracking=True, default='normal')
 
     mo_count = fields.Integer(
@@ -73,6 +76,46 @@ class SaleOrder(models.Model):
     buyer_po_date = fields.Date(string="Buyer PO Date")
     expected_date = fields.Date(string='Expected Date', help='The expected date'
                                                              'of the order', required=False)
+    manufacturing_user_id = fields.Many2one(
+        'res.users',
+        string='Manf. Person'
+    )
+    department_id = fields.Many2one(
+        'hr.department',
+        string='Department Id'
+    )
+    mo_status = fields.Selection([('in_manf', 'In Manufacturing'),
+        ('in_progress', 'In Progress'),
+        ('closed', 'Closed')],
+        string="MO Status")
+    
+    customer_gst_number = fields.Char(string='GST Number',related='partner_id.vat',store=True,readonly=True)
+
+    def _create_invoices(self, grouped=False, final=False, date=None):
+        invoices = super()._create_invoices(
+            grouped=grouped,
+            final=final,
+            date=date
+        )
+
+        for invoice in invoices:
+            sale_order = invoice.line_ids.sale_line_ids.order_id[:1]
+            if sale_order:
+                invoice.buyer_po_number = sale_order.buyer_po_number
+
+        return invoices
+    
+    @api.model
+    def create(self, vals):
+        if not vals.get('department_id'):
+            dept = self.env['hr.department'].search(
+                [('name', 'ilike', 'manufacturing')],
+                limit=1
+            )
+            if dept:
+                vals['department_id'] = dept.id
+
+        return super().create(vals)
 
     def _compute_freight_count(self):
         for order in self:
@@ -141,10 +184,27 @@ class SaleOrder(models.Model):
 
 
     def action_cfo_approval(self):
-         for order in self:
+        for order in self:
             if not order.order_line:
                 raise UserError("Sales Order must have at least one order line.")
-            self.write({'state': 'to_approve'})
+
+            cfo_group = self.env.ref('famti.group_cheif_financial_officer')
+            cfo_users = cfo_group.users.filtered(lambda user: user.email)
+
+            if not cfo_users:
+                raise UserError("No CFO user with an email address is configured.")
+
+            template = self.env.ref('famti.email_template_sale_cfo_approval')
+
+            template.send_mail(
+                order.id,
+                force_send=False, 
+                email_values={
+                    'email_to': ','.join(cfo_users.mapped('email')),
+                },
+            )
+
+        self.write({'state': 'to_approve'})
 
     def action_approve(self):
         for order in self:
@@ -155,19 +215,74 @@ class SaleOrder(models.Model):
                 if order.state == 'to_approve':
                     order.write({'state': 'draft'})
 
+                    template = self.env.ref(
+                        'famti.email_template_so_approved',
+                        raise_if_not_found=False
+                    )
+
+                    if template:
+                        creator = order.create_uid
+
+                        if creator and creator.email:
+                            template.send_mail(
+                                order.id,
+                                force_send=True,
+                                email_values={
+                                    'email_to': creator.email,
+                                }
+                            )
+
             order.action_confirm()
 
 
     def action_reject(self):
         return self.action_cancel()
 
+    # def action_confirm(self):
+    #     if self.state == 'to_approve' and not self.env.user.has_group(
+    #             'famti.group_cheif_financial_officer'):
+    #         raise UserError("Sale Order requires CFO approval.")
+    #     # return super().action_confirm()
+    #     res = super().action_confirm()
+    #     self._create_freight_cost()
+    #     return res
+
     def action_confirm(self):
-        if self.state == 'to_approve' and not self.env.user.has_group(
-                'famti.group_cheif_financial_officer'):
+        if self.state == 'to_approve' and not self.env.user.has_group('famti.group_cheif_financial_officer'):
             raise UserError("Sale Order requires CFO approval.")
-        # return super().action_confirm()
         res = super().action_confirm()
+        for order in self:
+            for line in order.order_line:
+                for move in line.move_ids:
+                    move.write({
+                        'treatment_in': line.treatment_in,
+                        'treatment_out': line.treatment_out,
+                        'thickness_val': line.thickness_val,
+                        'thickness_uom': line.thickness_uom,
+                        'width_val': line.width_val,
+                        'width_uom': line.width_uom,
+                        'core_id': line.core_id,
+                        'length_val': line.length_val,
+                        'length_uom': line.length_uom,
+                        'pieces': line.pieces,
+                        'remarks': line.remarks,
+                        'description': line.description,
+                    })
+
+            attachments = self.env['ir.attachment'].search([
+                ('res_model', '=', 'sale.order'),
+                ('res_id', '=', order.id),
+            ])
+            if attachments and order.picking_ids:
+                for picking in order.picking_ids:
+                    for attachment in attachments:
+                        attachment.copy({
+                            'res_model': 'stock.picking',
+                            'res_id': picking.id,
+                        })
+
         self._create_freight_cost()
+
         return res
     
     def _create_freight_cost(self):
@@ -185,7 +300,7 @@ class SaleOrder(models.Model):
                     'price': line.price_unit,
                 }))
 
-            freight.create([{
+            freight_order = freight.create([{
                 'shipper_id': order.partner_id.id, 
                 'type': 'export', 
                 'transport_type': 'land',
@@ -197,6 +312,19 @@ class SaleOrder(models.Model):
                 'incoterm_id':order.incoterm.id,
                 'order_ids': line_vals,
                 'consignee_id': order.partner_id.id,}])
+
+            attachments = self.env['ir.attachment'].search([
+                ('res_model', '=', 'sale.order'),
+                ('res_id', '=', order.id),
+            ])
+
+
+            for attachment in attachments:
+                new_attachment = attachment.copy({
+                    'res_model': 'freight.order',
+                    'res_id': freight_order.id,
+                })
+
                 
         return
 
@@ -301,6 +429,105 @@ class SaleOrder(models.Model):
             'target': 'new',
         }
 
+    def action_in_progress(self):
+        self.state = 'in_progress'
+
+
+    def action_closed(self):
+        self.mo_status = 'closed'
+        self.state = 'closed'
+        # self.write({'state':'closed','mo_status':'closed'})
+ 
+
+    def action_send_to_production(self):
+        if self.state == 'sale':
+            self.state = 'in_manf'
+            self.mo_status = 'in_manf'
+
+            template = self.env.ref(
+                'famti.email_template_so_send_to_production',
+                raise_if_not_found=False
+            )
+
+            if template:
+                manufacture_group = self.env.ref(
+                    'famti.group_manufacture_users',
+                    raise_if_not_found=False
+                )
+
+                if manufacture_group:
+                    users = manufacture_group.users.filtered(
+                        lambda u: u.email
+                    )
+
+                    email_to = ','.join(users.mapped('email'))
+
+                    if email_to:
+                        template.send_mail(
+                            self.id,
+                            force_send=True,
+                            email_values={
+                                'email_to': email_to,
+                            }
+                        )
+        else:
+            raise UserError('Order Needs to be approved or Something went wrong!')
+
+    def action_sale_ready(self):
+        if self.state == 'closed':
+            self.state = 'sale'
+
+            template = self.env.ref(
+                'famti.email_template_so_manufacturing_completed',
+                raise_if_not_found=False
+            )
+
+            if template:
+                creator = self.create_uid
+
+                if creator and creator.email:
+                    template.send_mail(
+                        self.id,
+                        force_send=True,
+                        email_values={
+                            'email_to': creator.email,
+                        }
+                    )
+        else:
+            raise UserError('Order Needs to be approved or Something went wrong!')
+
+    def _create_invoices(self, grouped=False, final=False, date=None):
+        invoices = super()._create_invoices(
+            grouped=grouped,
+            final=final,
+            date=date,
+        )
+
+        for invoice in invoices:
+            for invoice_line in invoice.invoice_line_ids:
+                sale_lines = invoice_line.sale_line_ids
+
+                if not sale_lines:
+                    continue
+
+                sale_line = sale_lines[0]
+
+                invoice_line.write({
+                    'description': sale_line.description,
+                    'treatment_in': sale_line.treatment_in,
+                    'treatment_out': sale_line.treatment_out,
+                    'thickness_val': sale_line.thickness_val,
+                    'thickness_uom': sale_line.thickness_uom,
+                    'width_val': sale_line.width_val,
+                    'width_uom': sale_line.width_uom,
+                    'core_id': sale_line.core_id,
+                    'length_val': sale_line.length_val,
+                    'length_uom': sale_line.length_uom,
+                    'remarks': sale_line.remarks,
+                })
+
+        return invoices
+
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -310,24 +537,34 @@ class SaleOrderLine(models.Model):
 
     treatment_in = fields.Selection([
         ('corona', 'Corona'),
-        ('met_corona', 'Met on Corona'),
-        ('met_chemical', 'Met on Chemical'),
-        ('met_plain', 'Met on Plain'),
+        ('met_corona', 'Metalizzed on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('met_plain', 'Metallized on Plain'),
         ('plain', 'Plain'),
         ('pvdc', 'PVDC COATED'),
         ('soft_touch', 'SOFT TOUCH'),
         ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('acrylic', 'ACRYLIC'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
     ], string="Treatment IN")
 
     treatment_out = fields.Selection([
         ('acrylic', 'ACRYLIC'),
         ('corona', 'Corona'),
-        ('met_plain', 'Met on Plain'),
-        ('met_corona', 'Met on Corona'),
-        ('met_corona_out', 'Metallized on Corona Outside'),
+        ('met_plain', 'Metallized on Plain'),
+        ('met_corona', 'Metallized on Corona'),
         ('met_chemical', 'Metallized on Chemical'),
         ('plain', 'Plain'),
         ('pvdc_out', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
     ], string="Treatment OUT")
 
     thickness_val = fields.Float(string="Thickness",help="This helps to categorise specific product.")
@@ -361,6 +598,7 @@ class SaleOrderLine(models.Model):
             super(SaleOrderLine, rec).write(new_vals)
 
         return True
+
 
 class SaleMoValuation(models.Model):
     _name = 'sale.mo.valuation'

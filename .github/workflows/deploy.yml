@@ -49,6 +49,14 @@ jobs:
             git clean -fd
             git pull origin $BRANCH
 
+            echo "Installing qifparse..."
+
+            /opt/odoo18/venv/bin/python -m pip install qifparse
+            
+            echo "Verifying qifparse installation..."
+            
+            /opt/odoo18/venv/bin/python -c "import qifparse; print('qifparse installed successfully')"
+
             echo "Starting service..."
             sudo systemctl start $SERVICE
 

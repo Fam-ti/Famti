@@ -709,7 +709,7 @@ class MrpProductionSerialLine(models.Model):
     production_id = fields.Many2one( 'mrp.production', string='Manufacturing Order',
         ondelete='cascade', required=True
     )
-    serial_number = fields.Char(string='Serial Number')
+    serial_number = fields.Char(string='Roll Number')
     location_id = fields.Many2one('stock.location', string='Location', domain="[('usage', '=', 'internal')]")
     quantity = fields.Float(string='Quantity')
     uom_id = fields.Many2one('uom.uom', string='Unit of Measure')
@@ -741,26 +741,37 @@ class MrpProductionSerialLine(models.Model):
     po_product_code = fields.Char(string="Product Code")
     density = fields.Float(string="Roll Density")
     treatment_in = fields.Selection([
-            ('corona', 'Corona'),
-            ('met_corona', 'Met on Corona'),
-            ('met_chemical', 'Met on Chemical'),
-            ('met_plain', 'Met on Plain'),
-            ('plain', 'Plain'),
-            ('pvdc', 'PVDC COATED'),
-            ('soft_touch', 'SOFT TOUCH'),
-            ('alox', 'Top coat Alox'),
+        ('corona', 'Corona'),
+        ('met_corona', 'Metalizzed on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('met_plain', 'Metallized on Plain'),
+        ('plain', 'Plain'),
+        ('pvdc', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('acrylic', 'ACRYLIC'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
         ], string="Treatment IN")
 
     treatment_out = fields.Selection([
-            ('acrylic', 'ACRYLIC'),
-            ('corona', 'Corona'),
-            ('met_plain', 'Met on Plain'),
-            ('met_corona', 'Met on Corona'),
-            ('met_corona_out', 'Metallized on Corona Outside'),
-            ('met_chemical', 'Metallized on Chemical'),
-            ('plain', 'Plain'),
-            ('pvdc_out', 'PVDC COATED'),
-        ], string="Treatment OUT")
+        ('acrylic', 'ACRYLIC'),
+        ('corona', 'Corona'),
+        ('met_plain', 'Metallized on Plain'),
+        ('met_corona', 'Metallized on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('plain', 'Plain'),
+        ('pvdc_out', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
+
+    ], string="Treatment OUT")
 
 
 
@@ -772,7 +783,7 @@ class MrpProductionScrapLine(models.Model):
         ondelete='cascade', required=True
     )
     serial_number_id = fields.Many2one('stock.lot',store=True)
-    serial_number = fields.Char(string='Serial Number')
+    serial_number = fields.Char(string='Roll Number')
     location_id = fields.Many2one('stock.location', string='Destination Location', domain="[('usage', '=', 'internal')]")
     source_location_id = fields.Many2one('stock.location', string='Source Location')
     quantity = fields.Float(string='Scrap Qty')
@@ -796,26 +807,36 @@ class MrpProductionScrapLine(models.Model):
     film = fields.Char(string="Film", help="Product Film.")
     film_type = fields.Char(string="Film Type", help="Film Type")
     treatment_in = fields.Selection([
-            ('corona', 'Corona'),
-            ('met_corona', 'Met on Corona'),
-            ('met_chemical', 'Met on Chemical'),
-            ('met_plain', 'Met on Plain'),
-            ('plain', 'Plain'),
-            ('pvdc', 'PVDC COATED'),
-            ('soft_touch', 'SOFT TOUCH'),
-            ('alox', 'Top coat Alox'),
+        ('corona', 'Corona'),
+        ('met_corona', 'Metalizzed on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('met_plain', 'Metallized on Plain'),
+        ('plain', 'Plain'),
+        ('pvdc', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('acrylic', 'ACRYLIC'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
         ], string="Treatment IN")
 
     treatment_out = fields.Selection([
-            ('acrylic', 'ACRYLIC'),
-            ('corona', 'Corona'),
-            ('met_plain', 'Met on Plain'),
-            ('met_corona', 'Met on Corona'),
-            ('met_corona_out', 'Metallized on Corona Outside'),
-            ('met_chemical', 'Metallized on Chemical'),
-            ('plain', 'Plain'),
-            ('pvdc_out', 'PVDC COATED'),
-        ], string="Treatment OUT")
+        ('acrylic', 'ACRYLIC'),
+        ('corona', 'Corona'),
+        ('met_plain', 'Metallized on Plain'),
+        ('met_corona', 'Metallized on Corona'),
+        ('met_chemical', 'Metallized on Chemical'),
+        ('plain', 'Plain'),
+        ('pvdc_out', 'PVDC COATED'),
+        ('soft_touch', 'SOFT TOUCH'),
+        ('alox', 'Top coat Alox'),
+        ('chemical_coat', 'Chemical Coated'),
+        ('met_copolymer', 'Met on Copolymer'),
+        ('copolymer', 'Copolymer'),
+        ('special_chemical', 'Special Chemical'),
+    ], string="Treatment OUT")
     
 
 

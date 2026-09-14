@@ -36,6 +36,7 @@
         'data/workcenter_demo.xml',
         'data/sequence.xml',
         'data/accounting_data.xml',
+        'data/hr_department_demo.xml',
         'wizard/converted_uoms.xml',
         'wizard/lot_import_wizard.xml',
         'wizard/stock_lot_wiz.xml',
@@ -46,11 +47,15 @@
         'wizard/wsib_wizard.xml',
         'wizard/remarks_wizard.xml',
         'wizard/report_wizard.xml',
+        'wizard/barcode_print_wizard.xml',
+        'wizard/roll_import.xml',
+        "wizard/customer_import.xml",
         'reports/offer_letter_report.xml',
         'reports/purchase_order_report.xml',
         'reports/sale_order_report.xml',
         'reports/invoice_report.xml',
         'reports/customer_interaction.xml',
+        'reports/barcode_report.xml',
         'views/purchase.xml',
         'views/hr_expense.xml',
         'views/res_partner.xml',
@@ -73,7 +78,9 @@
         'views/hr_resignation.xml',
         'views/quickbook.xml',
         'views/performance.xml',
-        'views/cost_sheet.xml'
+        'views/cost_sheet.xml',
+        'views/barcode_generation_views.xml',
+        'views/stock_move.xml',
 
     ],
     'demo': [
@@ -82,6 +89,7 @@
 'assets': {
         'web.assets_backend': [
             'famti/static/src/xml/import_lot_patch.xml',
+            'famti/static/src/js/roll_name_patch.js',
         ],
         'web.assets_frontend': [
                     'famti/static/src/js/import_lot_patch.js',
