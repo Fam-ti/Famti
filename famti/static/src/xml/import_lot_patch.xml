@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates xml:space="preserve">
 
-     <t t-inherit="stock.generate_serial_dialog" t-inherit-mode="extension">
-        <xpath expr="//t[@t-set-slot='footer']" position="inside">
-            <button class="btn btn-outline-primary" id="openExcel"
-                    t-on-click="openExcelImport">
-                Upload Excel / CSV
-            </button>
-        </xpath>
-    </t>
+<!--     <t t-inherit="stock.generate_serial_dialog" t-inherit-mode="extension">-->
+<!--        <xpath expr="//t[@t-set-slot='footer']" position="inside">-->
+<!--            <button class="btn btn-outline-primary" id="openExcel"-->
+<!--                    t-on-click="openExcelImport">-->
+<!--                Upload Excel / CSV-->
+<!--            </button>-->
+<!--        </xpath>-->
+<!--    </t>-->
 
     <t t-inherit="stock.GenerateSerials" t-inherit-mode="extension">
         <xpath expr="//button" position="replace">
