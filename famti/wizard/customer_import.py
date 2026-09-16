@@ -1140,6 +1140,24 @@ class CustomerImportWizard(models.TransientModel):
                     "customer_rank": 1,
                 }
 
+            billing_country = row["_billing_country_record"]
+            billing_state = row["_billing_state_record"]
+
+            if self._has_address_data(
+                    row["billing_street"],
+                    row["billing_city"],
+                    row["billing_state"],
+                    row["billing_zip"],
+                    row["billing_country"],
+            ):
+                customer_values.update({
+                    "street": row["billing_street"] or False,
+                    "city": row["billing_city"] or False,
+                    "state_id": billing_state.id if billing_state else False,
+                    "zip": row["billing_zip"] or False,
+                    "country_id": billing_country.id if billing_country else False,
+                })
+
             # ----------------------------------------------------
             # Only update email when supplied.
             # ----------------------------------------------------
