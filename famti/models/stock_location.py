@@ -341,9 +341,13 @@ class StockPicking(models.Model):
             'A14',
             f'Delivery Dated : {picking.scheduled_date.strftime("%d %b %Y") if picking.scheduled_date else ""}'
         )
+
+        po = picking.move_ids.purchase_line_id.order_id[:1]
+        po_number = po.name if po else ""
+
         sheet.write(
             'A15',
-            f'PO Number # {picking.origin or ""}'
+            f'PO Number # {po_number or ""}'
         )
 
         row = 18
