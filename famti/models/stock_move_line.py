@@ -86,7 +86,8 @@ class StockMoveLine(models.Model):
         ('copolymer', 'Copolymer'),
         ('special_chemical', 'Special Chemical'),
     ], string="Treatment OUT")
-    description = fields.Text(string="Film Description")
+    description = fields.Text(string="Description")
+    film_description = fields.Text(string="Film Description")
     supplier_name = fields.Many2one('res.partner', string="Supplier Name")
     product_code = fields.Char(
         related='product_id.default_code',

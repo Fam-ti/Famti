@@ -67,6 +67,9 @@
                             <field name="location_id"/>
                             <field name="treatment_in"/>
                             <field name="treatment_out"/>
+                            <field name="film"/>
+                            <field name="film_type"/>
+                            <field name="film_description"/>
                             <field name="thickness" required="1"/>
                             <field name="thickness_uom" />
                             <field name="width" required="1"/>
@@ -91,6 +94,9 @@
                             <field name="location_id"/>
                             <field name="treatment_in"/>
                             <field name="treatment_out"/>
+                            <field name="film"/>
+                            <field name="film_type"/>
+                            <field name="film_description"/>
                             <field name="thickness" optional="hide"/>
                             <field name="thickness_uom" optional="hide"/>
                             <field name="width" optional="hide"/>

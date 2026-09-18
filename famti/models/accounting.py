@@ -135,6 +135,10 @@ class AccountMoveLine(models.Model):
     length_val = fields.Float(string="Length", help="Product Length")
     length_uom = fields.Selection(selection=[('m', 'M'), ('feet', 'Feet')], default='feet', string=" ")
     remarks = fields.Text(string="Remarks")
+    film = fields.Char(string="Film")
+    film_type = fields.Char(string="Film Type", tracking=True, help="Film Type")
+
+
 
 
 

@@ -65,6 +65,14 @@ class ProductTemplate(models.Model):
     no_of_joint = fields.Char(string="No. Of Joint")
     aging = fields.Char(string="Aging")
     received_date = fields.Datetime(string="Received Date")
+
+    _sql_constraints = [
+        (
+            'default_code_unique',
+            'unique(default_code)',
+            'Internal Reference / SKU must be unique.'
+        ),
+    ]
     
 
 
@@ -131,6 +139,14 @@ class ProductProduct(models.Model):
 
     width_val = fields.Float(string="Width",help="This helps to categorise specific product.",related='product_tmpl_id.width_val')
     width_uom = fields.Selection(selection=[('mm','MM'),('inch','Inch'),('mm','MM'),('mil','Mil')],default='mm',string=" ",related='product_tmpl_id.width_uom')
+
+    _sql_constraints = [
+        (
+            'default_code_unique',
+            'unique(default_code)',
+            'Internal Reference / SKU must be unique.'
+        ),
+    ]
     
 
     @api.model

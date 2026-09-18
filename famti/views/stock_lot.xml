@@ -36,22 +36,19 @@
                         <group>
                             <field name="treatment_in"/>
                             <field name="grade_type"/>
-                            <label for="thickness" />
-                            <div class="o_row">
-                                <field name="thickness"/>
-                                <field name="thickness_uom"/>
-                            </div>
-                            <label for="weight" />
-                            <div class="o_row">
-                                <field name="weight"/>
-                                <field name="weight_uom"/>
-                            </div>
+
+<!--                            <label for="weight" />-->
+<!--                            <div class="o_row">-->
+<!--                                <field name="weight" invisible="1"/>-->
+<!--                                <field name="weight_uom" invisible="1"/>-->
+<!--                            </div>-->
                             <field name="core_id"/>
                             <field name="lot_number" invisible="1"/>
-                            <field name="pallet_no"/>
                             <field name="film"/>
                             <field name="film_type"/>
                             <field name="film_description"/>
+                            <field name="no_of_joint"/>
+                            <field name="aging"/>
                             <field name="qc_remark"/>
 
                         </group>
@@ -67,10 +64,15 @@
                                 <field name="length_val"/>
                                 <field name="length_uom"/>
                             </div>
+                            <label for="thickness" />
+                             <div class="o_row">
+                                <field name="thickness"/>
+                                <field name="thickness_uom"/>
+                            </div>
                             <field name="qc_status" invisible="1"/>
                             <field name="upload_doc"/>
-                            <field name="no_of_joint"/>
-                            <field name="aging"/>
+
+                            <field name="pallet_no"/>
                             <field name="received_date"/>
                             <field name="supplier_name"/>
                         </group>

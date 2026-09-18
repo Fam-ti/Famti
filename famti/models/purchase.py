@@ -268,7 +268,6 @@ class PurchaseOrderLine(models.Model):
 
 
     def action_open_uom_conversion(self):
-        print(f'-line 46--------{self}--{self.ids}')
         return {
             'name': 'Purchase Order Lines',
             'type': 'ir.actions.act_window',
@@ -282,10 +281,17 @@ class PurchaseOrderLine(models.Model):
 
     @api.onchange('product_id')
     def _onchange_product_id_set_film_description(self):
-        if self.product_id:
-            if self.product_id.film_description:
-                self.description = self.product_id.film_description
-        
+        for line in self:
+            if not line.product_id:
+                line.description = False
+                line.film_type = False
+                line.film = False
+                return
+            product_template = line.product_id.product_tmpl_id
+            line.description = product_template.film_description or False
+            line.film_type = product_template.material_type or False
+            line.film = product_template.type_reference or False
+
     @api.model
     def create(self, vals):
         record = super().create(vals)
@@ -321,8 +327,8 @@ class PurchaseOrderLine(models.Model):
                 'width_uom': self.width_uom,
                 'core_id': self.core_id,
                 # 'category': self.category,
-                'film': self.film,
-                'film_type': self.film_type,
+                # 'film': self.film,
+                # 'film_type': self.film_type,
                 'length_val': self.length_val,
                 'length_uom': self.length_uom,
                 # 'pieces': self.pieces,
@@ -331,5 +337,69 @@ class PurchaseOrderLine(models.Model):
                 'treatment_in': self.treatment_in,
                 'treatment_out': self.treatment_out,
             })
-            print("==========vals",vals)
         return res
+
+    # def _prepare_account_move_line(self, move=False):
+    #     vals = super()._prepare_account_move_line(move=move)
+    #
+    #     vals.update({
+    #         'pieces_po': self.pieces,
+    #         'rolls_uom_id': self.rolls_uom_id.id if self.rolls_uom_id else False,
+    #         'description': self.description,
+    #         'treatment_in': self.treatment_in,
+    #         'treatment_out': self.treatment_out,
+    #         'thickness_val': self.thickness_val,
+    #         'thickness_uom': self.thickness_uom,
+    #         'width_val': self.width_val,
+    #         'width_uom': self.width_uom,
+    #         'core_id': self.core_id,
+    #         'length_val': self.length_val,
+    #         'length_uom': self.length_uom,
+    #         'remarks': self.remarks,
+    #         'film':self.film,
+    #         'film_type':self.film_type,
+    #     })
+    #
+    #     return vals
+
+    def _prepare_account_move_line(self, move=False):
+        self.ensure_one()
+
+        print("========== PO LINE TO BILL ==========")
+        print("PO LINE ID:", self.id)
+        print("PRODUCT:", self.product_id.display_name)
+        print("PIECES:", self.pieces)
+        print("DESCRIPTION:", self.description)
+        print("FILM:", self.film)
+        print("FILM TYPE:", self.film_type)
+        print("TREATMENT IN:", self.treatment_in)
+        print("TREATMENT OUT:", self.treatment_out)
+        print("THICKNESS:", self.thickness_val)
+        print("WIDTH:", self.width_val)
+        print("CORE:", self.core_id)
+        print("LENGTH:", self.length_val)
+        print("REMARKS:", self.remarks)
+
+        vals = super()._prepare_account_move_line(move=move)
+
+        vals.update({
+            'pieces_po': self.pieces,
+            'rolls_uom_id': self.rolls_uom_id.id if self.rolls_uom_id else False,
+            'description': self.description,
+            'treatment_in': self.treatment_in,
+            'treatment_out': self.treatment_out,
+            'thickness_val': self.thickness_val,
+            'thickness_uom': self.thickness_uom,
+            'width_val': self.width_val,
+            'width_uom': self.width_uom,
+            'core_id': self.core_id,
+            'length_val': self.length_val,
+            'length_uom': self.length_uom,
+            'remarks': self.remarks,
+            'film': self.film,
+            'film_type': self.film_type,
+        })
+
+        print("BILL VALUES:", vals)
+
+        return vals
