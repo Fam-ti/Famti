@@ -588,6 +588,9 @@ class MrpProduction(models.Model):
                     'company_id': self.company_id.id,
                     'mo_product_code': line.mo_product_code,
                     'product_code': line.po_product_code,
+                    'film': line.film,
+                    'film_type': line.film_type,
+                    'film_description': line.film_description,
                 })
 
             StockMoveLine.create({
@@ -598,6 +601,11 @@ class MrpProduction(models.Model):
                 'product_uom_id': line.uom_id.id,
                 'location_id': move.location_id.id,
                 'location_dest_id': line.location_id.id,
+                'treatment_in':line.treatment_in,
+                'treatment_out':line.treatment_out,
+                'film':line.film,
+                'film_type':line.film_type,
+                'film_description':line.film_description,
                 'thickness': line.thickness,
                 'thickness_uom': line.thickness_uom,
                 'core_id': line.core_id,
@@ -730,7 +738,10 @@ class MrpProductionSerialLine(models.Model):
     billed = fields.Float(string='Billed')
     film_category = fields.Char(string="Film Category",  help="This helps to categorise specific product.")
     film = fields.Char(string="Film", help="Product Film.")
-    film_type = fields.Char(string="Film Type", help="Film Type")
+    film_type = fields.Selection([('bopet', 'BOPET'),
+                                  ('bopa', 'BOPA'),
+                                  ('cpp', 'CPP')], string="Film Type", tracking=True, help="Film Type")
+    film_description = fields.Text(string="Film Description")
 
     total_input = fields.Float(string=" Input")
     total_output = fields.Float(string=" Output")
@@ -805,7 +816,11 @@ class MrpProductionScrapLine(models.Model):
     billed = fields.Float(string='Billed')
     film_category = fields.Char(string="Film Category",  help="This helps to categorise specific product.")
     film = fields.Char(string="Film", help="Product Film.")
-    film_type = fields.Char(string="Film Type", help="Film Type")
+    film_type = fields.Selection([('bopet', 'BOPET'),
+                                  ('bopa', 'BOPA'),
+                                  ('cpp', 'CPP')], string="Film Type", tracking=True, help="Film Type")
+    film_description = fields.Text(string="Film Description")
+
     treatment_in = fields.Selection([
         ('corona', 'Corona'),
         ('met_corona', 'Metalizzed on Corona'),

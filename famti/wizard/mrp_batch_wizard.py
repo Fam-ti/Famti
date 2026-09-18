@@ -8,7 +8,7 @@ class MrpBatchProduceLine(models.TransientModel):
     _description = 'Batch Production Line'
 
     wizard_id = fields.Many2one('mrp.batch.produce', string='Wizard',ondelete='cascade', required=True)
-    serial_number = fields.Char(string='Serial Number')
+    serial_number = fields.Char(string='Roll Number')
     location_id = fields.Many2one('stock.location', string='Location')
     quantity = fields.Float(string='Quantity')
     uom_id = fields.Many2one('uom.uom', string='Unit of Measure')
@@ -23,8 +23,8 @@ class MrpBatchProduceLine(models.TransientModel):
     recived = fields.Float(string='Recived')
     billed = fields.Float(string='Billed')
     film_category = fields.Char(string="Film Category",  help="This helps to categorise specific product.")
-    film = fields.Char(string="Film", help="Product Film.")
-    film_type = fields.Char(string="Film Type", help="Film Type")
+    # film = fields.Char(string="Film", help="Product Film.")
+    # film_type = fields.Char(string="Film Type", help="Film Type")
     scrap = fields.Float(string='Scrap')
     grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
     scrap_reason_tag_ids = fields.Many2many( comodel_name='stock.scrap.reason.tag',
@@ -62,6 +62,11 @@ class MrpBatchProduceLine(models.TransientModel):
         ('copolymer', 'Copolymer'),
         ('special_chemical', 'Special Chemical'),
         ], string="Treatment OUT")
+    film = fields.Char(string="Type", tracking=True, help="Type")
+    film_type = fields.Selection([('bopet','BOPET'),
+                                  ('bopa','BOPA')],string="Film Type", tracking=True, help="Film Type")
+    film_description = fields.Text(string="Film Description")
+
 
 
     @api.onchange('scrap')
@@ -116,6 +121,9 @@ class MrpBatchProduce(models.TransientModel):
             'serial_number': "Serial Number",
             'location_id': "Location",
             'quantity': "Quantity",
+            'film' : 'Film',
+            'film_type': "Film Type",
+            'film_description': "Film Description",
             'thickness': "Thickness",
             'thickness_uom': "Thickness UOM",
             'width': "Width",
@@ -154,6 +162,9 @@ class MrpBatchProduce(models.TransientModel):
                 'serial_number': line.serial_number,
                 'mo_product_code':line.mo_product_code,
                 'po_product_code': line.po_product_code,
+                'film':line.film,
+                'film_type':line.film_type,
+                'film_description':line.film_description,
                 'quantity': line.quantity,
                 'uom_id': line.uom_id.id,
                 'location_id': line.location_id.id,
@@ -182,6 +193,9 @@ class MrpBatchProduce(models.TransientModel):
                     'scrap_reason_tag_ids': [(6, 0, line.scrap_reason_tag_ids.ids)],
                     'location_id': line.location_id.id, 
                     'serial_number': line.serial_number,
+                    'film': line.film,
+                    'film_type': line.film_type,
+                    'film_description': line.film_description,
                     'quantity': line.scrap,
                     'uom_id': line.uom_id.id,
                     'thickness': line.thickness,

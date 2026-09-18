@@ -36,6 +36,8 @@
                 <field name="core_id"/>
                 <field name="length_val"/>
                 <field name="length_uom"/>
+                <field name="film"/>
+                <field name="film_type"/>
                 <field name="remarks"/>
             </xpath>
 
