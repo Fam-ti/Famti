@@ -292,7 +292,7 @@ class SaleOrder(models.Model):
         discharging_port_id = self.env['freight.port'].search([])[0]
         for order in self.filtered(lambda so: so.state in ('sale', 'done')):
             line_vals = []
-            for line in order.order_line:
+            for line in order.order_line.filtered(lambda l: not l.display_type and l.product_id):
                 line_vals.append((0, 0, {
                     'product_id': line.product_id.id,
                     'weight': line.product_uom_qty,
