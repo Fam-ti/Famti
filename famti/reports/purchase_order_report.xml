@@ -446,6 +446,7 @@
                     <thead>
                         <tr style="border-bottom:1px solid #000;background:#3b4e87;color:white;">
                             <th style="padding:6px;font-weight:bold;">DESCRIPTION OF GOODS</th>
+                            <th style="padding:6px;font-weight:bold;">SUPPLIER CODE</th>
                             <th style="padding:6px;font-weight:bold;">THICKNESS (<span t-esc="dict(o.order_line[:1]._fields['thickness_uom'].selection).get(o.order_line[:1].thickness_uom, '')"/>)</th>
                             <th style="padding:6px;font-weight:bold;">WIDTH (<span t-esc="dict(o.order_line[:1]._fields['width_uom'].selection).get(o.order_line[:1].width_uom, '')"/>)</th>
                             <th style="padding:6px;font-weight:bold;">ITEM CODE</th>
@@ -484,6 +485,9 @@
                             <tr t-else="" style="border-bottom:1px solid #000;">
                                 <td style="padding:6px;">
                                     <span t-field="line.description"/>
+                                </td>
+                                <td style="padding:6px;">
+                                    <span t-field="line.supplier_code"/>
                                 </td>
                                 <td style="padding:6px;">
                                     <span t-field="line.thickness_val"/>
