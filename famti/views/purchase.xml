@@ -106,10 +106,12 @@
                     <field name="payment_term_id" required="1" options="{'no_open': True}"/>
                     <field name="incoterm_id" string="Delivery Terms" required="1" options="{'no_open': True}"/>
                     <field name="po_expense_ids" widget="many2many_tags" invisible="not po_expense_ids"/>
+                    <field name="ref_note"/>
                 </xpath>
 
                 <xpath expr="//field[@name='order_line']/list/field[@name='product_id']" position="after">
                     <field name="description"/>
+                    <field name="supplier_code"/>
                     <field name="treatment_in" column_invisible="parent.is_tolling"/>
                     <field name="treatment_out" column_invisible="parent.is_tolling"/>
                     <field name="thickness_val"  column_invisible="parent.is_tolling"/>

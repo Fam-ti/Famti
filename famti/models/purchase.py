@@ -53,6 +53,8 @@ class Purchase(models.Model):
     po_expense_ids = fields.Many2many('hr.expense','po_expense_rel','po_id',           
         'expense_id',string='Expenses')
 
+    ref_note = fields.Text(string="Note")
+
 
     def _compute_freight_count(self):
         for order in self:
@@ -113,7 +115,7 @@ class Purchase(models.Model):
         discharging_port_id = self.env['freight.port'].search([])[0]
         for order in self.filtered(lambda po: po.state in ('purchase', 'done')):
             line_vals = []
-            for line in order.order_line:
+            for line in order.order_line.filtered(lambda l: not l.display_type and l.product_id):
                 line_vals.append((0, 0, {
                     'product_id': line.product_id.id,
                     'weight': line.product_qty,
@@ -266,6 +268,8 @@ class PurchaseOrderLine(models.Model):
     rolls_uom_id = fields.Many2one('uom.uom', string="UoM",domain="[('name','=','rolls')]",
         default=lambda self: self.env['uom.uom'].search([('name','=','rolls')], limit=1))
 
+    supplier_code = fields.Char(string="Supplier Code")
+
 
     def action_open_uom_conversion(self):
         return {
@@ -386,6 +390,7 @@ class PurchaseOrderLine(models.Model):
             'pieces_po': self.pieces,
             'rolls_uom_id': self.rolls_uom_id.id if self.rolls_uom_id else False,
             'description': self.description,
+            'supplier_code':self.supplier_code,
             'treatment_in': self.treatment_in,
             'treatment_out': self.treatment_out,
             'thickness_val': self.thickness_val,

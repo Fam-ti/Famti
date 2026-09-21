@@ -205,7 +205,8 @@
                 
                 <div style="width:100%;text-align:center;">
                     <strong>
-                        PACKAGING MATERIAL ( <span t-esc="', '.join([l.product_id.name for l in o.order_line])"/> FILM )
+                        <!-- PACKAGING MATERIAL ( <span t-esc="', '.join([l.product_id.name for l in o.order_line])"/> FILM ) -->
+                        PACKAGING MATERIAL ( <span t-esc="', '.join([l.product_id.name for l in o.order_line if not l.display_type and l.product_id])"/> FILM )
                     </strong>
                 </div>
                 <table style="width:100%; border-collapse:collapse; font-size:12px; margin-top:15px;">
@@ -230,7 +231,27 @@
 
                     <tbody>
                         <t t-foreach="o.order_line" t-as="line">
-                            <tr style="border-bottom:1px solid #000;">
+
+                            <tr t-if="line.display_type == 'line_section'"
+                                style="border-bottom:1px solid #000; background:#f2f2f2;">
+                                <td colspan="11" style="padding:6px; text-align:left;">
+                                    <strong>
+                                        <span t-field="line.name"/>
+                                    </strong>
+                                </td>
+                            </tr>
+
+                            <tr t-elif="line.display_type == 'line_note'"
+                                style="border-bottom:1px solid #000;">
+                                <td colspan="11" style="padding:6px; text-align:left;">
+                                    <em>
+                                        <span t-field="line.name"/>
+                                    </em>
+                                </td>
+                            </tr>
+
+                            <tr t-else="" style="border-bottom:1px solid #000;">
+
                                 <td style="padding:6px;">
                                     <span t-field="line.description"/>
                                 </td>
@@ -261,9 +282,7 @@
                                 <td t-if="o.so_type == 'fgf'" style="padding:6px;">
                                     <span t-field="line.pieces"/>
                                 </td>
-<!--                                <td style="padding:6px;">-->
-<!--                                    <span t-field="line.price_unit"/>-->
-<!--                                </td>-->
+
                                 <td style="padding:6px; text-align:right;">
                                     <span t-field="line.price_subtotal"/>
                                 </td>

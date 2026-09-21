@@ -436,7 +436,8 @@
 
                 <div style="width:100%;text-align:center;">
                     <strong>
-                        PACKAGING MATERIAL ( <span t-esc="', '.join([l.product_id.name for l in o.order_line])"/> FILM )
+                        <!-- PACKAGING MATERIAL ( <span t-esc="', '.join([l.product_id.name for l in o.order_line])"/> FILM ) -->
+                        PACKAGING MATERIAL ( <span t-esc="', '.join([l.product_id.name for l in o.order_line if l.display_type == False and l.product_id])"/> FILM )
                     </strong>
                 </div>
 
@@ -445,26 +446,48 @@
                     <thead>
                         <tr style="border-bottom:1px solid #000;background:#3b4e87;color:white;">
                             <th style="padding:6px;font-weight:bold;">DESCRIPTION OF GOODS</th>
-                            <th style="padding:6px;font-weight:bold;">THICKNESS (GAUGE)</th>
-                            <th style="padding:6px;font-weight:bold;">WIDTH (IN)</th>
+                            <th style="padding:6px;font-weight:bold;">SUPPLIER CODE</th>
+                            <th style="padding:6px;font-weight:bold;">THICKNESS (<span t-esc="dict(o.order_line[:1]._fields['thickness_uom'].selection).get(o.order_line[:1].thickness_uom, '')"/>)</th>
+                            <th style="padding:6px;font-weight:bold;">WIDTH (<span t-esc="dict(o.order_line[:1]._fields['width_uom'].selection).get(o.order_line[:1].width_uom, '')"/>)</th>
                             <th style="padding:6px;font-weight:bold;">ITEM CODE</th>
                             <th style="padding:6px;font-weight:bold;">CORE ID (Inch)</th>
                             <th style="padding:6px;font-weight:bold;">TREATMENT IN</th>
                             <th style="padding:6px;font-weight:bold;">TREATMENT OUT</th>
-                            <th style="padding:6px;font-weight:bold;">ROLL LENGTH (MTRS APPROX)</th>
-                            <th t-if="o.po_type != 'fgf'" style="padding:6px;font-weight:bold;">QUANTITY (LBS)</th>
-                            <th t-if="o.po_type != 'fgf'" style="padding:6px;font-weight:bold;">PRICE / POUND (IN USD)</th>
+                            <th style="padding:6px;font-weight:bold;">ROLL LENGTH (<span t-esc="dict(o.order_line[:1]._fields['length_uom'].selection).get(o.order_line[:1].length_uom, '')"/>)</th>
+                            <th t-if="o.po_type != 'fgf'" style="padding:6px;font-weight:bold;">QUANTITY ((<span t-esc="o.order_line[:1].product_uom.name or ''"/>))</th>
+                            <th t-if="o.po_type != 'fgf'" style="padding:6px;font-weight:bold;">PRICE / POUND (IN <span t-esc="o.currency_id.name or ''"/>)</th>
                             <th t-if="o.po_type == 'fgf'" style="padding:6px;font-weight:bold;">QUANTITY (NO OF ROLLS)</th>
-                            <th t-if="o.po_type == 'fgf'" style="padding:6px;font-weight:bold;">PRICE / ROLL (IN USD)</th>
-                            <th style="padding:6px;font-weight:bold;">AMOUNT (IN USD)</th>
+                            <th t-if="o.po_type == 'fgf'" style="padding:6px;font-weight:bold;">PRICE / ROLL (IN <span t-esc="o.currency_id.name or ''"/>)</th>
+                            <th style="padding:6px;font-weight:bold;">AMOUNT (IN <span t-esc="o.currency_id.name or ''"/>)</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         <t t-foreach="o.order_line" t-as="line">
-                            <tr style="border-bottom:1px solid #000;">
+
+                            <tr t-if="line.display_type == 'line_section'"
+                                style="background:#f2f2f2;">
+                                <td colspan="12" style="padding:6px;">
+                                    <strong>
+                                        <span t-field="line.name"/>
+                                    </strong>
+                                </td>
+                            </tr>
+
+                            <tr t-elif="line.display_type == 'line_note'">
+                                <td colspan="12" style="padding:6px;">
+                                    <em>
+                                        <span t-field="line.name"/>
+                                    </em>
+                                </td>
+                            </tr>
+
+                            <tr t-else="" style="border-bottom:1px solid #000;">
                                 <td style="padding:6px;">
                                     <span t-field="line.description"/>
+                                </td>
+                                <td style="padding:6px;">
+                                    <span t-field="line.supplier_code"/>
                                 </td>
                                 <td style="padding:6px;">
                                     <span t-field="line.thickness_val"/>
@@ -543,6 +566,9 @@
                 </div>
                 <div>
                     <strong>Remarks:</strong>
+                </div>
+                <div t-if="o.remarks">
+                    <span t-field="o.remarks"/>
                 </div>
 
 

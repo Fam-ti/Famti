@@ -261,32 +261,66 @@
                             </thead>
 
                             <tbody>
-                                <tr t-foreach="o.invoice_line_ids" t-as="line">
-                                    <td style="">
-                                        <span t-field="line.name"/>
-                                    </td>
-                                    <td>
-                                        <!-- <span t-field="line.description"/> -->
-                                        Thickness: <span t-field="line.thickness_val"/> <span t-field="line.thickness_uom"/>,
-                                        Width: <span t-field="line.width_val"/> <span t-field="line.width_uom"/>,
-                                        Length: <span t-field="line.length_val"/> <span t-field="line.length_uom"/>
-                                    </td>
-                                    <td>
-                                        <span t-field="line.quantity"/>
-                                    </td>
-                                    <td t-if="not has_pieces">
-                                        <span t-field="line.price_unit"/>
-                                    </td>
-                                    <td t-if="has_pieces">
-                                        <span  t-field="line.pieces"/>
-                                    </td>
-                                    <td t-if="has_pieces">
-                                        <span t-field="line.price_unit"/>
-                                    </td>
-                                    <td>
-                                        <span t-field="line.price_subtotal"/>
-                                    </td>
-                                </tr>
+                                <t t-foreach="o.invoice_line_ids" t-as="line">
+
+                                    <tr t-if="line.display_type == 'line_section'"
+                                        style="background:#f2f2f2;">
+                                        <td colspan="7" style="padding:5px; text-align:left;">
+                                            <strong>
+                                                <span t-field="line.name"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+
+                                    <tr t-elif="line.display_type == 'line_note'">
+                                        <td colspan="7" style="padding:5px; text-align:left;">
+                                            <em>
+                                                <span t-field="line.name"/>
+                                            </em>
+                                        </td>
+                                    </tr>
+
+                                    <tr t-else="">
+                                        <td>
+                                            <span t-field="line.name"/>
+                                        </td>
+
+                                        <td>
+                                            Thickness:
+                                            <span t-field="line.thickness_val"/>
+                                            <span t-field="line.thickness_uom"/>,
+
+                                            Width:
+                                            <span t-field="line.width_val"/>
+                                            <span t-field="line.width_uom"/>,
+
+                                            Length:
+                                            <span t-field="line.length_val"/>
+                                            <span t-field="line.length_uom"/>
+                                        </td>
+
+                                        <td>
+                                            <span t-field="line.quantity"/>
+                                        </td>
+
+                                        <td t-if="not has_pieces">
+                                            <span t-field="line.price_unit"/>
+                                        </td>
+
+                                        <td t-if="has_pieces">
+                                            <span t-field="line.pieces"/>
+                                        </td>
+
+                                        <td t-if="has_pieces">
+                                            <span t-field="line.price_unit"/>
+                                        </td>
+
+                                        <td>
+                                            <span t-field="line.price_subtotal"/>
+                                        </td>
+                                    </tr>
+
+                                </t>
                             </tbody>
 
                         </table>
