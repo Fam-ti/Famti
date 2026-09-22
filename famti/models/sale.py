@@ -518,38 +518,6 @@ class SaleOrder(models.Model):
         else:
             raise UserError('Order Needs to be approved or Something went wrong!')
 
-    def _create_invoices(self, grouped=False, final=False, date=None):
-        invoices = super()._create_invoices(
-            grouped=grouped,
-            final=final,
-            date=date,
-        )
-
-        for invoice in invoices:
-            for invoice_line in invoice.invoice_line_ids:
-                sale_lines = invoice_line.sale_line_ids
-
-                if not sale_lines:
-                    continue
-
-                sale_line = sale_lines[0]
-
-                invoice_line.write({
-                    'description': sale_line.description,
-                    'treatment_in': sale_line.treatment_in,
-                    'treatment_out': sale_line.treatment_out,
-                    'thickness_val': sale_line.thickness_val,
-                    'thickness_uom': sale_line.thickness_uom,
-                    'width_val': sale_line.width_val,
-                    'width_uom': sale_line.width_uom,
-                    'core_id': sale_line.core_id,
-                    'length_val': sale_line.length_val,
-                    'length_uom': sale_line.length_uom,
-                    'remarks': sale_line.remarks,
-                })
-
-        return invoices
-
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
