@@ -209,7 +209,7 @@
                         <table style="width:100%; margin-top:20px; text-align:center;">
                             <thead style="background:#3b4e87; color:white;">
                                 <tr>
-                                    <th style="padding:5px;">SALESPERSON</th>
+                                    <!-- <th style="padding:5px;">SALESPERSON</th> -->
                                     <th style="padding:5px;">PO NUMBER</th>
                                     <th style="padding:5px;">SHIP DATE</th>
                                     <th style="padding:5px;">SHIP VIA</th>
@@ -221,11 +221,11 @@
 
                             <tbody>
                                 <tr style="text-aligh:center;">
-                                    <td>
+                                    <!-- <td>
                                         <span t-field="o.invoice_user_id.name"/>
-                                    </td>
+                                    </td> -->
                                     <td>
-                                        <span t-field="o.invoice_origin"/>
+                                        <span t-field="o.buyer_po_number"/>
                                     </td>
                                     <td>
                                         <span t-field="o.invoice_date"/>
@@ -252,11 +252,11 @@
                                 <tr>
                                     <th style="padding:5px;">ITEM NUMBER</th>
                                     <th style="padding:5px;">DESCRIPTION</th>
-                                    <th style="padding:5px;">Qty (lb)</th>
-                                    <th style="padding:5px;" t-if="not has_pieces">UNIT PRICE (per lb)</th>
+                                    <th style="padding:5px;">Qty (<span t-field="o.invoice_line_ids[0].product_uom_id.name"/>)</th>
+                                    <th style="padding:5px;" t-if="not has_pieces">UNIT PRICE (per <span t-field="o.invoice_line_ids[0].product_uom_id.name"/>)</th>
                                     <th style="padding:5px;" t-if="has_pieces">NO OF ROLLS</th>
                                     <th style="padding:5px;" t-if="has_pieces">UNIT PRICE (PER ROLL)</th>
-                                    <th style="padding:5px;">TOTAL (USD/CAD)</th>
+                                    <th style="padding:5px;">TOTAL (<span t-field="o.currency_id.name"/>)</th>
                                 </tr>
                             </thead>
 
@@ -286,6 +286,8 @@
                                         </td>
 
                                         <td>
+                                            Film Type:
+                                            <span t-field="line.product_id.material_type"/>,
                                             Thickness:
                                             <span t-field="line.thickness_val"/>
                                             <span t-field="line.thickness_uom"/>,
@@ -379,7 +381,14 @@
 
                                 <div style="width:100%; overflow:hidden; white-space:nowrap;">
                                     <div style="float:left;"><strong>S &amp; H</strong></div>
-                                    <div style="float:right;">$0.00</div>
+                                    <div style="float:right;">
+                                        <span t-esc="sum(
+                                            line.price_subtotal
+                                            for line in o.invoice_line_ids
+                                            if line.product_id.type == 'service'
+                                        )"
+                                        t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </div>
                                 </div>
 
                                 <div style="clear:both;"></div>
@@ -394,7 +403,7 @@
                                 <div style="border-top:2px solid black; margin-top:8px;"></div>
 
                                 <div style="width:100%; overflow:hidden; margin-top:5px;">
-                                    <div style="float:left;"><strong>TOTAL (USD/CAD)</strong></div>
+                                    <div style="float:left;"><strong>TOTAL (<span t-field="o.currency_id.name"/>)</strong></div>
                                     <div style="float:right;">
                                         <strong>
                                             <span t-field="o.amount_total"/>
