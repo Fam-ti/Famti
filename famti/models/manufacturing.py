@@ -641,30 +641,26 @@ class MrpProduction(models.Model):
                 ('product_id', '=', self.product_id.id),
                 ('company_id', '=', self.company_id.id),
             ], limit=1)
-            if not lot and line.serial_number_id:
-                lot = line.serial_number_id
             if not lot:
-                raise ValidationError(
-                    f"Lot/Serial {line.serial_number} not found for scrap."
-                )
-
+                lot = StockLot.create({
+                    'name': line.serial_number,
+                    'product_id': self.product_id.id,
+                    'company_id': self.company_id.id,
+                })
+            # scrap will be generated with same roll number everytime and will add the qty  in same roll.
             scrap = StockScrap.create({
                 'product_id': self.product_id.id,
                 'scrap_qty': line.quantity,
                 'product_uom_id': line.uom_id.id,
                 'lot_id': lot.id,
-                # 'location_id': line.source_location_id.id or self.location_src_id.id,
                 'location_id': line.location_id.id,
                 'scrap_location_id': self.scrap_location_id.id,
-                # 'scrap_location_id': line.location_id.id,
-
                 'company_id': self.company_id.id,
                 'origin': self.name,
                 'production_id': self.id,
                 'scrap_reason_tag_ids': [(6, 0, line.scrap_reason_tag_ids.ids)],
             })
 
-            # scrap.action_validate()
             action = scrap.with_context(
                 not_unlink_on_discard=True
             ).action_validate()
@@ -677,7 +673,6 @@ class MrpProduction(models.Model):
                 })
 
                 wizard.action_done()
-
 
     def action_product_code(self):
         month_code = {
