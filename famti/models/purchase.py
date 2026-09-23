@@ -368,24 +368,7 @@ class PurchaseOrderLine(models.Model):
 
     def _prepare_account_move_line(self, move=False):
         self.ensure_one()
-
-        print("========== PO LINE TO BILL ==========")
-        print("PO LINE ID:", self.id)
-        print("PRODUCT:", self.product_id.display_name)
-        print("PIECES:", self.pieces)
-        print("DESCRIPTION:", self.description)
-        print("FILM:", self.film)
-        print("FILM TYPE:", self.film_type)
-        print("TREATMENT IN:", self.treatment_in)
-        print("TREATMENT OUT:", self.treatment_out)
-        print("THICKNESS:", self.thickness_val)
-        print("WIDTH:", self.width_val)
-        print("CORE:", self.core_id)
-        print("LENGTH:", self.length_val)
-        print("REMARKS:", self.remarks)
-
         vals = super()._prepare_account_move_line(move=move)
-
         vals.update({
             'pieces_po': self.pieces,
             'rolls_uom_id': self.rolls_uom_id.id if self.rolls_uom_id else False,
@@ -404,7 +387,4 @@ class PurchaseOrderLine(models.Model):
             'film': self.film,
             'film_type': self.film_type,
         })
-
-        print("BILL VALUES:", vals)
-
         return vals

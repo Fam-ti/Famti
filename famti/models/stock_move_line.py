@@ -43,7 +43,8 @@ class StockMoveLine(models.Model):
     core_id = fields.Selection(selection=[('3', '3 Inch'), ('6', '6 Inch')], string="Core", tracking=True)
     length = fields.Float(string="Length", tracking=True, help="Product Length")
     length_uom = fields.Selection(selection=[('m', 'M'), ('feet', 'Feet')], default='m', string=" ", tracking=True)
-    grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
+    # grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
+    grade_type = fields.Many2one('scrap.grade',string="Grade")
     mo_product_code =fields.Char(string="MO Product Code")
     # treatment_in = fields.Selection([
     #     ('corona', 'Corona'), ('met_corona', 'Met on Corona'), ('met_chemical', 'Met on Chemical'),

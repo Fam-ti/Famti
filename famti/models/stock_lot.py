@@ -44,7 +44,9 @@ class StockLot(models.Model):
     # product_code =fields.Char(string="Product Code",compute="_compute_product_code",store=True)
     product_code =fields.Char(string="Product Code")
     mo_product_code =fields.Char(string="MO Product Code")
-    grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
+    grade_type = fields.Many2one('scrap.grade',string="Grade")
+
+    # grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
     treatment_in = fields.Selection([
         ('corona', 'Corona'),
         ('met_corona', 'Metalizzed on Corona'),

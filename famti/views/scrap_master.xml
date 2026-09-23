@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Scrap Grade List View -->
+    <record id="view_scrap_grade_tree" model="ir.ui.view">
+        <field name="name">scrap.grade.tree</field>
+        <field name="model">scrap.grade</field>
+        <field name="arch" type="xml">
+            <list string="Scrap Grades">
+                <field name="name"/>
+                <field name="active"/>
+            </list>
+        </field>
+    </record>
+
+
+    <!-- Scrap Grade Form View -->
+    <record id="view_scrap_grade_form" model="ir.ui.view">
+        <field name="name">scrap.grade.form</field>
+        <field name="model">scrap.grade</field>
+        <field name="arch" type="xml">
+            <form string="Scrap Grade">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <!-- Scrap Grade Action -->
+    <record id="action_scrap_grade" model="ir.actions.act_window">
+        <field name="name">Scrap Code</field>
+        <field name="res_model">scrap.grade</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <!-- Scrap Grade Menu -->
+    <menuitem
+        id="menu_scrap_grade"
+        name="Scrap Code"
+        parent="mrp.menu_mrp_configuration"
+        action="action_scrap_grade"
+        groups="famti.group_scrap_grade_manager"
+        sequence="50"/>
+
+</odoo>

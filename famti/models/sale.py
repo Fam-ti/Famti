@@ -97,7 +97,6 @@ class SaleOrder(models.Model):
             final=final,
             date=date
         )
-
         for invoice in invoices:
             sale_order = invoice.line_ids.sale_line_ids.order_id[:1]
             if sale_order:
@@ -105,12 +104,9 @@ class SaleOrder(models.Model):
 
             for invoice_line in invoice.invoice_line_ids:
                 sale_lines = invoice_line.sale_line_ids
-
                 if not sale_lines:
                     continue
-
                 sale_line = sale_lines[0]
-
                 invoice_line.write({
                     'description': sale_line.description,
                     'treatment_in': sale_line.treatment_in,
