@@ -34,7 +34,7 @@
         'data/manpower_template.xml',
         'data/payment_terms_data.xml',
         'data/workcenter_demo.xml',
-        'data/scrap_demo.xml',
+        # 'data/scrap_demo.xml',
         'data/sequence.xml',
         'data/accounting_data.xml',
         'data/hr_department_demo.xml',
