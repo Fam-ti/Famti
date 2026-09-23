@@ -250,7 +250,7 @@
                                 </td>
                             </tr>
 
-                            <tr t-else="" style="border-bottom:1px solid #000;">
+                            <tr t-else="" t-if="line.product_id.type != 'service'" style="border-bottom:1px solid #000;">
 
                                 <td style="padding:6px;">
                                     <span t-field="line.description"/>
