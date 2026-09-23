@@ -26,7 +26,10 @@ class MrpBatchProduceLine(models.TransientModel):
     # film = fields.Char(string="Film", help="Product Film.")
     # film_type = fields.Char(string="Film Type", help="Film Type")
     scrap = fields.Float(string='Scrap')
-    grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
+    grade_type = fields.Many2one('scrap.grade',string="Grade")
+    # grade_type = fields.Selection([('a', 'A Grade'),
+    #                                ('b', 'B Grade'),('WBPET','WBPET'),('WMPET','WMPET'),('WBOPP','WBOPP'),('WMOPP','WMOPP'),('WBOPE','WBOPE'),('WMOPE','WMOPE'),
+    #                                ('WBOPA','WBOPA'),('WMOPA','WMOPA')],string="Grade")
     scrap_reason_tag_ids = fields.Many2many( comodel_name='stock.scrap.reason.tag',
         string='Scrap Reason')
     mo_product_code = fields.Char(string='MO Product Code')
@@ -63,28 +66,49 @@ class MrpBatchProduceLine(models.TransientModel):
         ('special_chemical', 'Special Chemical'),
         ], string="Treatment OUT")
     film = fields.Char(string="Type", tracking=True, help="Type")
-    film_type = fields.Selection([('bopet','BOPET'),
-                                  ('bopa','BOPA')],string="Film Type", tracking=True, help="Film Type")
+    film_type = fields.Selection([('bopet_normal', 'BOPET - Normal'),
+    ('bopet_metalised', 'BOPET - Metalised PET'),
+    ('bopp_normal', 'BOPP - Normal'),
+    ('bopp_metalised', 'BOPP - Metalised BOPP'),
+    ('bopa_normal', 'BOPA - Normal'),
+    ('bopa_metalised', 'BOPA - Metalised BOPA'),
+    ('pe_normal', 'PE - Normal'),
+    ('pe_metalised', 'PE - Metalised PE'),
+    ('mdope_normal', 'MDOPE - Normal'),
+    ('mdope_metalised', 'MDOPE - Metalised MDOPE'),
+    ('cpp_normal', 'CPP - Normal'),
+    ('cpp_metalised', 'CPP - Metalised CPP'),],string="Film Type", tracking=True, help="Film Type")
     film_description = fields.Text(string="Film Description")
 
 
 
-    @api.onchange('scrap')
-    def _onchange_scrap(self):
-        import re
+    # @api.onchange('scrap')
+    # def _onchange_scrap(self):
+    #     import re
+    #     for rec in self:
+    #         if not rec.scrap or not rec.serial_number:
+    #             continue
+    #         production = rec.wizard_id.production_id
+    #         if not production:
+    #             continue
+    #         component_move = production.move_raw_ids[:1]
+    #         if not component_move:
+    #             continue
+    #         product_name = component_move.product_id.name.replace(" ", "")
+    #         numeric = re.search(r'(\d+)$', rec.serial_number)
+    #         numeric_part = numeric.group(1) if numeric else rec.serial_number
+    #         rec.serial_number = f"W{product_name}"
+
+
+    @api.onchange('grade_type')
+    def _onchange_scrap_grade(self):
+        print(f"-line 104---------{self}")
         for rec in self:
-            if not rec.scrap or not rec.serial_number:
-                continue
-            production = rec.wizard_id.production_id
-            if not production:
-                continue
-            component_move = production.move_raw_ids[:1]
-            if not component_move:
-                continue
-            product_name = component_move.product_id.name.replace(" ", "")
-            numeric = re.search(r'(\d+)$', rec.serial_number)
-            numeric_part = numeric.group(1) if numeric else rec.serial_number
-            rec.serial_number = f"W{product_name}"
+            if rec.grade_type:
+                grade_name = rec.grade_type.name.strip()
+
+                if grade_name.lower().startswith('w'):
+                    rec.serial_number = grade_name
 
 
 class MrpBatchProduce(models.TransientModel):
@@ -180,7 +204,7 @@ class MrpBatchProduce(models.TransientModel):
                 'total_input': production.qty_producing,
                 'total_output': line.quantity,
                 'total_scrap': line.scrap,
-                'grade_type': line.grade_type,
+                'grade_type': line.grade_type.id,
                 'density': density,
                 'treatment_in': line.treatment_in,
                 'treatment_out': line.treatment_out,

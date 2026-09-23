@@ -249,6 +249,8 @@ class MrpProduction(models.Model):
         return super().create(vals)
 
     def action_confirm(self):
+        if not self.scrap_location_id:
+            raise ValidationError(_('Please select scrap location in miscelleneous tab.'))
         for rec in self:
             for move in rec.move_raw_ids:
                 if move.product_uom_qty <= 0:
@@ -317,6 +319,11 @@ class MrpProduction(models.Model):
 
                 production.serial_line_ids.unlink()
 
+                if not production.move_raw_ids:
+                    raise UserError(
+                        "Cannot generate rolls because this Manufacturing Order "
+                        "does not have any raw material."
+                    )
                 self.env['mrp.production.serial.line'].create({
                     'production_id': production.id,
                     'serial_number': production.lot_producing_id.name,
@@ -572,6 +579,7 @@ class MrpProduction(models.Model):
         move.move_line_ids.filtered(lambda l: l.state != 'done').unlink()
 
         for line in self.serial_line_ids:
+            print(f"linefilm-----------{line.film_type}")
             if not line.serial_number:
                 raise ValidationError("Serial/Lot name is required.")
 
@@ -588,8 +596,9 @@ class MrpProduction(models.Model):
                     'company_id': self.company_id.id,
                     'mo_product_code': line.mo_product_code,
                     'product_code': line.po_product_code,
+                    'product_uom_id': line.uom_id.id,
                     'film': line.film,
-                    'film_type': line.film_type,
+                    'film_type': dict(line._fields['film_type'].selection).get(line.film_type),
                     'film_description': line.film_description,
                 })
 
@@ -604,7 +613,7 @@ class MrpProduction(models.Model):
                 'treatment_in':line.treatment_in,
                 'treatment_out':line.treatment_out,
                 'film':line.film,
-                'film_type':line.film_type,
+                'film_type':dict(line._fields['film_type'].selection).get(line.film_type),
                 'film_description':line.film_description,
                 'thickness': line.thickness,
                 'thickness_uom': line.thickness_uom,
@@ -615,7 +624,7 @@ class MrpProduction(models.Model):
                 'width_uom': line.width_uom,
                 'length': line.length,
                 'length_uom': line.length_uom,
-                'grade_type': line.grade_type,
+                'grade_type': line.grade_type.id,
                 'mo_product_code': line.production_id.product_id.default_code,
             })
 
@@ -738,16 +747,26 @@ class MrpProductionSerialLine(models.Model):
     billed = fields.Float(string='Billed')
     film_category = fields.Char(string="Film Category",  help="This helps to categorise specific product.")
     film = fields.Char(string="Film", help="Product Film.")
-    film_type = fields.Selection([('bopet', 'BOPET'),
-                                  ('bopa', 'BOPA'),
-                                  ('cpp', 'CPP')], string="Film Type", tracking=True, help="Film Type")
+    film_type = fields.Selection([('bopet_normal', 'BOPET - Normal'),
+    ('bopet_metalised', 'BOPET - Metalised PET'),
+    ('bopp_normal', 'BOPP - Normal'),
+    ('bopp_metalised', 'BOPP - Metalised BOPP'),
+    ('bopa_normal', 'BOPA - Normal'),
+    ('bopa_metalised', 'BOPA - Metalised BOPA'),
+    ('pe_normal', 'PE - Normal'),
+    ('pe_metalised', 'PE - Metalised PE'),
+    ('mdope_normal', 'MDOPE - Normal'),
+    ('mdope_metalised', 'MDOPE - Metalised MDOPE'),
+    ('cpp_normal', 'CPP - Normal'),
+    ('cpp_metalised', 'CPP - Metalised CPP'),], string="Film Type", tracking=True, help="Film Type")
     film_description = fields.Text(string="Film Description")
 
     total_input = fields.Float(string=" Input")
     total_output = fields.Float(string=" Output")
     total_scrap = fields.Float(string=" Scrap")
+    grade_type = fields.Many2one('scrap.grade',string="Grade")
 
-    grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
+    # grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
     mo_product_code = fields.Char(string="MO Product Code")
     po_product_code = fields.Char(string="Product Code")
     density = fields.Float(string="Roll Density")
@@ -816,9 +835,18 @@ class MrpProductionScrapLine(models.Model):
     billed = fields.Float(string='Billed')
     film_category = fields.Char(string="Film Category",  help="This helps to categorise specific product.")
     film = fields.Char(string="Film", help="Product Film.")
-    film_type = fields.Selection([('bopet', 'BOPET'),
-                                  ('bopa', 'BOPA'),
-                                  ('cpp', 'CPP')], string="Film Type", tracking=True, help="Film Type")
+    film_type = fields.Selection([('bopet_normal', 'BOPET - Normal'),
+    ('bopet_metalised', 'BOPET - Metalised PET'),
+    ('bopp_normal', 'BOPP - Normal'),
+    ('bopp_metalised', 'BOPP - Metalised BOPP'),
+    ('bopa_normal', 'BOPA - Normal'),
+    ('bopa_metalised', 'BOPA - Metalised BOPA'),
+    ('pe_normal', 'PE - Normal'),
+    ('pe_metalised', 'PE - Metalised PE'),
+    ('mdope_normal', 'MDOPE - Normal'),
+    ('mdope_metalised', 'MDOPE - Metalised MDOPE'),
+    ('cpp_normal', 'CPP - Normal'),
+    ('cpp_metalised', 'CPP - Metalised CPP'),], string="Film Type", tracking=True, help="Film Type")
     film_description = fields.Text(string="Film Description")
 
     treatment_in = fields.Selection([

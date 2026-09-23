@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="scrap_grade_wbpet" model="scrap.grade">
+        <field name="name">WBPET</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="scrap_grade_wmpet" model="scrap.grade">
+        <field name="name">WMPET</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="scrap_grade_wbopp" model="scrap.grade">
+        <field name="name">WBOPP</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="scrap_grade_wmopp" model="scrap.grade">
+        <field name="name">WMOPP</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="scrap_grade_wbope" model="scrap.grade">
+        <field name="name">WBOPE</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="scrap_grade_wmope" model="scrap.grade">
+        <field name="name">WMOPE</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="scrap_grade_wbopa" model="scrap.grade">
+        <field name="name">WBOPA</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="scrap_grade_wmopa" model="scrap.grade">
+        <field name="name">WMOPA</field>
+        <field name="active">True</field>
+    </record>
+
+</odoo>
