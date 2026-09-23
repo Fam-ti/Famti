@@ -34,6 +34,7 @@
                     <attribute name="string">Roll Number</attribute>
                 </xpath>
                 <xpath expr="//field[@name='lot_valuated']" position="after">
+                    <field name="is_other_charge"/>
                     <field name="mo_serial_no"/>
                     <field name = "is_consumables"/>
                     <field name = "mo_service_cost"/>
@@ -89,6 +90,7 @@
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='lot_valuated']" position="after">
+                    <field name="is_other_charge"/>
                     <field name="mo_serial_no"/>
                     <field name = "is_consumables"/>
                     <field name = "mo_service_cost"/>
