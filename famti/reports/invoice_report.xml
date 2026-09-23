@@ -282,7 +282,7 @@
                                         </td>
                                     </tr>
 
-                                    <tr t-else="">
+                                    <tr t-else="" t-if="line.product_id.type != 'service'">
                                         <td>
                                             <span t-field="line.name"/>
                                         </td>
