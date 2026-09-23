@@ -65,6 +65,7 @@ class ProductTemplate(models.Model):
     no_of_joint = fields.Char(string="No. Of Joint")
     aging = fields.Char(string="Aging")
     received_date = fields.Datetime(string="Received Date")
+    is_other_charge = fields.Boolean(string="Other Charge", default=False,)
 
     _sql_constraints = [
         (
@@ -139,7 +140,8 @@ class ProductProduct(models.Model):
 
     width_val = fields.Float(string="Width",help="This helps to categorise specific product.",related='product_tmpl_id.width_val')
     width_uom = fields.Selection(selection=[('mm','MM'),('inch','Inch'),('mm','MM'),('mil','Mil')],default='mm',string=" ",related='product_tmpl_id.width_uom')
-
+    is_other_charge = fields.Boolean(string="Other Charge", related='product_tmpl_id.is_other_charge', default=False,)
+    
     _sql_constraints = [
         (
             'default_code_unique',
