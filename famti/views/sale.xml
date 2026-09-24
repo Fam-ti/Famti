@@ -384,6 +384,8 @@
                                     <field name="core_id"/>
                                     <field name="length_val"/>
                                     <field name="length_uom"/>
+                                    <field name="is_met" column_invisible="True"/>
+                                    <field name="optical_density" invisible="not is_met"/>
                                     <field name="name" widget="sol_text" optional="hide"/>
                                     <field name="product_uom_qty" decoration-info="(not display_type and invoice_status == 'to invoice')" decoration-bf="(not display_type and invoice_status == 'to invoice')" context="{'partner_id': parent.partner_id,'quantity': product_uom_qty,'pricelist': parent.pricelist_id,'uom': product_uom, 'company_id': parent.company_id }" readonly="is_downpayment"/>
                                     <field name="qty_delivered" decoration-info="(not display_type and invoice_status == 'to invoice')" decoration-bf="(not display_type and invoice_status == 'to invoice')" string="Delivered" column_invisible="parent.state != 'sale'" readonly="qty_delivered_method != 'manual' or is_downpayment" optional="show"/>
