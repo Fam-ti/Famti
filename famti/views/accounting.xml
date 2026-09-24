@@ -9,7 +9,8 @@
                 <button name="action_send_to_qb"
                         type="object"
                         string="Send to QuickBooks"
-                        class="btn-primary"/>
+                        class="btn-primary"
+                        groups="famti.group_quickbook_users"/>
             </xpath>
 
             <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='product_uom_id']" position="attributes">
@@ -46,7 +47,7 @@
             <xpath expr="//field[@name='delivery_date']" position="before">
                 <field name="invoice_incoterm_id" string="Delivery terms" readonly="state in ['cancel', 'posted']"/>
                 <field name="ship_via"/>
-                <field name="quickbook_id" readonly="1"/>
+                <field name="quickbook_id" readonly="1" groups="famti.group_quickbook_users"/>
 
             </xpath>
             <xpath expr="//div[@class='o_col']" position="after">
