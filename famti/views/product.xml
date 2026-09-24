@@ -34,6 +34,7 @@
                     <attribute name="string">Roll Number</attribute>
                 </xpath>
                 <xpath expr="//field[@name='lot_valuated']" position="after">
+                    <field name="is_other_charge"/>
                     <field name="mo_serial_no"/>
                     <field name = "is_consumables"/>
                     <field name = "mo_service_cost"/>
@@ -69,6 +70,7 @@
                             <field name="width_val"/>
                             <field name="width_uom"/>
                         </div>
+                        <field name="optical_density" invisible="not mo_serial_no"/>
                     </group>
                     <label for="film_description"/>
                     <div>
@@ -89,6 +91,7 @@
             <field name="inherit_id" ref="product.product_normal_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='lot_valuated']" position="after">
+                    <field name="is_other_charge"/>
                     <field name="mo_serial_no"/>
                     <field name = "is_consumables"/>
                     <field name = "mo_service_cost"/>
@@ -111,6 +114,7 @@
                         <field name="treatment_in"/>
                         <field name="treatment_out"/>
                         <field name="low_stock_alert_sent"/>
+                        <field name="optical_density"/>
                     </group>
                     <label for="film_description"/>
                     <div>

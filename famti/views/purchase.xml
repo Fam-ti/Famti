@@ -122,6 +122,8 @@
                     <field name="core_id"  column_invisible="parent.is_tolling"/>
                     <field name="length_val"  column_invisible="parent.is_tolling"/>
                     <field name="length_uom" no_label="1"  column_invisible="parent.is_tolling"/>
+                    <field name="is_met" column_invisible="True"/>
+                    <field name="optical_density" invisible="not is_met"/>
                     <field name="category"  optional="hide"  column_invisible="parent.is_tolling"/>
                     <field name="film"  column_invisible="parent.is_tolling"/>
                     <field name="film_type" force_save="1" column_invisible="parent.is_tolling"/>

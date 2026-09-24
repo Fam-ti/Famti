@@ -43,7 +43,8 @@ class StockMoveLine(models.Model):
     core_id = fields.Selection(selection=[('3', '3 Inch'), ('6', '6 Inch')], string="Core", tracking=True)
     length = fields.Float(string="Length", tracking=True, help="Product Length")
     length_uom = fields.Selection(selection=[('m', 'M'), ('feet', 'Feet')], default='m', string=" ", tracking=True)
-    grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
+    # grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
+    grade_type = fields.Many2one('scrap.grade',string="Grade")
     mo_product_code =fields.Char(string="MO Product Code")
     # treatment_in = fields.Selection([
     #     ('corona', 'Corona'), ('met_corona', 'Met on Corona'), ('met_chemical', 'Met on Chemical'),
@@ -94,6 +95,8 @@ class StockMoveLine(models.Model):
         string='SKU',
         readonly=True,
     )
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
+    is_met = fields.Boolean(string="Is Met", related="product_id.mo_serial_no", store=False)
     #
     # def _action_done(self):
     #     res = super()._action_done()
@@ -192,6 +195,9 @@ class StockMoveLine(models.Model):
             if line.date and not lot.received_date:
                 vals['received_date'] = line.date
 
+            if line.optical_density:
+                vals['optical_density'] = line.optical_density
+
             if vals:
                 lot.write(vals)
 
@@ -256,7 +262,22 @@ class StockMoveLine(models.Model):
             line.weight_uom = lot.weight_uom
             line.film = lot.film
             line.film_type = lot.film_type
-    
+            line.optical_density = lot.optical_density
+
+    # @api.constrains('lot_id', 'product_id')
+    # def _check_lot_product(self):
+    #     for line in self:
+    #         if (
+    #                 line.lot_id
+    #                 and line.lot_id.sudo().product_id
+    #                 and line.product_id != line.lot_id.sudo().product_id
+    #         ):
+    #             raise ValidationError(_(
+    #                 'This lot %(lot_name)s is incompatible with this product %(product_name)s',
+    #                 lot_name=line.lot_id.name,
+    #                 product_name=line.product_id.display_name
+    #             ))
+
 
 class StockMove(models.Model):
     _inherit = 'stock.move'

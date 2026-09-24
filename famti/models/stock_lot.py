@@ -44,7 +44,9 @@ class StockLot(models.Model):
     # product_code =fields.Char(string="Product Code",compute="_compute_product_code",store=True)
     product_code =fields.Char(string="Product Code")
     mo_product_code =fields.Char(string="MO Product Code")
-    grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
+    grade_type = fields.Many2one('scrap.grade',string="Grade")
+
+    # grade_type = fields.Selection([('a', 'A Grade'),('b', 'B Grade'),],string="Grade")
     treatment_in = fields.Selection([
         ('corona', 'Corona'),
         ('met_corona', 'Metalizzed on Corona'),
@@ -92,6 +94,9 @@ class StockLot(models.Model):
     received_date = fields.Date(string="Received Date")
     supplier_name = fields.Many2one('res.partner', string="Supplier Name")
     film_description = fields.Text(string="Film Description")
+
+    is_metalized = fields.Boolean(string="Metalized", related="product_id.mo_serial_no", store=True,)
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
 
     @api.depends('location_id')
     def _compute_parent_location_id(self):

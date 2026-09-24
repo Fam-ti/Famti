@@ -69,6 +69,8 @@
                                 <field name="thickness"/>
                                 <field name="thickness_uom"/>
                             </div>
+                            <field name="is_metalized" invisible="1"/>
+                            <field name="optical_density" invisible="not is_metalized"/>
                             <field name="qc_status" invisible="1"/>
                             <field name="upload_doc"/>
 
@@ -235,6 +237,8 @@
                             </div>
 
                             <field name="core_id" string="Core ID"/>
+                            <field name="is_met" invisible="True"/>
+                            <field name="optical_density" invisible="not is_met"/>
 
                         </group>
 

@@ -97,7 +97,6 @@ class SaleOrder(models.Model):
             final=final,
             date=date
         )
-
         for invoice in invoices:
             sale_order = invoice.line_ids.sale_line_ids.order_id[:1]
             if sale_order:
@@ -105,12 +104,9 @@ class SaleOrder(models.Model):
 
             for invoice_line in invoice.invoice_line_ids:
                 sale_lines = invoice_line.sale_line_ids
-
                 if not sale_lines:
                     continue
-
                 sale_line = sale_lines[0]
-
                 invoice_line.write({
                     'description': sale_line.description,
                     'treatment_in': sale_line.treatment_in,
@@ -123,6 +119,7 @@ class SaleOrder(models.Model):
                     'length_val': sale_line.length_val,
                     'length_uom': sale_line.length_uom,
                     'remarks': sale_line.remarks,
+                    'optical_density':sale_line.optical_density,
                 })
 
         return invoices
@@ -289,6 +286,7 @@ class SaleOrder(models.Model):
                         'pieces': line.pieces,
                         'remarks': line.remarks,
                         'description': line.description,
+                        'optical_density':line.optical_density,
                     })
 
             attachments = self.env['ir.attachment'].search([
@@ -518,38 +516,6 @@ class SaleOrder(models.Model):
         else:
             raise UserError('Order Needs to be approved or Something went wrong!')
 
-    def _create_invoices(self, grouped=False, final=False, date=None):
-        invoices = super()._create_invoices(
-            grouped=grouped,
-            final=final,
-            date=date,
-        )
-
-        for invoice in invoices:
-            for invoice_line in invoice.invoice_line_ids:
-                sale_lines = invoice_line.sale_line_ids
-
-                if not sale_lines:
-                    continue
-
-                sale_line = sale_lines[0]
-
-                invoice_line.write({
-                    'description': sale_line.description,
-                    'treatment_in': sale_line.treatment_in,
-                    'treatment_out': sale_line.treatment_out,
-                    'thickness_val': sale_line.thickness_val,
-                    'thickness_uom': sale_line.thickness_uom,
-                    'width_val': sale_line.width_val,
-                    'width_uom': sale_line.width_uom,
-                    'core_id': sale_line.core_id,
-                    'length_val': sale_line.length_val,
-                    'length_uom': sale_line.length_uom,
-                    'remarks': sale_line.remarks,
-                })
-
-        return invoices
-
 
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
@@ -600,6 +566,8 @@ class SaleOrderLine(models.Model):
     mo_price = fields.Float(string="MO Price")
     rolls_uom_id = fields.Many2one('uom.uom', string="UoM",domain="[('name','=','rolls')]",
         default=lambda self: self.env['uom.uom'].search([('name','=','rolls')], limit=1))
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
+    is_met = fields.Boolean(string="Is Met", related="product_id.mo_serial_no", store=False)
 
     @api.model
     def create(self, vals):
