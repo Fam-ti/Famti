@@ -1101,6 +1101,7 @@ class MrpProductionSerialLine(models.Model):
         ('special_chemical', 'Special Chemical'),
 
     ], string="Treatment OUT")
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
 
 
 
