@@ -7,6 +7,9 @@ import base64
 import xlsxwriter
 import logging
 _logger = logging.getLogger(__name__)
+from collections import defaultdict
+
+from odoo.tools import groupby as tools_groupby
 
 
 class MrpProduction(models.Model):
@@ -574,9 +577,101 @@ class MrpProduction(models.Model):
     #
     #     return res
 
+    # def button_mark_done(self):
+    #     failed_lots = []
+    #     for mo in self:
+    #         for prod in mo.move_raw_ids:
+    #             for lot in prod.lot_ids:
+    #                 if lot.qc_status in ['pending', 'failed']:
+    #                     failed_lots.append(lot.name)
+    #
+    #         if failed_lots:
+    #             raise UserError(
+    #                 f"The following Lots are not QC Approved:\n"
+    #                 f"{', '.join(failed_lots)}"
+    #             )
+    #         not_done_workorders = mo.workorder_ids.filtered(
+    #             lambda wo: wo.state != 'done'
+    #         )
+    #         if not_done_workorders:
+    #             names = ", ".join(not_done_workorders.mapped('name'))
+    #
+    #             raise ValidationError(
+    #                 _("You cannot split lots.\n"
+    #                   "The following Work Orders are not Done: %s") % names
+    #             )
+    #         for rec in mo.serial_line_ids:
+    #             fields_to_check = {
+    #                 'Thickness': rec.thickness,
+    #                 'Width': rec.width,
+    #                 'Length': rec.length,
+    #             }
+    #
+    #             for label, value in fields_to_check.items():
+    #                 if not rec.total_scrap or rec.total_scrap == 0:
+    #
+    #                     if value <= 0:
+    #                         raise ValidationError(
+    #                             _("Serial %s: Please Enter the value for %s.")
+    #                             % (
+    #                                 rec.serial_number or '',
+    #                                 label
+    #                             )
+    #                         )
+    #         density = 0
+    #
+    #         raw_move = mo.move_raw_ids.filtered(
+    #             lambda m: m.product_id
+    #         )[:1]
+    #
+    #         if raw_move:
+    #             density = raw_move.product_id.density or 0
+    #
+    #         for rec in mo.serial_line_ids:
+    #
+    #             calculated_weight = 0
+    #
+    #             if (
+    #                     rec.thickness
+    #                     and rec.width
+    #                     and rec.length
+    #                     and density
+    #             ):
+    #                 calculated_weight = (
+    #                                             rec.thickness
+    #                                             * rec.width
+    #                                             * rec.length
+    #                                             * density
+    #                                     ) / 1000000
+    #
+    #                 print(
+    #                     "calculated_weight---------",
+    #                     calculated_weight
+    #                 )
+    #                 #
+    #                 # print(
+    #                 #     "rec.recived---------",
+    #                 #     rec.quantity
+    #                 # )
+    #
+    #         if mo.product_id.tracking == 'lot' and mo.serial_line_ids:
+    #             mo._create_lots_and_move_lines()
+    #
+    #         if mo.scrap_line_ids:
+    #             mo._create_stock_scrap_from_lines()
+    #     res = super().button_mark_done()
+    #     self._create_sale_mo_valuation()
+    #
+    #     return res
+
     def button_mark_done(self):
         failed_lots = []
+
         for mo in self:
+
+            # ---------------------------------------------------------
+            # QC VALIDATION
+            # ---------------------------------------------------------
             for prod in mo.move_raw_ids:
                 for lot in prod.lot_ids:
                     if lot.qc_status in ['pending', 'failed']:
@@ -584,20 +679,35 @@ class MrpProduction(models.Model):
 
             if failed_lots:
                 raise UserError(
-                    f"The following Lots are not QC Approved:\n"
-                    f"{', '.join(failed_lots)}"
+                    _(
+                        "The following Lots are not QC Approved:\n%s"
+                    ) % ", ".join(failed_lots)
                 )
+
+            # ---------------------------------------------------------
+            # WORK ORDER VALIDATION
+            # ---------------------------------------------------------
             not_done_workorders = mo.workorder_ids.filtered(
                 lambda wo: wo.state != 'done'
             )
+
             if not_done_workorders:
-                names = ", ".join(not_done_workorders.mapped('name'))
+                names = ", ".join(
+                    not_done_workorders.mapped('name')
+                )
 
                 raise ValidationError(
-                    _("You cannot split lots.\n"
-                      "The following Work Orders are not Done: %s") % names
+                    _(
+                        "You cannot split lots.\n"
+                        "The following Work Orders are not Done: %s"
+                    ) % names
                 )
+
+            # ---------------------------------------------------------
+            # SERIAL LINE FIELD VALIDATION
+            # ---------------------------------------------------------
             for rec in mo.serial_line_ids:
+
                 fields_to_check = {
                     'Thickness': rec.thickness,
                     'Width': rec.width,
@@ -605,16 +715,22 @@ class MrpProduction(models.Model):
                 }
 
                 for label, value in fields_to_check.items():
+
                     if not rec.total_scrap or rec.total_scrap == 0:
 
                         if value <= 0:
                             raise ValidationError(
-                                _("Serial %s: Please Enter the value for %s.")
-                                % (
+                                _(
+                                    "Serial %s: Please Enter the value for %s."
+                                ) % (
                                     rec.serial_number or '',
                                     label
                                 )
                             )
+
+            # ---------------------------------------------------------
+            # WEIGHT CALCULATION
+            # ---------------------------------------------------------
             density = 0
 
             raw_move = mo.move_raw_ids.filtered(
@@ -641,22 +757,39 @@ class MrpProduction(models.Model):
                                                 * density
                                         ) / 1000000
 
-                    print(
-                        "calculated_weight---------",
-                        calculated_weight
-                    )
-                    #
-                    # print(
-                    #     "rec.recived---------",
-                    #     rec.quantity
-                    # )
-
+            # ---------------------------------------------------------
+            # CREATE PRODUCTION ROLL LOTS + MOVE LINES
+            # ---------------------------------------------------------
             if mo.product_id.tracking == 'lot' and mo.serial_line_ids:
                 mo._create_lots_and_move_lines()
 
+            # ---------------------------------------------------------
+            # CREATE SCRAP
+            # ---------------------------------------------------------
             if mo.scrap_line_ids:
                 mo._create_stock_scrap_from_lines()
-        res = super().button_mark_done()
+
+        # ---------------------------------------------------------
+        # POST INVENTORY
+        # ---------------------------------------------------------
+        #
+        # skip_backorder is important for the slitting workflow:
+        #
+        # Input = 20
+        # Production = 15
+        # Scrap = 5
+        #
+        # There is no unfinished production to backorder.
+        #
+        # ---------------------------------------------------------
+        res = super(
+            MrpProduction,
+            self.with_context(skip_backorder=True)
+        ).button_mark_done()
+
+        # ---------------------------------------------------------
+        # SALE MO VALUATION
+        # ---------------------------------------------------------
         self._create_sale_mo_valuation()
 
         return res
@@ -694,10 +827,111 @@ class MrpProduction(models.Model):
                 self.env['sale.mo.valuation'].create(vals) 
                 
 
+    # def _create_lots_and_move_lines(self):
+    #     self.ensure_one()
+    #     StockLot = self.env['stock.lot']
+    #     StockMoveLine = self.env['stock.move.line']
+    #     move = self.move_finished_ids.filtered(
+    #         lambda m: m.product_id == self.product_id
+    #     )[:1]
+    #
+    #     if not move:
+    #         return
+    #
+    #     move.move_line_ids.filtered(
+    #         lambda l: l.state != 'done'
+    #     ).unlink()
+    #     production_lines = self.serial_line_ids.filtered(
+    #         lambda line: (
+    #                 line.serial_number
+    #                 and not line.serial_number.strip().upper().startswith('W')
+    #         )
+    #     )
+    #
+    #     if not production_lines:
+    #         raise ValidationError(_(
+    #             "No actual production Roll / Serial Number was found."
+    #         ))
+    #     serial_numbers = [
+    #         line.serial_number.strip()
+    #         for line in production_lines
+    #         if line.serial_number
+    #     ]
+    #
+    #     duplicates = {
+    #         name for name in serial_numbers
+    #         if serial_numbers.count(name) > 1
+    #     }
+    #
+    #     if duplicates:
+    #         raise ValidationError(_(
+    #             "Duplicate Roll / Serial Number is not allowed.\n\n"
+    #             "Duplicate Roll Number(s): %s"
+    #         ) % ", ".join(sorted(duplicates)))
+    #     # first_lot = False
+    #     for line in production_lines:
+    #         serial_number = line.serial_number.strip()
+    #         lot = StockLot.search([
+    #             ('name', '=', serial_number),
+    #             ('product_id', '=', self.product_id.id),
+    #             ('company_id', '=', self.company_id.id),
+    #         ], limit=1)
+    #
+    #         if not lot:
+    #             lot = StockLot.create({
+    #                 'name': serial_number,
+    #                 'product_id': self.product_id.id,
+    #                 'company_id': self.company_id.id,
+    #                 'mo_product_code': line.mo_product_code,
+    #                 'product_code': line.po_product_code,
+    #                 'product_uom_id': line.uom_id.id,
+    #                 'film': line.film,
+    #                 'film_type': dict(
+    #                     line._fields['film_type'].selection
+    #                 ).get(line.film_type),
+    #                 'film_description': line.film_description,
+    #             })
+    #
+    #         # if not first_lot:
+    #         #     first_lot = lot
+    #
+    #         StockMoveLine.create({
+    #             'move_id': move.id,
+    #             'product_id': self.product_id.id,
+    #             'lot_id': lot.id,
+    #             'quantity': line.quantity,
+    #             'product_uom_id': line.uom_id.id,
+    #             'location_id': move.location_id.id,
+    #             'location_dest_id': line.location_id.id,
+    #             'treatment_in': line.treatment_in,
+    #             'treatment_out': line.treatment_out,
+    #             'film': line.film,
+    #             'film_type': dict(
+    #                 line._fields['film_type'].selection
+    #             ).get(line.film_type),
+    #             'film_description': line.film_description,
+    #             'thickness': line.thickness,
+    #             'thickness_uom': line.thickness_uom,
+    #             'core_id': line.core_id,
+    #             'weight': line.quantity,
+    #             'width': line.width,
+    #             'width_uom': line.width_uom,
+    #             'length': line.length,
+    #             'length_uom': line.length_uom,
+    #             'grade_type': line.grade_type.id,
+    #             'mo_product_code': line.production_id.product_id.default_code,
+    #             'optical_density': line.optical_density,
+    #         })
+    #
+    #     # if first_lot:
+    #     #     self.lot_producing_id = first_lot.id
+
     def _create_lots_and_move_lines(self):
         self.ensure_one()
+
         StockLot = self.env['stock.lot']
         StockMoveLine = self.env['stock.move.line']
+
         move = self.move_finished_ids.filtered(
             lambda m: m.product_id == self.product_id
         )[:1]
@@ -705,9 +939,11 @@ class MrpProduction(models.Model):
         if not move:
             return
 
+        # Remove unfinished move lines.
         move.move_line_ids.filtered(
             lambda l: l.state != 'done'
         ).unlink()
+
         production_lines = self.serial_line_ids.filtered(
             lambda line: (
                     line.serial_number
@@ -719,6 +955,8 @@ class MrpProduction(models.Model):
             raise ValidationError(_(
                 "No actual production Roll / Serial Number was found."
             ))
+
+        # Check duplicate roll numbers.
         serial_numbers = [
             line.serial_number.strip()
             for line in production_lines
@@ -726,7 +964,8 @@ class MrpProduction(models.Model):
         ]
 
         duplicates = {
-            name for name in serial_numbers
+            name
+            for name in serial_numbers
             if serial_numbers.count(name) > 1
         }
 
@@ -735,9 +974,21 @@ class MrpProduction(models.Model):
                 "Duplicate Roll / Serial Number is not allowed.\n\n"
                 "Duplicate Roll Number(s): %s"
             ) % ", ".join(sorted(duplicates)))
-        first_lot = False
+
+        # Keep the first lot only for Odoo's lot-tracking requirement.
+        # It must NOT be used to replace the individual quantities.
+        first_lot = None
+
         for line in production_lines:
+
             serial_number = line.serial_number.strip()
+
+            if line.quantity <= 0:
+                raise ValidationError(_(
+                    "Quantity must be greater than zero for Roll / "
+                    "Serial Number '%s'."
+                ) % serial_number)
+
             lot = StockLot.search([
                 ('name', '=', serial_number),
                 ('product_id', '=', self.product_id.id),
@@ -762,6 +1013,14 @@ class MrpProduction(models.Model):
             if not first_lot:
                 first_lot = lot
 
+            # IMPORTANT:
+            # Each production roll gets its own quantity.
+            #
+            # Example:
+            # S1 = 10 kg
+            # S2 = 5 kg
+            #
+            # These quantities must remain independent.
             StockMoveLine.create({
                 'move_id': move.id,
                 'product_id': self.product_id.id,
@@ -770,6 +1029,7 @@ class MrpProduction(models.Model):
                 'product_uom_id': line.uom_id.id,
                 'location_id': move.location_id.id,
                 'location_dest_id': line.location_id.id,
+
                 'treatment_in': line.treatment_in,
                 'treatment_out': line.treatment_out,
                 'film': line.film,
@@ -790,8 +1050,168 @@ class MrpProduction(models.Model):
                 'optical_density': line.optical_density,
             })
 
+        # Odoo requires a producing lot for a lot-tracked finished product.
+        # Keep the first lot here, but _post_inventory() below prevents
+        # this lot from being applied to all production move lines.
         if first_lot:
             self.lot_producing_id = first_lot.id
+
+    def _post_inventory(self, cancel_backorder=False):
+        moves_to_do = set()
+        moves_not_to_do = set()
+        moves_to_cancel = set()
+
+        # ---------------------------------------------------------
+        # RAW MATERIAL MOVES
+        # ---------------------------------------------------------
+        for move in self.move_raw_ids:
+            if move.state == 'done':
+                moves_not_to_do.add(move.id)
+            elif not move.picked:
+                moves_to_cancel.add(move.id)
+            elif move.state != 'cancel':
+                moves_to_do.add(move.id)
+
+        self.with_context(
+            skip_mo_check=True
+        ).env['stock.move'].browse(
+            moves_to_do
+        )._action_done(
+            cancel_backorder=cancel_backorder
+        )
+
+        self.with_context(
+            skip_mo_check=True
+        ).env['stock.move'].browse(
+            moves_to_cancel
+        )._action_cancel()
+
+        moves_to_do = (
+                self.move_raw_ids.filtered(
+                    lambda x: x.state == 'done'
+                )
+                - self.env['stock.move'].browse(moves_not_to_do)
+        )
+
+        moves_to_do_by_order = defaultdict(
+            lambda: self.env['stock.move'],
+            [
+                (
+                    key,
+                    self.env['stock.move'].concat(*values)
+                )
+                for key, values in tools_groupby(
+                moves_to_do,
+                key=lambda m: m.raw_material_production_id.id
+            )
+            ]
+        )
+
+        # ---------------------------------------------------------
+        # FINISHED MOVES
+        # ---------------------------------------------------------
+        for order in self:
+
+            finish_moves = order.move_finished_ids.filtered(
+                lambda m: (
+                        m.product_id == order.product_id
+                        and m.state not in ('done', 'cancel')
+                )
+            )
+
+            for move in finish_moves:
+
+                # -------------------------------------------------
+                # NORMAL ODOO PRODUCTION
+                # -------------------------------------------------
+                #
+                # For normal production, Odoo can use qty_producing.
+                #
+                # -------------------------------------------------
+                if not order.serial_line_ids:
+
+                    move.quantity = float_round(
+                        order.qty_producing - order.qty_produced,
+                        precision_rounding=order.product_uom_id.rounding,
+                        rounding_method='HALF-UP'
+                    )
+
+                    extra_vals = order._prepare_finished_extra_vals()
+
+                    if extra_vals:
+                        move.move_line_ids.write(extra_vals)
+
+                # -------------------------------------------------
+                # CUSTOM SLITTING / MULTI-ROLL PRODUCTION
+                # -------------------------------------------------
+                #
+                # DO NOTHING to move.quantity.
+                #
+                # _create_lots_and_move_lines() has already created:
+                #
+                # Roll S1 = 10 kg
+                # Roll S2 = 5 kg
+                #
+                # We must preserve those exact move-line quantities.
+                #
+                # Also DO NOT call _prepare_finished_extra_vals()
+                # because that would apply lot_producing_id (S1)
+                # to the finished move lines.
+                #
+                # -------------------------------------------------
+
+            # -----------------------------------------------------
+            # WORK ORDERS
+            # -----------------------------------------------------
+            for workorder in order.workorder_ids:
+
+                if workorder.state not in ('done', 'cancel'):
+                    workorder.duration_expected = (
+                        workorder._get_duration_expected()
+                    )
+
+                if (
+                        workorder.duration == 0.0
+                        and workorder.state != 'cancel'
+                ):
+                    workorder.duration = workorder.duration_expected
+                    workorder.duration_unit = round(
+                        workorder.duration /
+                        max(workorder.qty_produced, 1),
+                        2
+                    )
+
+            order._cal_price(
+                moves_to_do_by_order[order.id]
+            )
+
+        # ---------------------------------------------------------
+        # COMPLETE FINISHED MOVES
+        # ---------------------------------------------------------
+        moves_to_finish = self.move_finished_ids.filtered(
+            lambda x: x.state not in ('done', 'cancel')
+        )
+
+        moves_to_finish.picked = True
+
+        moves_to_finish = moves_to_finish._action_done(
+            cancel_backorder=cancel_backorder
+        )
+
+        # ---------------------------------------------------------
+        # LINK CONSUMPTION LINES
+        # ---------------------------------------------------------
+        for order in self:
+            consume_move_lines = (
+                moves_to_do_by_order[order.id]
+                .mapped('move_line_ids')
+            )
+
+            order.move_finished_ids.move_line_ids.consume_line_ids = [
+                (6, 0, consume_move_lines.ids)
+            ]
+
+        return True
 
 
     def _create_stock_scrap_from_lines(self):
