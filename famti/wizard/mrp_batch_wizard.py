@@ -79,6 +79,7 @@ class MrpBatchProduceLine(models.TransientModel):
     ('cpp_normal', 'CPP - Normal'),
     ('cpp_metalised', 'CPP - Metalised CPP'),],string="Film Type", tracking=True, help="Film Type")
     film_description = fields.Text(string="Film Description")
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
 
 
 
@@ -119,6 +120,7 @@ class MrpBatchProduce(models.TransientModel):
     line_ids = fields.One2many('mrp.batch.produce.line', 'wizard_id', string='Line Items')
     scrap_reason_tag_ids = fields.Many2many( comodel_name='stock.scrap.reason.tag',
         string='Scrap Reason')
+    is_met = fields.Boolean(string="Slitting", related='production_id.mo_serial_no', readonly=True)
 
     @api.depends('production_id')
     def _compute_lot_qty(self):
@@ -208,6 +210,7 @@ class MrpBatchProduce(models.TransientModel):
                 'density': density,
                 'treatment_in': line.treatment_in,
                 'treatment_out': line.treatment_out,
+                'optical_density':line.optical_density,
             })
 
             if line.scrap and line.scrap > 0:
@@ -231,6 +234,7 @@ class MrpBatchProduce(models.TransientModel):
                     'length_uom': line.length_uom,
                     'treatment_in': line.treatment_in,
                     'treatment_out': line.treatment_out,
+                    'optical_density':line.optical_density,
                 })
         total_manufactured_qty = sum(self.line_ids.mapped('quantity'))
 

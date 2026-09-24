@@ -449,12 +449,13 @@
                             <th style="padding:6px;font-weight:bold;">SUPPLIER CODE</th>
                             <th style="padding:6px;font-weight:bold;">THICKNESS (<span t-esc="dict(o.order_line[:1]._fields['thickness_uom'].selection).get(o.order_line[:1].thickness_uom, '')"/>)</th>
                             <th style="padding:6px;font-weight:bold;">WIDTH (<span t-esc="dict(o.order_line[:1]._fields['width_uom'].selection).get(o.order_line[:1].width_uom, '')"/>)</th>
+                            <th t-if="any(line.optical_density for line in o.order_line if not line.display_type)" style="padding:6px;font-weight:bold;"> OPTICAL DENSITY </th>
                             <th style="padding:6px;font-weight:bold;">ITEM CODE</th>
                             <th style="padding:6px;font-weight:bold;">CORE ID (Inch)</th>
                             <th style="padding:6px;font-weight:bold;">TREATMENT IN</th>
                             <th style="padding:6px;font-weight:bold;">TREATMENT OUT</th>
                             <th style="padding:6px;font-weight:bold;">ROLL LENGTH (<span t-esc="dict(o.order_line[:1]._fields['length_uom'].selection).get(o.order_line[:1].length_uom, '')"/>)</th>
-                            <th t-if="o.po_type != 'fgf'" style="padding:6px;font-weight:bold;">QUANTITY ((<span t-esc="o.order_line[:1].product_uom.name or ''"/>))</th>
+                            <th t-if="o.po_type != 'fgf'" style="padding:6px;font-weight:bold;">QUANTITY (<span t-esc="o.order_line[:1].product_uom.name or ''"/>)</th>
                             <th t-if="o.po_type != 'fgf'" style="padding:6px;font-weight:bold;">PRICE / POUND (IN <span t-esc="o.currency_id.name or ''"/>)</th>
                             <th t-if="o.po_type == 'fgf'" style="padding:6px;font-weight:bold;">QUANTITY (NO OF ROLLS)</th>
                             <th t-if="o.po_type == 'fgf'" style="padding:6px;font-weight:bold;">PRICE / ROLL (IN <span t-esc="o.currency_id.name or ''"/>)</th>
@@ -494,6 +495,9 @@
                                 </td>
                                 <td style="padding:6px;">
                                     <span t-field="line.width_val"/>
+                                </td>
+                                <td t-if="any(l.optical_density for l in o.order_line if not l.display_type)" style="padding:6px;">
+                                    <span t-field="line.optical_density"/>
                                 </td>
                                 <td style="padding:6px;">
                                     <span t-field="line.name"/>

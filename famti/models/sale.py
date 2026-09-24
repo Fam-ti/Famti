@@ -119,6 +119,7 @@ class SaleOrder(models.Model):
                     'length_val': sale_line.length_val,
                     'length_uom': sale_line.length_uom,
                     'remarks': sale_line.remarks,
+                    'optical_density':sale_line.optical_density,
                 })
 
         return invoices
@@ -285,6 +286,7 @@ class SaleOrder(models.Model):
                         'pieces': line.pieces,
                         'remarks': line.remarks,
                         'description': line.description,
+                        'optical_density':line.optical_density,
                     })
 
             attachments = self.env['ir.attachment'].search([
@@ -564,6 +566,8 @@ class SaleOrderLine(models.Model):
     mo_price = fields.Float(string="MO Price")
     rolls_uom_id = fields.Many2one('uom.uom', string="UoM",domain="[('name','=','rolls')]",
         default=lambda self: self.env['uom.uom'].search([('name','=','rolls')], limit=1))
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
+    is_met = fields.Boolean(string="Is Met", related="product_id.mo_serial_no", store=False)
 
     @api.model
     def create(self, vals):

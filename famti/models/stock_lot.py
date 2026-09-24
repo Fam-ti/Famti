@@ -95,6 +95,9 @@ class StockLot(models.Model):
     supplier_name = fields.Many2one('res.partner', string="Supplier Name")
     film_description = fields.Text(string="Film Description")
 
+    is_metalized = fields.Boolean(string="Metalized", related="product_id.mo_serial_no", store=True,)
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
+
     @api.depends('location_id')
     def _compute_parent_location_id(self):
         for rec in self:

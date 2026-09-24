@@ -626,6 +626,7 @@ class MrpProduction(models.Model):
                 'length_uom': line.length_uom,
                 'grade_type': line.grade_type.id,
                 'mo_product_code': line.production_id.product_id.default_code,
+                'optical_density': line.optical_density,
             })
 
     def _create_stock_scrap_from_lines(self):
@@ -797,6 +798,7 @@ class MrpProductionSerialLine(models.Model):
         ('special_chemical', 'Special Chemical'),
 
     ], string="Treatment OUT")
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
 
 
 
@@ -875,7 +877,7 @@ class MrpProductionScrapLine(models.Model):
         ('copolymer', 'Copolymer'),
         ('special_chemical', 'Special Chemical'),
     ], string="Treatment OUT")
-    
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
 
 
 class MrpWorkcenter(models.Model):
