@@ -103,13 +103,15 @@ class MrpBatchProduceLine(models.TransientModel):
 
     @api.onchange('grade_type')
     def _onchange_scrap_grade(self):
-        print(f"-line 104---------{self}")
         for rec in self:
             if rec.grade_type:
                 grade_name = rec.grade_type.name.strip()
 
                 if grade_name.lower().startswith('w'):
                     rec.serial_number = grade_name
+                    rec.mo_product_code = 'SCRAP'
+                    rec.po_product_code = "SCRAP"
+
 
 
 class MrpBatchProduce(models.TransientModel):

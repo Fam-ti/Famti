@@ -263,7 +263,21 @@ class StockMoveLine(models.Model):
             line.film = lot.film
             line.film_type = lot.film_type
             line.optical_density = lot.optical_density
-    
+
+    # @api.constrains('lot_id', 'product_id')
+    # def _check_lot_product(self):
+    #     for line in self:
+    #         if (
+    #                 line.lot_id
+    #                 and line.lot_id.sudo().product_id
+    #                 and line.product_id != line.lot_id.sudo().product_id
+    #         ):
+    #             raise ValidationError(_(
+    #                 'This lot %(lot_name)s is incompatible with this product %(product_name)s',
+    #                 lot_name=line.lot_id.name,
+    #                 product_name=line.product_id.display_name
+    #             ))
+
 
 class StockMove(models.Model):
     _inherit = 'stock.move'
