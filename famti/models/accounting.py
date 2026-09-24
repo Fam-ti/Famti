@@ -138,7 +138,8 @@ class AccountMoveLine(models.Model):
     film = fields.Char(string="Film")
     film_type = fields.Char(string="Film Type", tracking=True, help="Film Type")
     supplier_code = fields.Char(string="Supplier Code")
-
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
+    is_met = fields.Boolean(string="Is Met", related="product_id.mo_serial_no", store=False)
 
 
 

@@ -269,6 +269,8 @@ class PurchaseOrderLine(models.Model):
         default=lambda self: self.env['uom.uom'].search([('name','=','rolls')], limit=1))
 
     supplier_code = fields.Char(string="Supplier Code")
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
+    is_met = fields.Boolean(string="Is Met", related="product_id.mo_serial_no", store=False)
 
 
     def action_open_uom_conversion(self):
@@ -340,6 +342,7 @@ class PurchaseOrderLine(models.Model):
                 # 'remarks': self.remarks,
                 'treatment_in': self.treatment_in,
                 'treatment_out': self.treatment_out,
+                'optical_density':self.optical_density,
             })
         return res
 
@@ -386,5 +389,6 @@ class PurchaseOrderLine(models.Model):
             'remarks': self.remarks,
             'film': self.film,
             'film_type': self.film_type,
+            'optical_density':self.optical_density,
         })
         return vals

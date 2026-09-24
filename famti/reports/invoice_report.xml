@@ -301,6 +301,10 @@
                                             Length:
                                             <span t-field="line.length_val"/>
                                             <span t-field="line.length_uom"/>
+                                            <t t-if="line.optical_density">
+                                                , Optical Density:
+                                                <span t-field="line.optical_density"/>
+                                            </t>
                                         </td>
 
                                         <td>

@@ -48,3 +48,5 @@ class StockMove(models.Model):
     length_val = fields.Float(string="Length", help="Product Length")
     length_uom = fields.Selection(selection=[('m', 'M'), ('feet', 'Feet')], default='feet', string=" ")
     remarks = fields.Text(string="Remarks")
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
+    is_met = fields.Boolean(string="Is Met", related="product_id.mo_serial_no", store=False)

@@ -95,6 +95,8 @@ class StockMoveLine(models.Model):
         string='SKU',
         readonly=True,
     )
+    optical_density = fields.Float(string="Optical Density", digits=(16, 2))
+    is_met = fields.Boolean(string="Is Met", related="product_id.mo_serial_no", store=False)
     #
     # def _action_done(self):
     #     res = super()._action_done()
@@ -193,6 +195,9 @@ class StockMoveLine(models.Model):
             if line.date and not lot.received_date:
                 vals['received_date'] = line.date
 
+            if line.optical_density:
+                vals['optical_density'] = line.optical_density
+
             if vals:
                 lot.write(vals)
 
@@ -257,6 +262,7 @@ class StockMoveLine(models.Model):
             line.weight_uom = lot.weight_uom
             line.film = lot.film
             line.film_type = lot.film_type
+            line.optical_density = lot.optical_density
     
 
 class StockMove(models.Model):

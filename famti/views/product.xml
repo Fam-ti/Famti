@@ -70,6 +70,7 @@
                             <field name="width_val"/>
                             <field name="width_uom"/>
                         </div>
+                        <field name="optical_density" invisible="not mo_serial_no"/>
                     </group>
                     <label for="film_description"/>
                     <div>
@@ -113,6 +114,7 @@
                         <field name="treatment_in"/>
                         <field name="treatment_out"/>
                         <field name="low_stock_alert_sent"/>
+                        <field name="optical_density"/>
                     </group>
                     <label for="film_description"/>
                     <div>

@@ -159,6 +159,8 @@
                 <field name="core_id"/>
                 <field name="length_val"/>
                 <field name="length_uom"/>
+                <field name="is_met" column_invisible="True"/>
+                <field name="optical_density" invisible="not is_met"/>
             </xpath>
             
             <xpath expr="//field[@name='order_line']/list/field[@name='qty_invoiced']" position="after">
