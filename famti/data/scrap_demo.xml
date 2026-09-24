@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
  <data noupdate="1">
+     <record id="scrap_grade_a" model="scrap.grade">
+        <field name="name">A Grade</field>
+        <field name="active">True</field>
+    </record>
+
+    <record id="scrap_grade_b" model="scrap.grade">
+        <field name="name">B Grade</field>
+        <field name="active">True</field>
+    </record>
 
 
     <record id="scrap_grade_wbpet" model="scrap.grade">

@@ -8,6 +8,7 @@
         <field name="arch" type="xml">
             <list string="Scrap Grades">
                 <field name="name"/>
+                <field name="sequence" widget="handle"/>
                 <field name="active"/>
             </list>
         </field>
