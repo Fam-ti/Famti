@@ -251,13 +251,18 @@ class MrpProduction(models.Model):
     def create(self, vals):
         if vals.get('origin'):
             vals['bom_id'] = False
-
         return super().create(vals)
 
     def action_confirm(self):
-        if not self.scrap_location_id:
-            raise ValidationError(_('Please select scrap location in miscelleneous tab.'))
         for rec in self:
+            if rec._name == "mrp.production":
+                if not rec.scrap_location_id:
+                    raise ValidationError(
+                        _(
+                            "Please select scrap location "
+                            "in miscellaneous tab."
+                        )
+                    )
             for move in rec.move_raw_ids:
                 if move.product_uom_qty <= 0:
                     move.product_uom_qty = rec.product_qty
