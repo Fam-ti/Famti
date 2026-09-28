@@ -11,3 +11,4 @@ from .import report_wizard
 from . import barcode_print_wizard
 from . import roll_import
 from . import customer_import
+from . import product_catalog_import_wizard

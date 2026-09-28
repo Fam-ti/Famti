@@ -60,7 +60,7 @@
 
 
     <menuitem id="menu_import_root"
-              name="Roll Import"
+              name="Import Excels"
               parent="stock.menu_stock_root"
               sequence="90"/>
 
