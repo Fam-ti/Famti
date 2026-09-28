@@ -72,7 +72,7 @@ class ProductTemplate(models.Model):
         (
             'default_code_unique',
             'unique(default_code)',
-            'Internal Reference / SKU must be unique.'
+            'Product Code / SKU must be unique.'
         ),
     ]
     
@@ -149,7 +149,7 @@ class ProductProduct(models.Model):
         (
             'default_code_unique',
             'unique(default_code)',
-            'Internal Reference / SKU must be unique.'
+            'Product Code / SKU must be unique.'
         ),
     ]
     

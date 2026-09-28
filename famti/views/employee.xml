@@ -44,6 +44,21 @@
                     Permit Number
                 </attribute>
             </xpath>
+
+
+            <xpath expr="//field[@name='ssnid']" position="attributes">
+                <attribute name="string">
+                    SIN Number
+                </attribute>
+            </xpath>
+
+
+            <xpath expr="//field[@name='pin']" position="attributes">
+                <attribute name="string">
+                    Postal Code
+                </attribute>
+            </xpath>
+
                  <xpath expr="//field[@name='work_permit_expiration_date']" position="attributes">
                 <attribute name="string">
                     Permit Expiration Date
