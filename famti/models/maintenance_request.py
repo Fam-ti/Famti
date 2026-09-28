@@ -460,3 +460,4 @@ class MaintenanceEquipment(models.Model):
         'equipment_id',
         string="Maintenance Requests"
     )
+    excepted_mtbf_date_time = fields.Datetime(string="Expected Mean Time Between Failure")
