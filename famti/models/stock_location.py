@@ -343,11 +343,18 @@ class StockPicking(models.Model):
         )
 
         po = picking.move_ids.purchase_line_id.order_id[:1]
-        po_number = po.name if po else ""
+        so = picking.move_ids.sale_line_id.order_id[:1]
+
+        if po:
+            document_number = po.name
+        elif so:
+            document_number = so.buyer_po_number or ""
+        else:
+            document_number = ""
 
         sheet.write(
             'A15',
-            f'PO Number # {po_number or ""}'
+            f'PO Number # {document_number}'
         )
 
         row = 18
