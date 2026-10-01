@@ -113,7 +113,6 @@ class BarcodeLabelWizard(models.TransientModel):
                 for move in picking.move_ids_without_package:
                     package = move.product_packaging_id.name if move.product_packaging_id else ''
 
-                    # Automatically detect PO or SO source
                     if move.purchase_line_id:
                         order_line = move.purchase_line_id
                     elif move.sale_line_id:
@@ -123,40 +122,67 @@ class BarcodeLabelWizard(models.TransientModel):
 
                     order = order_line.order_id if order_line else False
 
-                    spec_vals = {
-                        'thickness': getattr(order_line, 'thickness_val', '') if order_line else '',
-                        'thickness_uom': getattr(order_line, 'thickness_uom', '') if order_line else '',
-                        'width': getattr(order_line, 'width_val', '') if order_line else '',
-                        'width_uom': getattr(order_line, 'width_uom', '') if order_line else '',
-                        'length': getattr(order_line, 'length_val', '') if order_line else '',
-                        'length_uom': getattr(order_line, 'length_uom', '') if order_line else '',
-                        'treatment_in': dict(order_line._fields['treatment_in'].selection).get(order_line.treatment_in, order_line.treatment_in) if order_line and order_line.treatment_in else '',
-                        'treatment_out': dict(order_line._fields['treatment_out'].selection).get(order_line.treatment_out, order_line.treatment_out) if order_line and order_line.treatment_out else '',
-                        'product': getattr(order_line.product_id, 'name', '') if order_line and order_line.product_id else '',
-                        'po_product_code': order.name if order else '',
-                        'date': order.date_order if order else picking.scheduled_date,
-                    }
+                    move_lines = move.move_line_ids
 
-                    if move.lot_ids:
-                        for lot in move.lot_ids:
-                            lines.append({
-                                'product_name': move.product_id.display_name,
-                                'serial_number': lot.name,
-                                'package_number': package,
-                                'barcode_value': lot.name,
-                                'quantity': move.quantity,
-                                'uom_id': move.product_uom.name,
-                                **spec_vals,
-                            })
-                    else:
+                    for move_line in move_lines:
+
+                        treatment_in = ''
+                        if move_line.treatment_in:
+                            treatment_in = dict(
+                                move_line._fields['treatment_in'].selection
+                            ).get(
+                                move_line.treatment_in,
+                                move_line.treatment_in
+                            )
+
+                        treatment_out = ''
+                        if move_line.treatment_out:
+                            treatment_out = dict(
+                                move_line._fields['treatment_out'].selection
+                            ).get(
+                                move_line.treatment_out,
+                                move_line.treatment_out
+                            )
+
                         lines.append({
-                            'product_name': move.product_id.display_name,
-                            'serial_number': '',
-                            'package_number': package,
-                            'barcode_value': move.product_id.barcode or '',
-                            'quantity': move.quantity,
-                            'uom_id': move.product_uom.name,
-                            **spec_vals,
+                            'product_name': move_line.product_id.display_name,
+
+                            'serial_number': move_line.lot_id.name if move_line.lot_id else '',
+                            'package_number': (
+                                move_line.package_id.name
+                                if move.sale_line_id and move_line.package_id
+                                else move_line.result_package_id.name
+                                if move.purchase_line_id and move_line.result_package_id
+                                else ''
+                            ),
+                            'barcode_value': (
+                                move_line.lot_id.name
+                                if move_line.lot_id
+                                else move_line.product_id.barcode or ''
+                            ),
+
+                            'quantity': move_line.quantity,
+                            'uom_id': move_line.product_uom_id.name,
+
+                            'thickness': move_line.thickness or '',
+                            'thickness_uom': move_line.thickness_uom or '',
+
+                            'width': move_line.width or '',
+                            'width_uom': move_line.width_uom or '',
+
+                            'length': move_line.length or '',
+                            'length_uom': move_line.length_uom or '',
+
+                            'treatment_in': treatment_in,
+                            'treatment_out': treatment_out,
+
+                            'product': move_line.product_id.name
+                                if move_line.product_id else '',
+
+                            'po_product_code': order.name if order else '',
+
+                            'date': order.date_order
+                                if order else picking.scheduled_date,
                         })
 
             return self.env.ref(
@@ -164,7 +190,10 @@ class BarcodeLabelWizard(models.TransientModel):
             ).with_context(
                 copies=self.copies,
                 print_format=self.print_format
-            ).report_action(records, data={'lines': lines})
+            ).report_action(
+                records,
+                data={'lines': lines}
+            )
 
         elif active_model == 'mrp.production':
             lines = []

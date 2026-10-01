@@ -307,9 +307,21 @@ class StockPicking(models.Model):
             'border': 1,
         })
 
+        normal_center = workbook.add_format({
+            'border': 1,
+            'align': 'center',
+            'valign': 'vcenter',
+        })
+
         total_fmt = workbook.add_format({
             'bold': True,
             'border': 1,
+        })
+        total_fmt_center = workbook.add_format({
+            'bold': True,
+            'border': 1,
+            'align': 'center',
+            'valign': 'vcenter',
         })
 
         sheet.set_column('A:A', 25)
@@ -318,8 +330,24 @@ class StockPicking(models.Model):
 
         picking = self[:1]
 
+        company = picking.company_id
+        if company.logo:
+            logo_data = base64.b64decode(company.logo)
+            logo_stream = io.BytesIO(logo_data)
 
-        sheet.merge_range('F5:J5', 'PACKING LIST', header)
+            sheet.insert_image(
+                'K2',
+                'company_logo.png',
+                {
+                    'image_data': logo_stream,
+                    'x_scale': 0.7,
+                    'y_scale': 0.7,
+                    'x_offset': 5,
+                    'y_offset': 5,
+                }
+            )
+
+        sheet.merge_range('E5:I5', 'PACKING LIST', header)
 
 
         sheet.write('A6', 'SUPPLIER: FAM Ti, INC', total_fmt)
@@ -448,28 +476,28 @@ class StockPicking(models.Model):
             film_type = move_line.film or ''
 
 
-            sheet.write(row, 0, package_name, normal)
-            sheet.write(row, 1, serial_no, normal)
+            sheet.write(row, 0, package_name, normal_center)
+            sheet.write(row, 1, serial_no, normal_center)
 
-            sheet.write(row, 2, thickness, normal)
-            sheet.write(row, 3, gauge, normal)
+            sheet.write(row, 2, thickness, normal_center)
+            sheet.write(row, 3, gauge, normal_center)
 
-            sheet.write(row, 4, film_type, normal)
+            sheet.write(row, 4, film_type, normal_center)
 
-            sheet.write(row, 5, width_mm, normal)
-            sheet.write(row, 6, width_inch, normal)
+            sheet.write(row, 5, width_mm, normal_center)
+            sheet.write(row, 6, width_inch, normal_center)
 
-            sheet.write(row, 7, core_mm, normal)
-            sheet.write(row, 8, core_inch, normal)
+            sheet.write(row, 7, core_mm, normal_center)
+            sheet.write(row, 8, core_inch, normal_center)
 
-            sheet.write(row, 9, length_mtr, normal)
-            sheet.write(row, 10, length_feet, normal)
+            sheet.write(row, 9, length_mtr, normal_center)
+            sheet.write(row, 10, length_feet, normal_center)
 
-            sheet.write(row, 11, treatment_in, normal)
-            sheet.write(row, 12, treatment_out, normal)
+            sheet.write(row, 11, treatment_in, normal_center)
+            sheet.write(row, 12, treatment_out, normal_center)
 
-            sheet.write(row, 13, qty, normal)
-            sheet.write(row, 14, lbs, normal)
+            sheet.write(row, 13, qty, normal_center)
+            sheet.write(row, 14, lbs, normal_center)
 
             total_kgs += qty
             total_lbs += lbs
@@ -483,8 +511,8 @@ class StockPicking(models.Model):
             total_fmt
         )
 
-        sheet.write(row, 13, total_kgs, total_fmt)
-        sheet.write(row, 14, total_lbs, total_fmt)
+        sheet.write(row, 13, total_kgs, total_fmt_center)
+        sheet.write(row, 14, total_lbs, total_fmt_center)
 
         row += 5
 
