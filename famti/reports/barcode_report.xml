@@ -172,14 +172,11 @@
                                 </div>
                             </div>
 
-                            <div style="font-size: 20px; font-weight: bold; letter-spacing: 1px; margin-bottom: 6px;">
+                            <div style="font-size: 40px; font-weight: bold; letter-spacing: 1px; margin-bottom: 6px;">
                                 <span>ROLL NUMBER</span>
                             </div>
-                            <div style="font-size: 20px; font-weight: bold; letter-spacing: 1px; margin-bottom: 6px;">
-                                <span t-esc="line.product_id.display_name"/>
-                            </div>
 
-                            <div style="font-size: 28px; font-weight: bold; margin-bottom: 16px;">
+                            <div style="font-size: 25px; font-weight: bold; margin-bottom: 16px;">
                                 <span t-esc="line.serial_number"/>
                             </div>
 
@@ -337,14 +334,11 @@
                                 </div>
                             </div>
 
-                            <div t-attf-style="font-size: {{20 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
+                            <div t-attf-style="font-size: {{30 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
                                 <span>ROLL NUMBER</span>
                             </div>
-                            <div t-attf-style="font-size: {{20 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
-                                <span t-esc="line.get('product_name')"/>
-                            </div>
 
-                            <div t-attf-style="font-size: {{28 * sc}}px; font-weight: bold; margin-bottom: {{16 * sc}}px;">
+                            <div t-attf-style="font-size: {{25 * sc}}px; font-weight: bold; margin-bottom: {{16 * sc}}px;">
                                 <span t-esc="line.get('serial_number')"/>
                             </div>
 
@@ -579,14 +573,11 @@
                                 </div>
                             </div>
 
-                            <div t-attf-style="font-size: {{20 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
+                            <div t-attf-style="font-size: {{30 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
                                 <span>ROLL NUMBER</span>
                             </div>
-                            <div t-attf-style="font-size: {{20 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
-                                <span t-esc="line.get('product_name')"/>
-                            </div>
 
-                            <div t-attf-style="font-size: {{28 * sc}}px; font-weight: bold; margin-bottom: {{16 * sc}}px;">
+                            <div t-attf-style="font-size: {{25 * sc}}px; font-weight: bold; margin-bottom: {{16 * sc}}px;">
                                 <span t-esc="line.get('serial_number')"/>
                             </div>
 
@@ -743,14 +734,11 @@
                                 </div>
                             </div>
 
-                            <div t-attf-style="font-size: {{20 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
+                            <div t-attf-style="font-size: {{30 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
                                 <span>ROLL NUMBER</span>
                             </div>
-                            <div t-attf-style="font-size: {{20 * sc}}px; font-weight: bold; letter-spacing: 1px; margin-bottom: {{6 * sc}}px;">
-                                <span t-esc="line.get('product_name')"/>
-                            </div>
 
-                            <div t-attf-style="font-size: {{28 * sc}}px; font-weight: bold; margin-bottom: {{16 * sc}}px;">
+                            <div t-attf-style="font-size: {{25 * sc}}px; font-weight: bold; margin-bottom: {{16 * sc}}px;">
                                 <span t-esc="line.get('serial_number')"/>
                             </div>
 
