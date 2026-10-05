@@ -393,26 +393,42 @@
                     <tr>
                         <td style="width:50%;padding:5px; font-size:14px;">
 
-                            <strong><span t-field="o.partner_id.name"/></strong><br/>
+                            <strong>
+                                <span t-field="o.partner_id.name"/>
+                            </strong>
+                            <br/>
+
+                            <span t-field="o.partner_id"
+                                t-options='{"widget": "contact", "fields": ["address"], "no_marker": true}'/><br/>
+
+
+                            <!-- <strong><span t-field="o.partner_id.name"/></strong><br/>
 
                             <span t-field="o.partner_id.street"/><br/>
                             <span t-field="o.partner_id.city"/>
                             <span t-field="o.partner_id.state_id.name"/><br/>
-                            <span t-field="o.partner_id.country_id.name"/><br/>
+                            <span t-field="o.partner_id.country_id.name"/><br/>       -->
 
                             <strong>Phone:</strong> <span t-field="o.partner_id.phone"/><br/>
-                            <strong>Email:</strong> <span t-field="o.partner_id.email"/>                            
+                            <strong>Email:</strong> <span t-field="o.partner_id.email"/>                      
 
                         </td>
 
                         <td style="width:50%;padding:5px; font-size:14px;">
+                            <strong>
+                                <span t-field="o.company_id.name"/>
+                            </strong>
+                            <br/>
 
-                            <strong><span t-field="o.company_id.name"/></strong><br/>
+                            <span t-field="o.company_id.partner_id"
+                                t-options='{"widget": "contact", "fields": ["address"], "no_marker": true}'/><br/>
+
+                            <!-- <strong><span t-field="o.company_id.name"/></strong><br/>
 
                             <span t-field="o.company_id.street"/><br/>
                             <span t-field="o.company_id.city"/>
                             <span t-field="o.company_id.state_id.name"/><br/>
-                            <span t-field="o.company_id.country_id.name"/><br/>
+                            <span t-field="o.company_id.country_id.name"/><br/> -->
 
                             <strong>Phone:</strong> <span t-field="o.company_id.phone"/><br/>
                             <strong>Email:</strong> <span t-field="o.company_id.email"/>
