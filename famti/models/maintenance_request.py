@@ -4,6 +4,7 @@ from odoo import models
 import io
 import base64
 import xlsxwriter
+from dateutil.relativedelta import relativedelta
 
 class MaintenanceRequest(models.Model):
     _inherit = 'maintenance.request'
@@ -49,6 +50,122 @@ class MaintenanceRequest(models.Model):
     heating_start_time = fields.Datetime(string="Heating Start Time")
     web_start_time = fields.Datetime(string="Web Start Time")
     mc_stop_time = fields.Datetime(string="Machine Stop Time")
+
+    next_maintenance_date = fields.Date(
+        string='Next Maintenance Date',
+        compute='_compute_next_maintenance_date',
+        store=True,
+    )
+
+    @api.depends('maintenance_type','schedule_date',
+        'recurring_maintenance','repeat_interval',
+        'repeat_unit','repeat_type','repeat_until',
+    )
+    def _compute_next_maintenance_date(self):
+        for request in self:
+            request.next_maintenance_date = False
+
+            if request.maintenance_type != 'preventive':
+                continue
+
+            if not request.recurring_maintenance:
+                continue
+
+            if not request.schedule_date:
+                continue
+
+            if request.repeat_interval <= 0:
+                continue
+
+            if request.repeat_unit == 'day':
+                next_date = request.schedule_date + relativedelta(
+                    days=request.repeat_interval
+                )
+
+            elif request.repeat_unit == 'week':
+                next_date = request.schedule_date + relativedelta(
+                    weeks=request.repeat_interval
+                )
+
+            elif request.repeat_unit == 'month':
+                next_date = request.schedule_date + relativedelta(
+                    months=request.repeat_interval
+                )
+
+            elif request.repeat_unit == 'year':
+                next_date = request.schedule_date + relativedelta(
+                    years=request.repeat_interval
+                )
+
+            else:
+                next_date = False
+
+            if next_date:
+                if (
+                    request.repeat_type == 'until'
+                    and request.repeat_until
+                    and next_date.date() > request.repeat_until
+                ):
+                    next_date = False
+
+                request.next_maintenance_date = (
+                    next_date.date() if next_date else False
+                )
+
+    @api.model
+    def cron_send_maintenance_reminders(self):
+
+        today = fields.Date.today()
+
+        requests = self.search([
+            ('maintenance_type', '=', 'preventive'),
+            ('recurring_maintenance', '=', True),
+            ('next_maintenance_date', '!=', False),
+        ])
+
+        template = self.env.ref(
+            'famti.email_template_maintenance_reminder',
+            raise_if_not_found=False,
+        )
+
+        if not template:
+            return
+
+        supervisor_group = self.env.ref(
+            'famti.group_supervisor_dep_users',
+            raise_if_not_found=False,
+        )
+
+        if not supervisor_group:
+            return
+
+        supervisors = supervisor_group.users.filtered(
+            lambda user: user.email
+        )
+
+        if not supervisors:
+            return
+
+        for request in requests:
+
+            days_remaining = (
+                request.next_maintenance_date - today
+            ).days
+
+            if days_remaining not in (2, 1):
+                continue
+
+            for supervisor in supervisors:
+
+                template.with_context(
+                    recipient_name=supervisor.name,
+                ).send_mail(
+                    request.id,
+                    force_send=True,
+                    email_values={
+                        'email_to': supervisor.email,
+                    },
+                )
 
     @api.onchange('start_datetime', 'end_datetime')
     def _onchange_duration_calculation(self):
