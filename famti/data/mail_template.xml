@@ -384,5 +384,99 @@
             <field name="auto_delete" eval="False"/>
         </record>
 
+
+        <record id="email_template_maintenance_reminder" model="mail.template">
+            <field name="name">Preventive Maintenance Reminder</field>
+            <field name="model_id" ref="maintenance.model_maintenance_request"/>
+            <field name="subject">Preventive Maintenance Reminder - {{ object.name }}</field>
+            <field name="email_from">{{ user.email or object.company_id.email }}</field>
+            <field name="email_to">{{ object.user_id.email or '' }}</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0; padding: 0; font-family: Arial, sans-serif;">
+
+                    <p>
+                        Hello
+                        <t t-out="ctx.get('recipient_name', 'Team')"/>,
+                    </p>
+
+                    <p>
+                        This is a reminder that the following
+                        <strong>Preventive Maintenance</strong>
+                        is scheduled for
+                        <strong>
+                            <t t-out="object.next_maintenance_date"/>
+                        </strong>.
+                    </p>
+
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd; width: 35%;">
+                                <strong>Maintenance Request</strong>
+                            </td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <t t-out="object.name"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <strong>Equipment</strong>
+                            </td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <t t-out="object.equipment_id.name or '-'"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <strong>Maintenance Team</strong>
+                            </td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <t t-out="object.maintenance_team_id.name or '-'"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <strong>Responsible</strong>
+                            </td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <t t-out="object.user_id.name or '-'"/>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <strong>Next Maintenance Date</strong>
+                            </td>
+                            <td style="padding: 8px; border: 1px solid #ddd;">
+                                <strong>
+                                    <t t-out="object.next_maintenance_date"/>
+                                </strong>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                    <p style="margin-top: 20px;">
+                        Please ensure that the maintenance is scheduled
+                        and completed on or before the due date.
+                    </p>
+
+                    <p>
+                        Regards,<br/>
+                        <strong>Maintenance Team</strong>
+                    </p>
+
+                </div>
+
+            </field>
+
+            <field name="auto_delete" eval="False"/>
+
+        </record>
+        
+
     </data>
 </odoo>

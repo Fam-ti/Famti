@@ -122,6 +122,8 @@ class MaintenanceTrackWizard(models.TransientModel):
             'notes': self.notes,
             'downtime_start': self.downtime_start,
         })
+        if self.maintenance_id and self.schedule_date:
+            self.maintenance_id.schedule_date = self.schedule_date
         self.maintenance_id.stage_id = self.env['maintenance.stage'].search([('name', '=', 'New Request')], limit=1).id
         self.activity_schedule_external()
         return {'type': 'ir.actions.act_window_close'}
