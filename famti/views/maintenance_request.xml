@@ -140,6 +140,9 @@
                 <xpath expr="//field[@name='schedule_date']" position="after">
                     <field name="end_datetime" readonly="show_supervisor_button"/>
                 </xpath>
+                <xpath expr="//field[@name='priority']" position="before">
+                    <field name="next_maintenance_date"/>
+                </xpath>
 
                 <xpath expr="//notebook" position="inside">
                     <page string="Track Maintenance">
