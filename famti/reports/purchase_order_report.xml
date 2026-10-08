@@ -594,9 +594,9 @@
                     <span t-field="o.remarks"/>
                 </div>
 
-                <div t-if="o.notes" style="font-size: 11px; color: #777777;">
+                <!-- <div t-if="o.notes" style="font-size: 11px; color: #777777;">
                     <strong>Notes:</strong>
-                </div>
+                </div> -->
 
                 <div t-if="o.notes" class="mb-3" style="font-size: 10px; color: #777777; line-height: 1.4;">
                     <span t-field="o.notes"/>
