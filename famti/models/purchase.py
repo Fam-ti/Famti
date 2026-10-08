@@ -194,14 +194,49 @@ class Purchase(models.Model):
     def create(self, vals):
         if not vals.get('notes'):
             vals['notes'] = """
-                <p><strong>Terms & Conditions:</strong></p>
+            <p><strong>Packaging &amp; Delivery Instructions:</strong></p>
 
-                <ul>
-                <li>Invoice each P.O. separately in duplicate showing the above P.O. number and shipping information.</li>
-                <li>All duty and/or taxes must be shown separately on invoice where applicable.</li>
-                <li>This order is subject to the terms and conditions stated.</li>
-                </ul>
-                """
+            <ul>
+                <li>Make sure packaging is done by one roll per pallet.</li>
+                <li>Please strictly adhere to the PO delivery schedule. Delays beyond 4-5 days will not be accepted.</li>
+            </ul>
+
+            <p><strong>Notes on Order:</strong></p>
+
+            <ol>
+                <li>Proformas to be emailed for approval once the order is entered.</li>
+                <li>Production date updates based on current lead times, updated weekly as a spreadsheet with all open POs.</li>
+                <li>Container numbers for international shipments to be added to the spreadsheet once production is completed, along with estimated departure and arrival dates. Tracking numbers to be provided for domestic shipments.</li>
+                <li>Estimated port arrival date and container numbers to be provided once the container has sailed. All shipping documents must be provided at this time, including a detailed Excel packing slip with unique Roll #s and COAs. All document details must be provided in imperial units such as pounds, inches, feet, etc.</li>
+                <li>Tracking through port, rail, and final destination as necessary. Emails regarding delivery appointments to be sent to all warehouses by the freight forwarder, with the Import Logistics Specialist copied.</li>
+                <li>Any items that are not packaged according to PO specifications will be refused.</li>
+                <li>Each roll must have a unique Roll # for traceability and must be marked with Treat/Wind In or Out.</li>
+            </ol>
+
+            <p><strong>IMPORTANT INSTRUCTIONS:</strong></p>
+
+            <ol>
+                <li>Quantity tolerance: +/- 5%.</li>
+                <li>No joints allowed in BOPP film, thickness = 25µ.</li>
+                <li>5% joints are allowed in PET films only with written approval.</li>
+                <li>5% joints are permitted in BOPP film, thickness 18µ &amp; 20µ, only with written approval.</li>
+                <li>Length tolerance in 12µ PET film: +/- 2%.</li>
+                <li>No short length is permitted in BOPP film, thickness = 25µ.</li>
+                <li>500 meters short length is permitted in BOPP film, thickness between 15µ-20µ.</li>
+                <li>Packing materials such as pallets, side end ply, and core plugs must meet a strong quality standard to avoid transit damage. Any damage to packing materials will be rejected.</li>
+                <li>Sufficient quantities of silica gel packets must be used for moisture control.</li>
+                <li>The container must be checked for any damage or holes. Do not load any material if the container is damaged.</li>
+                <li>Every roll should be wrapped with an additional protective layer, such as colored poly film or transparent film.</li>
+                <li>No wrinkles or ripples are permitted throughout the length.</li>
+                <li>No unflash winding.</li>
+                <li>Use 2&quot; wide tape at the centre of the paper core to prevent slippage.</li>
+                <li>Brown paper cores must be used. No color painting is permitted on the sides.</li>
+                <li>No labels are permitted inside the paper core.</li>
+                <li>Palletized rolls must be properly wrapped with shrink-wrap film, including the top side.</li>
+                <li>Foam sheets must be used on the sides to prevent damage from the side ply.</li>
+                <li>Generic case labels, packing slips, BOLs, and other documents must contain FAMTi Inc. company markings only.</li>
+            </ol>
+        """
         return super().create(vals)
 
 
