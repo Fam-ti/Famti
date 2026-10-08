@@ -122,7 +122,9 @@
                                 </tr>
                                 <tr>
                                     <td style="padding:5px;background:#eee;"><strong>Other Refrence(s)</strong></td>
-                                    <td></td>
+                                    <td style="text-align:right;padding:5px;">
+                                        <span t-field="o.partner_ref"/>
+                                    </td>
                                 </tr>
                             </table>
 
@@ -484,7 +486,7 @@
 
                             <tr t-if="line.display_type == 'line_section'"
                                 style="background:#f2f2f2;">
-                                <td colspan="12" style="padding:6px;">
+                                <td colspan="13" style="padding:6px;">
                                     <strong>
                                         <span t-field="line.name"/>
                                     </strong>
@@ -492,7 +494,7 @@
                             </tr>
 
                             <tr t-elif="line.display_type == 'line_note'">
-                                <td colspan="12" style="padding:6px;">
+                                <td colspan="13" style="padding:6px;">
                                     <em>
                                         <span t-field="line.name"/>
                                     </em>
@@ -584,12 +586,22 @@
                     </div>
 
                 </div>
-                <div>
+
+                <div t-if="o.remarks">
                     <strong>Remarks:</strong>
                 </div>
                 <div t-if="o.remarks">
                     <span t-field="o.remarks"/>
                 </div>
+
+                <!-- <div t-if="o.notes" style="font-size: 11px; color: #777777;">
+                    <strong>Notes:</strong>
+                </div> -->
+
+                <div t-if="o.notes" class="mb-3" style="font-size: 10px; color: #777777; line-height: 1.4;">
+                    <span t-field="o.notes"/>
+                </div>              
+                
 
 
                 <div class="page-break"/>

@@ -91,10 +91,10 @@
                                         <span t-field="o.so_type"/>
                                     </td>
                                 </tr>
-                                <tr>
+                                <!-- <tr>
                                     <td style="padding:5px;background:#eee;"><strong>Other Refrence(s)</strong></td>
                                     <td></td>
-                                </tr>
+                                </tr> -->
                             </table>
 
                         </div>
