@@ -164,6 +164,32 @@ class DebitNoteWizard(models.TransientModel):
                 note.invoice_line_ids.mapped('quantity')
             )
 
+            film_types = []
+            descriptions = []
+            payment_references = []
+            invoice_lines = note.invoice_line_ids
+
+            for line in invoice_lines:
+
+                if line.film_type:
+                    film_type_value = (
+                        line.film_type.display_name
+                        if hasattr(line.film_type, 'display_name')
+                        else str(line.film_type)
+                    )
+                    film_types.append(film_type_value)
+
+                # Invoice line description
+                if line.description:
+                    descriptions.append(str(line.description))
+
+            # Remove duplicate values while preserving order
+            film_types = list(dict.fromkeys(film_types))
+            descriptions = list(dict.fromkeys(descriptions))
+
+            film_type = ', '.join(film_types)
+            description = ', '.join(descriptions)
+
             sheet.write(row, 0, note.name or '', text_format)
             sheet.write(row, 1,
                         note.partner_id.name or '',
@@ -177,13 +203,13 @@ class DebitNoteWizard(models.TransientModel):
                         note.invoice_origin or '',
                         text_format)
 
-            sheet.write(row, 4, '', text_format)
+            sheet.write(row, 4, film_type, text_format)
 
             sheet.write(row, 5,
-                        note.narration or '',
+                        description or '',
                         text_format)
 
-            sheet.write(row, 6, '', text_format)
+            sheet.write(row, 6, note.payment_reference or '', text_format)
 
             sheet.write(row, 7,
                         qty,

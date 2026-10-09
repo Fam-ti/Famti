@@ -242,7 +242,7 @@ class MiscInvoiceReportWizard(models.TransientModel):
 
             sheet.write(
                 row, 12,
-                inv.narration or '',
+                '',
                 text_format
             )
 

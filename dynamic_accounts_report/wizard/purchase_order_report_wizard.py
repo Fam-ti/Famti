@@ -202,7 +202,7 @@ class PurchaseOrderReportWizard(models.TransientModel):
 
             sheet.write(
                 row, 7,
-                po.notes or '',
+                po.remarks or '',
                 text_format
             )
 

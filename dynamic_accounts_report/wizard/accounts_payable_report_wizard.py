@@ -239,6 +239,29 @@ class AccountsPayableReportWizard(models.TransientModel):
                     payment.journal_id.name
                 )
 
+            supplier_codes = []
+            remarks_list = []
+
+            for line in bill.invoice_line_ids:
+
+                if line.supplier_code:
+                    supplier_codes.append(
+                        str(line.supplier_code)
+                    )
+
+                if line.remarks:
+                    remarks_list.append(
+                        str(line.remarks)
+                    )
+
+                supplier_code = ', '.join(
+                    supplier_codes
+                )
+
+                remarks = ', '.join(
+                    remarks_list
+                )
+
             sheet.write(
                 row, 0,
                 bill.partner_id.name or '',
@@ -247,7 +270,7 @@ class AccountsPayableReportWizard(models.TransientModel):
 
             sheet.write(
                 row, 1,
-                bill.partner_id.ref or '',
+                supplier_code or '',
                 text_format
             )
 
@@ -313,7 +336,7 @@ class AccountsPayableReportWizard(models.TransientModel):
 
             sheet.write(
                 row, 12,
-                bill.narration or '',
+                remarks or '',
                 text_format
             )
 

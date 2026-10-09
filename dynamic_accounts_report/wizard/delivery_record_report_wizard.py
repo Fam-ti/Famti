@@ -141,6 +141,7 @@ class DeliveryRecordReportWizard(models.TransientModel):
                 'in',
                 self.partner_ids.ids
             ))
+            
 
         invoices = self.env[
             'account.move'
@@ -166,6 +167,10 @@ class DeliveryRecordReportWizard(models.TransientModel):
                 )
             )
 
+            sale_order = self.env['sale.order'].search([
+                        ('name', '=', inv.invoice_origin)
+                    ], limit=1)
+
             sheet.write(
                 row, 0,
                 str(inv.invoice_date or ''),
@@ -186,7 +191,7 @@ class DeliveryRecordReportWizard(models.TransientModel):
 
             sheet.write(
                 row, 3,
-                inv.invoice_origin or '',
+                sale_order.buyer_po_number or '',
                 text_format
             )
 
@@ -222,7 +227,7 @@ class DeliveryRecordReportWizard(models.TransientModel):
 
             sheet.write(
                 row, 9,
-                inv.narration or '',
+                '',
                 text_format
             )
 
