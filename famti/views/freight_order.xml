@@ -50,6 +50,10 @@
                     <field name="eta"/>                                       
                 </xpath>
 
+                <xpath expr="//field[@name='expected_date']" position="after">
+                    <field name="supplier_so_no"/>
+                </xpath>
+
                 <xpath expr="//group[@col='2']" position="after">
                     <group>                  
                         <group string="Location Details">

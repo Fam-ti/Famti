@@ -870,7 +870,7 @@ class SlittingLogBookWizard(models.TransientModel):
                 sheet.write(row, 28, '', text_format)
                 sheet.write(row, 29, '', text_format)
                 sheet.write(row, 30, '', text_format)
-                sheet.write(row, 31, serial_line.grade_type or '', center_format)
+                sheet.write(row, 31, serial_line.grade_type.name or '', center_format)
                 sheet.write(row, 32, '', text_format)
                 sheet.write(row, 33, '', text_format)
 
