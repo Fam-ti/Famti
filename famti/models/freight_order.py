@@ -36,6 +36,7 @@ class FreightOrder(models.Model):
     vehicle_number = fields.Char(string="Truck / Trailer No.")
     driver_phone = fields.Char(string="Driver Phone Number")
     driver_email = fields.Char(string="Driver Email")
+    supplier_so_no = fields.Char(string="Supplier Sale Order No.")
 
     @api.onchange('driver_name_id')
     def _onchange_driver_name_id(self):
