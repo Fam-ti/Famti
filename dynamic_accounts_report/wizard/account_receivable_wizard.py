@@ -176,6 +176,54 @@ class AccountReceivableWizard(models.TransientModel):
             elif inv.payment_state == 'partial':
                 status = 'Partial'
 
+            film_types = []
+            widths = []
+            quantities = []
+            remarks_list = []
+
+            for line in inv.invoice_line_ids:
+
+                if line.film_type:
+                    film_types.append(
+                        str(line.film_type)
+                    )
+
+                if line.width_val:
+                    widths.append(
+                        str(line.width_val)
+                    )
+
+                if line.quantity:
+                    quantities.append(
+                        str(line.quantity)
+                    )
+
+                if line.remarks:
+                    remarks_list.append(
+                        str(line.remarks)
+                    )
+
+            film_types = list(
+                dict.fromkeys(film_types)
+            )
+
+            widths = list(
+                dict.fromkeys(widths)
+            )
+
+            quantities = list(
+                dict.fromkeys(quantities)
+            )
+
+            remarks_list = list(
+                dict.fromkeys(remarks_list)
+            )
+
+            film_type = ', '.join(film_types)
+            width_val = ', '.join(widths)
+            quantity = ', '.join(quantities)
+            remarks = ', '.join(remarks_list)
+
             sheet.write(row, 0, inv.name or '', text_format)
 
             sheet.write(
@@ -204,19 +252,19 @@ class AccountReceivableWizard(models.TransientModel):
 
             sheet.write(
                 row, 5,
-                '',
+                film_type,
                 text_format
             )
 
             sheet.write(
                 row, 6,
-                '',
+                width_val,
                 text_format
             )
 
             sheet.write(
                 row, 7,
-                '',
+                quantity,
                 center_format
             )
 
@@ -270,7 +318,7 @@ class AccountReceivableWizard(models.TransientModel):
 
             sheet.write(
                 row, 16,
-                '',
+                remarks,
                 text_format
             )
 
