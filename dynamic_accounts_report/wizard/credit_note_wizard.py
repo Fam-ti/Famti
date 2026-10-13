@@ -169,6 +169,20 @@ class CreditNoteWizard(models.TransientModel):
                 )
             )
 
+            film_types = []
+
+            for line in note.invoice_line_ids:
+                if line.film_type:
+                    film_type_value = (
+                        line.film_type.name
+                        if hasattr(line.film_type, 'name')
+                        else str(line.film_type)
+                    )
+                    film_types.append(film_type_value)
+
+            film_types = list(dict.fromkeys(film_types))
+            film_type = ', '.join(film_types)
+
             status = 'Credited'
 
             if note.state == 'cancel':
@@ -194,7 +208,7 @@ class CreditNoteWizard(models.TransientModel):
 
             sheet.write(
                 row, 3,
-                '',
+                film_type,
                 text_format
             )
 

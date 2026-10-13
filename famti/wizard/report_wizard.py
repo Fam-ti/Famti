@@ -197,8 +197,8 @@ class DailyInventoryReportWizard(models.TransientModel):
                 sheet.write(row, 1,product.categ_id.name or '', cell_format)
                 sheet.write(row, 2,product.name or '',cell_format)
                 sheet.write(row, 3,lot.name or '',cell_format)
-                sheet.write(row, 4,product.thickness_val or '',cell_format)
-                sheet.write(row, 5,product.width_val or '',cell_format)
+                sheet.write(row, 4,lot.thickness or '',cell_format)
+                sheet.write(row, 5,lot.width_val or '',cell_format)
                 sheet.write( row, 6,getattr(line, 'length', ''),cell_format)
                 sheet.write( row, 7,line.quantity or 0.0,number_format)
                 sheet.write( row, 8,getattr(line, 'treatment', ''),cell_format)
@@ -1015,7 +1015,7 @@ class InventoryAgingReportWizard(models.TransientModel):
             'NET WEIGHT PER ROLL (KGS)',
             'NO OF ROLLS',
             'TOTAL WEIGHT (KGS)',
-            'CUSTOMER NAME',
+            'SUPPLIER NAME',
             'Aging (No. of days)',
             'Remarks'
         ]
@@ -1110,6 +1110,10 @@ class InventoryAgingReportWizard(models.TransientModel):
                 lot.product_qty or 0.0
             )
 
+            qc_remark = (
+                    lot.qc_remark or ''
+                )
+
             quant_domain = [
                 ('product_id', '=', lot.product_id.id),
                 ('quantity', '>', 0)
@@ -1130,9 +1134,9 @@ class InventoryAgingReportWizard(models.TransientModel):
 
             customer_name = ''
 
-            if hasattr(lot, 'partner_id') and lot.partner_id:
+            if hasattr(lot, 'supplier_name') and lot.supplier_name:
                 customer_name = (
-                    lot.partner_id.name
+                    lot.supplier_name.name
                 )
 
             sheet.write(
@@ -1215,7 +1219,7 @@ class InventoryAgingReportWizard(models.TransientModel):
             sheet.write(
                 row,
                 11,
-                '',
+                qc_remark,
                 text_format
             )
 

@@ -28,16 +28,6 @@ class HrApplicant(models.Model):
         old_stage_map = {rec.id: rec.stage_id.id for rec in self}
         res = super().write(vals)
 
-        if 'stage_id' in vals:
-            hired_stage = self.env['hr.recruitment.stage'].search(
-                [('name', '=', 'Selected')], limit=1
-            )
-
-            for rec in self:
-                old_stage = old_stage_map.get(rec.id)
-                if rec.stage_id.id == hired_stage.id and old_stage != hired_stage.id:
-                    rec.send_offer_letter()
-
         return res
 
     def send_offer_letter(self):
